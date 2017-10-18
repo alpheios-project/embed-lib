@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Wordsvc Test Page</title>
+</head>
+
+<body>
+    <script src="dist/alpheios-wordsvc.js"></script>
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function(event) {
+          new AlpheiosWordSvc(["#alpheios-main"],document).activate();
+        });
+    </script>
+    <div id="alpheios-main" data-trigger="click" data-selector=".alpheios-enabled"></div>
+    <div class="alpheios-enabled" id="block1" xml:lang="grc">
+      Some Greek Text
+    </div>
+
+    <div class="alpheios-enabled" id="block2" xml:lang="lat">
+      Some Latin Text
+    </div>
+</body>
+</html>
