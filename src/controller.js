@@ -1,5 +1,5 @@
 'use strict';
-import SelectedWord from './selectedword.js';
+import SourceSelection from './source_selection.js';
 // Import shared language data
 //import * as Lib from "./lib/lib.js";
 //import TuftsAdapter from "./analyzer/tufts/adapter.js";
@@ -34,8 +34,9 @@ export default class {
   }
 
   wordHandler(event) {
-    console.log(`Triggered on ${event.target.id}`);
-    let selection = new SelectedWord(event.target);
+    let selection = new SourceSelection(event.target);
+    selection.reset();
+    console.log(`Selected ${selection.word_selection.word}`);
   };
 
 };
