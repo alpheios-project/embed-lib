@@ -5,12 +5,12 @@ class LanguageModel {
 
    /**
    */
-   constructor( language=null, context_forward=0, context_backward=0, direction="ltr", base_unit=LanguageModel.UNIT_WORD ) {
-     this.source_language = language;
-     this.context_forward = context_forward;
-     this.context_backward = context_backward;
-     this.direction = direction;
-     this.base_unit = base_unit;
+   constructor() {
+     this.source_language = null;
+     this.context_forward = 0;
+     this.context_backward = 0;
+     this.direction = LanguageModel.DIR_LTR;
+     this.base_unit = LanguageModel.UNIT_WORD;
      this.language_codes = [];
 
    }
@@ -90,9 +90,9 @@ class LanguageModel {
    * @returns true if supported false if not
    * @type Boolean
    */
-  supportsLanguage(a_code)
+  static supportsLanguage(a_code)
   {
-      return this.language_codes.includes(a_code);
+      return false;
   };
 
   /**
@@ -117,8 +117,16 @@ class LanguageModel {
       return ".,;:!?'\"(){}\\[\\]<>\/\\\u00A0\u2010\u2011\u2012\u2013\u2014\u2015\u2018\u2019\u201C\u201D\u0387\u00B7\n\r";
   }
 
+  toString()
+  {
+    return this.source_language;
+  }
+
 }
 LanguageModel.UNIT_WORD = Symbol('word');
 LanguageModel.UNIT_CHAR = Symbol('char');
+LanguageModel.DIR_LTR = Symbol('ltr');
+LanguageModel.DIR_RTL = Symbol('rtl');
+LanguageModel.LANG_LATIN = Symbol('latin');
 
 export default LanguageModel;

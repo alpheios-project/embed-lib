@@ -36,7 +36,7 @@ export default class {
   wordHandler(event) {
     let selection = new SourceSelection(event.target);
     selection.reset();
-    console.log(`Selected ${selection.word_selection.word}`);
+    console.log(`Selected ${selection}`);
   };
 
 };

@@ -1,14 +1,26 @@
+import LanguageModelFactory from './language_model_factory.js';
 import LanguageModel from './language_model.js';
 class SourceSelection {
 
   constructor(target,default_language) {
     this.target = target;
-    let closest_lang_element = this.target.closest("[lang]");
-    if (closest_lang_element) {
-      default_language = closest_lang_element.getAttribute("lang") || closest_lang_element.getAttribute("xml:lang");
+    let target_lang;
+    try {
+      target_lang = this.getAttribute("lang") || this.getAttribute("xml:lang");
+    } catch(e) {
+      // if we don't have an element
+      console.log("getAttribute not accessible on target");
     }
-    this.language = new LanguageModel();
-    this.original_selection = this.target.ownerDocument.getSelection();
+    if (! target_lang) {
+      let closest_lang_element =target.closest("[lang]") || this.target.closest("[xml\\:lang]");
+      if (closest_lang_element) {
+        target_lang = closest_lang_element.getAttribute("lang") || closest_lang_element.getAttribute("xml:lang");
+      }
+    }
+    if (! target_lang) {
+      target_lang = default_language;
+    }
+    this.language = LanguageModelFactory.getLanguageForCode(target_lang);
     this.initialize({word:null,normalized_word:null,start:0,end:0,context:null,position:0});
   }
 
@@ -16,6 +28,13 @@ class SourceSelection {
     this.in_margin = this.selectionInMargin();
     if (this.in_margin) {
       this.word_selection = word_obj;
+      return;
+    }
+    try {
+      this.original_selection = this.target.ownerDocument.getSelection();
+    } catch(e) {
+      this.original_selection = null;
+      console.log("No selection found in target owner document")
       return;
     }
     let separator = this.language.base_unit;
@@ -164,6 +183,10 @@ class SourceSelection {
    */
   doCharacterBasedWordSelection() {
     // TODO
+  }
+
+  toString() {
+    return `language:${this.language} word: ${this.word_selection.normalized_word}`;
   }
 
 }
