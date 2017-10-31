@@ -96,11 +96,11 @@ class SourceSelection {
     let ro = selection.anchorOffset;
     // clean string:
     //   convert punctuation to spaces
-    anchor_text.replace(new RegExp("[" + this.language.getPunctuation() + "]","g")," ");
+    anchor_text = anchor_text.replace(new RegExp("[" + this.language.getPunctuation() + "]","g")," ");
 
     let new_ro = ro;
     while ((new_ro > 0) && (anchor_text[--new_ro] === ' '));
-    if (new_ro < ro) {
+    if (new_ro > 0 && new_ro < ro) {
       // we backed up so position ourselves at the first whitespace before
       // the selected word
       // this is based upon the original Alpheios code before the SelectionAPI

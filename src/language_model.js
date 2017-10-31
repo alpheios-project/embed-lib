@@ -61,30 +61,6 @@ class LanguageModel {
   }
 
   /**
-   * Helper function to determine if the user's selection
-   * is in the margin of the document
-   * @private
-   * @param {int} a_ro the range offset for the selection
-   * @param {String} a_rngstr the enclosing string
-   * @returns true if in the margin, false if not
-   * @type Boolean
-   */
-  selectionInMargin(a_ro, a_rngstr)
-  {
-      // Sometimes mouseover a margin seems to set the range offset
-      // greater than the string length, so check that condition,
-      // as well as looking for whitepace at the offset with
-      // only whitespace to the right or left of the offset
-      var inMargin =
-          a_ro >= a_rngstr.length ||
-          ( a_rngstr[a_ro].indexOf(" ") == 0 &&
-              (a_rngstr.slice(0,a_ro).search(/\S/) == -1 ||
-               a_rngstr.slice(a_ro+1,-1).search(/\S/) == -1)
-          );
-      return inMargin;
-  };
-
-  /**
    * Check to see if the supplied language code is supported by this tool
    * @param {String} a_code the language code
    * @returns true if supported false if not
@@ -119,7 +95,7 @@ class LanguageModel {
 
   toString()
   {
-    return this.source_language;
+    return String(this.source_language);
   }
 
 }
