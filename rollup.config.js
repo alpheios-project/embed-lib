@@ -1,7 +1,11 @@
 import resolve from 'rollup-plugin-node-resolve';
+import string from 'rollup-plugin-string';
 export default {
     entry: 'src/controller.js',
     plugins: [
+      string({
+        include: ['../analyzer/tests/data/**/*.json'],
+      }),
       resolve({
         module: true, // Default: true
         jsnext: true,  // Default: false

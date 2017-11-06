@@ -10,7 +10,7 @@
     "test": "jest",
     "build": "rollup -c rollup.config.js",
     "buildextension": "node build-extension.js",
-    "dev": "npm run build && http-server -p 8888 & onchange src -- npm run build"
+    "dev": "npm run build && http-server -c-1 -p 8888 & onchange src -- npm run build"
   },
   "repository": {
     "type": "git",
@@ -47,5 +47,9 @@
     "verbose": true,
     "testEnvironment": "jest-environment-jsdom-11.0.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "alpheios-analyzer": "file:../analyzer",
+    "alpheios-data-models": "file:../data-models",
+    "alpheios-tufts-adapter": "file:../analyzer"
+  }
 }
