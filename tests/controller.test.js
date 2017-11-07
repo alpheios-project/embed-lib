@@ -16,7 +16,7 @@ describe('WordSvc object', () => {
     });
 
     test('Should be initialized properly', () => {
-        expect(svc.anchors).toEqual(['#myanchor']);
+        expect(svc.anchor).toEqual(['#myanchor']);
         expect(svc.doc).toEqual(document);
     });
 });

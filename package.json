@@ -48,8 +48,7 @@
     "testEnvironment": "jest-environment-jsdom-11.0.0"
   },
   "dependencies": {
-    "alpheios-analyzer": "file:../analyzer",
-    "alpheios-data-models": "file:../data-models",
-    "alpheios-tufts-adapter": "file:../analyzer"
+    "alpheios-tufts-adapter": "git://github.com/alpheios-project/tufts-adapter",
+    "alpheios-data-models": "file:../data-models"
   }
 }
