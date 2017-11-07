@@ -1,22 +1,23 @@
-const t = require('../dist/alpheios-wordsvc.js');
+/* eslint-env jest */
+const T = require('../dist/alpheios-wordsvc.js')
 
 describe('WordSvc object', () => {
-    "use strict";
+  'use strict'
 
-    let svc = {};
+  let svc = {}
 
-    beforeAll(() => {
+  beforeAll(() => {
         // Create a test environment
-        let anchor = document.createElement("div");
-        anchor.setAttribute("id","myanchor");
-        anchor.setAttribute("data-selector",".alpheios-enabled");
-        anchor.setAttribute("data-trigger",".click");
-        document.querySelector("body").appendChild(anchor);
-        svc = new t(["#myanchor"],document);
-    });
+    let anchor = document.createElement('div')
+    anchor.setAttribute('id', 'myanchor')
+    anchor.setAttribute('data-selector', '.alpheios-enabled')
+    anchor.setAttribute('data-trigger', '.click')
+    document.querySelector('body').appendChild(anchor)
+    svc = new T(['#myanchor'], document)
+  })
 
-    test('Should be initialized properly', () => {
-        expect(svc.anchor).toEqual(['#myanchor']);
-        expect(svc.doc).toEqual(document);
-    });
-});
+  test('Should be initialized properly', () => {
+    expect(svc.anchor).toEqual(['#myanchor'])
+    expect(svc.doc).toEqual(document)
+  })
+})
