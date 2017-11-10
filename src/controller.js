@@ -1,6 +1,6 @@
 'use strict'
 import AlpheiosTuftsAdapter from 'alpheios-tufts-adapter'
-import * as Lib from 'alpheios-data-models'
+import SourceSelection from './source_selection.js'
 // Import shared language data
 // import * as Lib from "./lib/lib.js";
 // import TuftsAdapter from "./analyzer/tufts/adapter.js";
@@ -34,7 +34,7 @@ export default class {
   }
 
   wordHandler (event) {
-    let selection = new Lib.SourceSelection(event.target, this.defaultLang)
+    let selection = this.getSourceSelection(event.target, this.defaultLang)
     selection.reset()
     if (selection.word_selection.word) {
       this.adapter.fetch(selection.language.toCode(), selection.word_selection.word)
@@ -48,4 +48,8 @@ export default class {
     }
     console.log(`Selected ${selection}`)
   };
+
+  getSourceSelection (target, language) {
+    return new SourceSelection(target, language)
+  }
 };

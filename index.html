@@ -9,17 +9,27 @@
     <script src="dist/alpheios-wordsvc.js"></script>
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function(event) {
-          var adapterArgs = { engine: { lat: "whitakerLat"}, url: "http://morph.alpheios.net/api/v1/analysis/word?word=r_WORD&engine=r_ENGINE&lang=r_LANG"};
+          var adapterArgs = {
+            engine: {
+              lat: "whitakerLat",
+              grc: "morpheusgrc",
+              ara: "aramorph"
+            },
+            url: "http://morph.alpheios.net/api/v1/analysis/word?word=r_WORD&engine=r_ENGINE&lang=r_LANG"};
           new AlpheiosWordSvc("#alpheios-main",document).activate(adapterArgs);
         });
     </script>
     <div id="alpheios-main" data-trigger="dblclick" data-selector=".alpheios-enabled" data-adapterclass="AlpheiosTuftsAdapter"></div>
     <div class="alpheios-enabled" id="block1" xml:lang="grc">
-      Some Greek Text
+      ἄνδρα μοι ἔννεπε, μοῦσα, πολύτροπον
     </div>
 
     <div class="alpheios-enabled" id="block2" lang="lat">
       mare cupidinibus cepit
+    </div>
+
+    <div class="alpheios-enabled" id="block3" lang="ara" dir="rtl">
+       1 اَلدٌّنيَا دَارُ مَمَرٍ لاَ دَارُ مَقَرٍ * سُلطَان بِلاَ عَدلٍ كَنَهرٍ
     </div>
 </body>
 </html>
