@@ -4,7 +4,7 @@ export default {
   entry: 'src/controller.js',
   plugins: [
     string({
-      include: ['node_modules/alpheios-tufts-adapter/src/lib/lang/data/**/*.json']
+      include: ['node_modules/alpheios-tufts-adapter/src/lib/engine/data/**/*.json']
     }),
     resolve({
       module: true, // Default: true
