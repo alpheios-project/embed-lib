@@ -40,7 +40,7 @@
     "rollup-plugin-string": "^2.0.2",
     "standard": "*",
     "the-answer": "^1.0.0",
-    "vue": "^2.5.3",
+    "vue": "^2.5.5",
     "xmldom": "^0.1.27",
     "xmltojson": "^1.3.5"
   },
@@ -49,7 +49,8 @@
     "testEnvironment": "jest-environment-jsdom-11.0.0"
   },
   "dependencies": {
-    "alpheios-data-models": "git://github.com/alpheios-project/data-models.git",
-    "alpheios-tufts-adapter": "git://github.com/alpheios-project/tufts-adapter.git"
+    "alpheios-data-models": "git://github.com/alpheios-project/data-models.git#altlemmas",
+    "alpheios-dict-client": "file:../dict-client",
+    "alpheios-tufts-adapter": "git://github.com/alpheios-project/tufts-adapter.git#refine_lemmas"
   }
 }

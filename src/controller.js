@@ -1,6 +1,7 @@
 'use strict'
 import AlpheiosTuftsAdapter from 'alpheios-tufts-adapter'
 import SourceSelection from './source_selection.js'
+import * as Dict from 'alpheios-dict-client'
 // Import shared language data
 // import * as Lib from "./lib/lib.js";
 // import TuftsAdapter from "./analyzer/tufts/adapter.js";
@@ -18,6 +19,7 @@ export default class {
     this.anchor = anchor
     this.doc = doc
     this.adapters = new Map([['AlpheiosTuftsAdapter', AlpheiosTuftsAdapter]])
+    this.lexClient = new Dict.AlpheiosLexAdapter('lsj')
   }
 
   activate (adapterArgs) {
@@ -43,6 +45,20 @@ export default class {
               console.log(json)
               let homonym = this.adapter.transform(json, selection.word_selection.word)
               console.log(homonym)
+              for (let lex of homonym.lexemes) {
+                this.lexClient.lookupShortDef(lex.lemma).then((result) => { console.log(`short def: ${result}`) })
+                this.lexClient.lookupFullDef(lex.lemma).then((result) => {
+                  let elem = this.doc.querySelector(this.anchor)
+                  let parser = new DOMParser()
+                  let def
+                  try {
+                      def = parser.parseFromString(result.text,'text/html')
+                  } catch (e) {
+                      def = parser.parseFromString(`<div class="error">${e}</div>`,'text/html')
+                  }
+                  elem.appendChild(def.documentElement)
+                })
+              }
             },
             (error) => { console.log(`Error ${error}`) })
     }
