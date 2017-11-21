@@ -23,6 +23,9 @@
   },
   "homepage": "https://github.com/alpheios-project/wordsvc#readme",
   "devDependencies": {
+    "alpheios-data-models": "git://github.com/alpheios-project/data-models.git#providerobj",
+    "alpheios-lexicon-client": "git://github.com/alpheios-project/lexicon-client.git",
+    "alpheios-tufts-adapter": "git://github.com/alpheios-project/tufts-adapter.git#providerobj",
     "babel-jest": "^21.2.0",
     "babel-preset-es2015": "^6.24.1",
     "babyparse": "^0.4.6",
@@ -48,9 +51,5 @@
     "verbose": true,
     "testEnvironment": "jest-environment-jsdom-11.0.0"
   },
-  "dependencies": {
-    "alpheios-data-models": "git://github.com/alpheios-project/data-models.git#altlemmas",
-    "alpheios-dict-client": "file:../dict-client",
-    "alpheios-tufts-adapter": "git://github.com/alpheios-project/tufts-adapter.git#refine_lemmas"
-  }
+  "dependencies": {}
 }
