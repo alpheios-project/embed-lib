@@ -51,7 +51,7 @@ export default class {
   }
 
   wordHandler (event) {
-    this.clearResults()  
+    this.clearResults()
     let selection = this.getSourceSelection(event.target, this.defaultLang)
     let parser = new DOMParser()
     let elem = this.doc.querySelector(this.resultsElem)
@@ -72,8 +72,9 @@ export default class {
                   let shortdef
                   if (! lex.meaning) {
                     lexClient.lookupShortDef(lex.lemma).then((result) => {
-                      this.appendToResults('shortdef',result.text)
-                      if (result.provider !== lemma.provider) {
+                      lex.meaning = result
+                      this.appendToResults('shortdef',lex.meaning.text)
+                      if (lex.meaning.provider !== lemma.provider) {
                         this.appendToResults('shortdef_provider',result.provider)
                       }
                     })
