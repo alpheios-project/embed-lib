@@ -23,9 +23,9 @@
   },
   "homepage": "https://github.com/alpheios-project/wordsvc#readme",
   "devDependencies": {
-    "alpheios-data-models": "git://github.com/alpheios-project/data-models.git#providerobj",
+    "alpheios-data-models": "git://github.com/alpheios-project/data-models.git",
     "alpheios-lexicon-client": "git://github.com/alpheios-project/lexicon-client.git",
-    "alpheios-tufts-adapter": "git://github.com/alpheios-project/tufts-adapter.git#providerobj",
+    "alpheios-tufts-adapter": "git://github.com/alpheios-project/tufts-adapter.git",
     "babel-jest": "^21.2.0",
     "babel-preset-es2015": "^6.24.1",
     "babyparse": "^0.4.6",
