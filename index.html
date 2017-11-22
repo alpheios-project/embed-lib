@@ -9,14 +9,7 @@
     <script src="dist/alpheios-wordsvc.js"></script>
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function(event) {
-          var adapterArgs = {
-            engine: {
-              lat: "whitakerLat",
-              grc: "morpheusgrc",
-              ara: "aramorph"
-            },
-            url: "http://morph.alpheios.net/api/v1/analysis/word?word=r_WORD&engine=r_ENGINE&lang=r_LANG"};
-          new AlpheiosWordSvc("#alpheios-main",document).activate(adapterArgs);
+          new AlpheiosWordSvc("#alpheios-main",document).activate();
         });
     </script>
     <div id="alpheios-main"

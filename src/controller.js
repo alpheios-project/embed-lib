@@ -30,13 +30,13 @@ export default class {
     }
   }
 
-  activate (adapterArgs) {
+  activate () {
     let elem = this.doc.querySelector(this.anchor)
     let selector = elem.dataset.selector
     let trigger = elem.dataset.trigger
     let adapterClass = elem.dataset['adapterclass']
     this.defaultLang = elem.dataset.defaultlang
-    this.adapter = new (this.adapters.get(adapterClass))(adapterArgs)
+    this.adapter = new (this.adapters.get(adapterClass))()
     this.resultsElem = elem.dataset.results
     let activateOn = this.doc.querySelectorAll(selector)
     for (let o of activateOn) {
@@ -62,25 +62,27 @@ export default class {
             (json) => {
               console.log(json)
               let homonym = this.adapter.transform(json, selection.word_selection.word)
-              if (this.lexMap.has(selection.language.toCode())) {
-                let lexClient = this.lexMap.get(selection.language.toCode())[0]
-                for (let lex of homonym.lexemes) {
-                  let lemma = lex.lemma.word
-                  let lemma_provider = lex.provider
-                  this.appendToResults('lemma',lemma)
-                  this.appendToResults('lemma_provider',lemma_provider)
-                  let shortdef
-                  if (! lex.meaning) {
-                    lexClient.lookupShortDef(lex.lemma).then((result) => {
-                      lex.meaning = result
-                      this.appendToResults('shortdef',lex.meaning.text)
-                      if (lex.meaning.provider !== lemma.provider) {
-                        this.appendToResults('shortdef_provider',result.provider)
-                      }
-                    })
-                  } else {
+              for (let lex of homonym.lexemes) {
+                let lemma = lex.lemma.word
+                let lemma_provider = lex.provider
+                this.appendToResults('lemma',lemma)
+                this.appendToResults('lemma_provider',lemma_provider)
+                let shortdef, lexClient
+                if (this.lexMap.has(selection.language.toCode())) {
+                  lexClient = this.lexMap.get(selection.language.toCode())[0]
+                }
+                if (lexClient && ! lex.meaning) {
+                  lexClient.lookupShortDef(lex.lemma).then((result) => {
+                    lex.meaning = result
                     this.appendToResults('shortdef',lex.meaning.text)
-                  }
+                    if (lex.meaning.provider !== lemma.provider) {
+                      this.appendToResults('shortdef_provider',result.provider)
+                    }
+                  })
+                } else if (lex.meaning) {
+                  this.appendToResults('shortdef',lex.meaning.text)
+                }
+                if (lexClient) {
                   lexClient.lookupFullDef(lex.lemma).then((result) => {
                     let def
                     try {
