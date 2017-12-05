@@ -2,6 +2,7 @@
 import AlpheiosTuftsAdapter from 'alpheios-tufts-adapter'
 import SourceSelection from './source_selection.js'
 import * as Lex from 'alpheios-lexicon-client'
+import { Lemma, Lexeme, Homonym } from 'alpheios-data-models'
 // Import shared language data
 // import * as Lib from "./lib/lib.js";
 // import TuftsAdapter from "./analyzer/tufts/adapter.js";
@@ -59,47 +60,58 @@ export default class {
     let elem = this.doc.querySelector(this.resultsElem)
     selection.reset()
     if (selection.word_selection.word) {
-      this.adapter.fetch(selection.language.toCode(), selection.word_selection.word)
+      this.adapter.fetch(selection.language.toCode(), selection.word_selection.normalized_word)
           .then(
             (json) => {
               console.log(json)
               let homonym = this.adapter.transform(json, selection.word_selection.word)
-              for (let lex of homonym.lexemes) {
-                let lemma = lex.lemma.word
-                let lemma_provider = lex.provider
-                this.appendToResults('lemma',lemma)
-                this.appendToResults('lemma_provider',lemma_provider)
-                let shortdef, lexClient
-                if (this.lexMap.has(selection.language.toCode())) {
-                  lexClient = this.lexMap.get(selection.language.toCode())[0]
-                }
-                if (lexClient && ! lex.meaning) {
-                  lexClient.lookupShortDef(lex.lemma).then((result) => {
-                    lex.meaning = result
-                    this.appendToResults('shortdef',lex.meaning.text)
-                    if (lex.meaning.provider !== lemma.provider) {
-                      this.appendToResults('shortdef_provider',result.provider)
-                    }
-                  })
-                } else if (lex.meaning) {
-                  this.appendToResults('shortdef',lex.meaning.text)
-                }
-                if (lexClient) {
-                  lexClient.lookupFullDef(lex.lemma).then((result) => {
-                    let def
-                    try {
-                      this.appendToResults('fulldef',result.text)
-                    } catch (e) {
-                      this.appendToResults('fulldef_error',e)
-                    }
-                  })
-                }
-              }
+              this.lookupLemmas(selection,homonym)
             },
-            (error) => { console.log(`Error ${error}`) })
+            (error) => {
+              console.log(`Error ${error}`)
+              // construct a lemma from the selected word
+              let lemma = new Lemma(selection.word_selection.normalized_word,selection.language,[])
+              let lexeme = new Lexeme(lemma,[])
+              let homonym = new Homonym([lexeme],selection.word_selection.normalized_word)
+              this.lookupLemmas(selection,homonym)
+            })
     }
     console.log(`Selected ${selection}`)
   };
+
+  lookupLemmas(selection,homonym) {
+    for (let lex of homonym.lexemes) {
+      let lemma = lex.lemma.word
+      let lemma_provider = lex.provider
+      this.appendToResults('lemma',lemma)
+      this.appendToResults('lemma_provider',lemma_provider)
+      let shortdef, lexClient
+      if (this.lexMap.has(selection.language.toCode())) {
+        lexClient = this.lexMap.get(selection.language.toCode())[0][0]
+      }
+      if (lexClient && ! lex.meaning) {
+        lexClient.lookupShortDef(lex.lemma).then((result) => {
+          lex.meaning = result
+          this.appendToResults('shortdef',lex.meaning.text)
+          if (lex.meaning.provider !== lemma.provider) {
+            this.appendToResults('shortdef_provider',result.provider)
+          }
+        })
+      } else if (lex.meaning) {
+        this.appendToResults('shortdef',lex.meaning.text)
+      }
+      if (lexClient) {
+        lexClient.lookupFullDef(lex.lemma).then((result) => {
+          let def
+          try {
+            this.appendToResults('fulldef',result.text)
+          } catch (e) {
+            this.appendToResults('fulldef_error',e)
+          }
+        })
+      }
+    }
+  }
 
   clearResults() {
     let elem = this.doc.querySelector(this.resultsElem)
