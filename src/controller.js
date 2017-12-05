@@ -20,11 +20,11 @@ export default class {
     this.doc = doc
     this.adapters = new Map([['AlpheiosTuftsAdapter', AlpheiosTuftsAdapter]])
     this.lexMap = new Map()
-    for (let lang of ['lat','grc']) {
+    for (let lang of ['lat','grc','per','ara']) {
       let list = []
       let lexicons = Lex.AlpheiosLexAdapter.getLexicons(lang)
       for (let [lex,desc] of lexicons.entries()) {
-        list.push(new Lex.AlpheiosLexAdapter(lex),desc)
+        list.push([new Lex.AlpheiosLexAdapter(lex),desc])
       }
       this.lexMap.set(lang,list)
     }
@@ -44,7 +44,9 @@ export default class {
     }
     let lexList = '<ul>'
     for (let [k,v] of this.lexMap.entries()) {
-      lexList = lexList + `<li>${v[1]}</li>`
+      for (let l of v) {
+        lexList = lexList + `<li>${l[1]}</li>`
+      }
     }
     lexList = lexList + '</ul>'
     this.appendToResults('lexicons',lexList)
