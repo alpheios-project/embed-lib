@@ -3,26 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <title>Wordsvc Test Page</title>
+    <link rel="stylesheet" href="dist/styles/style.min.css"/>
 </head>
 
 <body>
-    <script src="dist/alpheios-wordsvc.js"></script>
+    <script src="dist/alpheios-embed.js"></script>
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function(event) {
-          new AlpheiosWordSvc("#alpheios-main",document).activate();
+          new Alpheios.Embedded("#alpheios-main",document).activate();
         });
     </script>
     <div id="alpheios-main"
       data-trigger="dblclick"
       data-selector=".alpheios-enabled"
-      data-adapterclass="AlpheiosTuftsAdapter"
       data-results="#alpheios-results"></div>
     <div class="alpheios-enabled" id="block1" xml:lang="grc">
       ἄνδρα μοι ἔννεπε, μοῦσα, πολύτροπον
     </div>
 
     <div class="alpheios-enabled" id="block2" lang="lat">
-      mare cupidinibus cepit
+      mare cupidinibus cepit<br/>
+      <span>venit</span><span>cupidinibus</span><span>cepit</span>
     </div>
 
     <div class="alpheios-enabled" id="block3" lang="ara" dir="rtl">
