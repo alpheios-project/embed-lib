@@ -7,16 +7,15 @@
 </head>
 
 <body>
-    <script src="dist/alpheios-embed.js"></script>
+    <script src="dist/alpheios-embedded.js"></script>
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function(event) {
-          new Alpheios.Embedded("#alpheios-main",document).activate();
+          new Alpheios.Embedded().activate();
         });
     </script>
     <div id="alpheios-main"
       data-trigger="dblclick"
-      data-selector=".alpheios-enabled"
-      data-results="#alpheios-results"></div>
+      data-selector=".alpheios-enabled"></div>
     <div class="alpheios-enabled" id="block1" xml:lang="grc">
       ἄνδρα μοι ἔννεπε, μοῦσα, πολύτροπον
     </div>

@@ -79,7 +79,7 @@ export default class State {
   static get statuses () {
     return {
       script: {
-         ACTIVE: Symbol.for('Alpheios_Script_Active')
+        ACTIVE: Symbol.for('Alpheios_Script_Active')
       },
       panel: {
         OPEN: Symbol.for('Alpheios_Status_PanelOpen'), // Panel is open
@@ -214,11 +214,11 @@ export default class State {
     let state = new State()
 
     for (let prop of State.symbolProps) {
-      if (jsonObject.hasOwnProperty(prop)) { tabScript[prop] = Symbol.for(jsonObject[prop]) }
+      if (jsonObject.hasOwnProperty(prop)) { state[prop] = Symbol.for(jsonObject[prop]) }
     }
 
     for (let prop of State.stringProps) {
-      if (jsonObject.hasOwnProperty(prop)) { tabScript[prop] = jsonObject[prop] }
+      if (jsonObject.hasOwnProperty(prop)) { state[prop] = jsonObject[prop] }
     }
 
     return state

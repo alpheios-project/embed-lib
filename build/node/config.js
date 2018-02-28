@@ -17,10 +17,10 @@ module.exports = {
     tasks: [
       {
         context: path.resolve(__dirname, '../../src'),
-        entry: './alpheios-embed.js',
+        entry: './embedded.js',
         output: {
           path: path.resolve(__dirname, '../../dist'),
-          filename: 'alpheios-embed.js',
+          filename: 'alpheios-embedded.js',
           libraryTarget: 'window',
           library: 'Alpheios'
         },
