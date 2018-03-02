@@ -59,7 +59,7 @@ class Embedded {
     }
     console.log(elem.dataset)
     let selector = elem.dataset.selector
-    let trigger = elem.dataset.trigger
+    let trigger = elem.dataset.trigger.split(/,/)
     if (!selector || !trigger) {
       throw new Error(`anchor element ${this.anchor} must define both trigger and selector`)
     }
@@ -68,7 +68,9 @@ class Embedded {
       throw new Error(`activation element ${activateOn} is missing`)
     }
     for (let o of activateOn) {
-      o.addEventListener(trigger, event => { this.handler(event) })
+      for (let t of trigger) {
+        o.addEventListener(t, event => { this.handler(event) })
+      }
     }
   }
 
