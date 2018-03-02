@@ -4,6 +4,7 @@ import AlpheiosTuftsAdapter from 'alpheios-tufts-adapter'
 import {Lexicons} from 'alpheios-lexicon-client'
 import { UIController, HTMLSelector, LexicalQuery, ContentOptions, ResourceOptions } from 'alpheios-components'
 import State from './state'
+import Template from './template.htmlf'
 
 /**
  * Encapsulation of Alpheios functionality which can be embedded in a webpage
@@ -26,7 +27,13 @@ class Embedded {
     this.maAdapter = new AlpheiosTuftsAdapter() // Morphological analyzer adapter, with default arguments
     this.langData = new LanguageDataList().loadData()
     let manifest = { version: '1.0', name: 'Alpheios Embedded Library' }
-    this.ui = new UIController(this.state, this.options, this.resourceOptions, State.statuses, manifest)
+    let template = { html: Template, panelId: 'alpheios-panel-embedded', popupId: 'alpheios-popup-embedded' }
+    this.ui = new UIController(this.state, this.options, this.resourceOptions, manifest,template)
+    this.doc.body.addEventListener('Alpheios_Embedded_Check', event => { this.notifyExtension(event)})
+  }
+
+  notifyExtension(event) {
+    this.doc.body.dispatchEvent(new Event('Alpheios_Embedded_Response'))
   }
 
   optionSaver () {

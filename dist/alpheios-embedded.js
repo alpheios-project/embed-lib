@@ -10293,6 +10293,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_alpheios_components__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_alpheios_components___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_alpheios_components__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__state__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__template_htmlf__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__template_htmlf___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__template_htmlf__);
+
 
 
 
@@ -10321,7 +10324,13 @@ class Embedded {
     this.maAdapter = new __WEBPACK_IMPORTED_MODULE_2_alpheios_tufts_adapter__["a" /* default */]() // Morphological analyzer adapter, with default arguments
     this.langData = new __WEBPACK_IMPORTED_MODULE_0_alpheios_inflection_tables__["LanguageDataList"]().loadData()
     let manifest = { version: '1.0', name: 'Alpheios Embedded Library' }
-    this.ui = new __WEBPACK_IMPORTED_MODULE_4_alpheios_components__["UIController"](this.state, this.options, this.resourceOptions, __WEBPACK_IMPORTED_MODULE_5__state__["a" /* default */].statuses, manifest)
+    let template = { html: __WEBPACK_IMPORTED_MODULE_6__template_htmlf___default.a, panelId: 'alpheios-panel-embedded', popupId: 'alpheios-popup-embedded' }
+    this.ui = new __WEBPACK_IMPORTED_MODULE_4_alpheios_components__["UIController"](this.state, this.options, this.resourceOptions, manifest,template)
+    this.doc.body.addEventListener('Alpheios_Embedded_Check', event => { this.notifyExtension(event)})
+  }
+
+  notifyExtension(event) {
+    this.doc.body.dispatchEvent(new Event('Alpheios_Embedded_Response'))
   }
 
   optionSaver () {
@@ -27695,16 +27704,17 @@ const languageNames = new Map([
 ])
 
 class UIController {
-  constructor (state, options, resourceOptions, statuses, manifest) {
+  constructor (state, options, resourceOptions, manifest,
+    template = {html: __WEBPACK_IMPORTED_MODULE_8__template_htmlf___default.a, panelId: 'alpheios-panel', popupId: 'alpheios-popup'}) {
     this.state = state
     this.options = options
     this.resourceOptions = resourceOptions
-    this.statuses = statuses
     this.settings = UIController.settingValues
     this.irregularBaseFontSizeClassName = 'alpheios-irregular-base-font-size'
     this.irregularBaseFontSize = !UIController.hasRegularBaseFontSize()
     this.verboseMode = false
     this.manifest = manifest
+    this.template = template
 
     this.zIndex = this.getZIndexMax()
 
@@ -27717,10 +27727,10 @@ class UIController {
     document.body.classList.add('alpheios')
     let container = document.createElement('div')
     document.body.insertBefore(container, null)
-    container.outerHTML = __WEBPACK_IMPORTED_MODULE_8__template_htmlf___default.a
+    container.outerHTML = template.html
     // Initialize components
     this.panel = new __WEBPACK_IMPORTED_MODULE_1_vue_dist_vue___default.a({
-      el: '#alpheios-panel',
+      el: `#${this.template.panelId}`,
       components: { panel: __WEBPACK_IMPORTED_MODULE_2__vue_components_panel_vue__["a" /* default */] },
       data: {
         panelData: {
@@ -27791,7 +27801,7 @@ class UIController {
         open: function () {
           if (!this.state.isPanelOpen()) {
             this.panelData.isOpen = true
-            this.state.setItem('panelStatus', statuses.panel.OPEN)
+            this.state.setPanelOpen()
           }
           return this
         },
@@ -27799,7 +27809,7 @@ class UIController {
         close: function () {
           if (!this.state.isPanelClosed()) {
             this.panelData.isOpen = false
-            this.state.setItem('panelStatus', statuses.panel.CLOSED)
+            this.state.setPanelClosed()
           }
           return this
         },
@@ -27961,15 +27971,15 @@ class UIController {
 
     this.options.load(() => {
       this.resourceOptions.load(() => {
-        this.state.status = statuses.script.ACTIVE
-        console.log('Content script is activated')
+        this.state.activateUI()
+        console.log('UI options are loaded')
         this.updateLanguage(this.options.items.preferredLanguage.currentValue)
       })
     })
 
     // Create a Vue instance for a popup
     this.popup = new __WEBPACK_IMPORTED_MODULE_1_vue_dist_vue___default.a({
-      el: '#alpheios-popup',
+      el: `#${this.template.popupId}`,
       components: { popup: __WEBPACK_IMPORTED_MODULE_3__vue_components_popup_vue__["a" /* default */] },
       data: {
         messages: [],
@@ -42755,6 +42765,12 @@ class State {
 /* harmony export (immutable) */ __webpack_exports__["a"] = State;
 
 
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports) {
+
+module.exports = "<div id=\"alpheios-popup-embedded\" >\n    <popup :messages=\"messages\" :definitions=\"definitions\" :visible=\"visible\" :lexemes=\"lexemes\" :linkedfeatures=\"linkedFeatures\"\n           :data=\"popupData\" @close=\"close\" @closepopupnotifications=\"clearNotifications\" @showpaneltab=\"showPanelTab\"\n           @sendfeature=\"sendFeature\" @settingchange=\"settingChange\">\n    </popup>\n</div>\n<div id=\"alpheios-panel-embedded\">\n    <panel :data=\"panelData\" @close=\"close\" @closenotifications=\"clearNotifications\"\n           @setposition=\"setPositionTo\" @settingchange=\"settingChange\" @resourcesettingchange=\"resourceSettingChange\"\n           @changetab=\"changeTab\"></panel>\n</div>\n";
 
 /***/ })
 /******/ ]);
