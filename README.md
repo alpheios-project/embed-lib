@@ -24,20 +24,20 @@ Encapsulates Alpheios functionality for use as an embedded library.
 </script>
 ```
 
-You can configure the Alpheios Embedded instance by passing parameters to the constructor:
+    You can configure the Alpheios Embedded instance by passing parameters to the constructor:
 
 ```
   new Alpheios.Embedded(selector_for_anchor_element,document_object,popup_arguments,panel_arguments)
 ```
 
-e.g
+    e.g
 
 ```
-  new Alpheios.Embedded("#alpheios-main",document_object,{top: "30vh", left: "30vw"},{})
+  new Alpheios.Embedded("#alpheios-main",document,{top: "30vh", left: "30vw"},{})
 ```
 
-Configuration options will be full documented in a future release. For now, its advisable to keep defaults
-for everything except the top and left properties of the popup, as in the example above.
+   Configuration options will be full documented in a future release. For now, its advisable to keep defaults
+   for everything except the top and left properties of the popup, as in the example above.
 
 
 3. Add an anchor element with the id "alpheios-main" to your HTML page to configure the library. This element
