@@ -61,7 +61,7 @@ window["Alpheios"] =
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
+/******/ 	return __webpack_require__(__webpack_require__.s = 2);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -10273,6 +10273,2730 @@ class ViewSet {
 
 /***/ }),
 /* 2 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Embedded", function() { return Embedded; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_alpheios_inflection_tables__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_alpheios_data_models__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_alpheios_tufts_adapter__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_alpheios_lexicon_client__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_alpheios_components__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_alpheios_components___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_alpheios_components__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__state__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__template_htmlf__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__template_htmlf___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__template_htmlf__);
+/* eslint-env jest */
+/* global Event */
+
+
+
+
+
+
+
+
+/**
+ * Encapsulation of Alpheios functionality which can be embedded in a webpage
+ */
+class Embedded {
+  /**
+   * @constructor
+   * @param {string} anchor - CSS selector for the HTML element containing Alpheios configuration (default is '#alpheios-main')
+   *                          the anchor element should contain the following attributes:
+                              data-selector: a CSS Selector string identifying the page elements for which Alpheios should be activated
+                              data-trigger: the DOM event to which Alpheios functionality should be attached
+   * @param {Document} doc - the parent document
+   * @param {Object} popupData - popup data overrides
+   * @param {Object} panelData - panel data overrides
+   */
+  constructor (anchor = '#alpheios-main', doc = document, popupData = {}, panelData = {}) {
+    this.anchor = anchor
+    this.doc = doc
+    this.state = new __WEBPACK_IMPORTED_MODULE_5__state__["a" /* default */]()
+    this.options = new __WEBPACK_IMPORTED_MODULE_4_alpheios_components__["ContentOptions"](this.optionSaver, this.optionLoader)
+    this.resourceOptions = new __WEBPACK_IMPORTED_MODULE_4_alpheios_components__["ResourceOptions"](this.optionSaver, this.optionLoader)
+    this.maAdapter = new __WEBPACK_IMPORTED_MODULE_2_alpheios_tufts_adapter__["a" /* default */]() // Morphological analyzer adapter, with default arguments
+    this.langData = new __WEBPACK_IMPORTED_MODULE_0_alpheios_inflection_tables__["LanguageDataList"]().loadData()
+    let manifest = { version: '1.0', name: 'Alpheios Embedded Library' }
+    let template = { html: __WEBPACK_IMPORTED_MODULE_6__template_htmlf___default.a, panelId: 'alpheios-panel-embedded', popupId: 'alpheios-popup-embedded' }
+    this.ui = new __WEBPACK_IMPORTED_MODULE_4_alpheios_components__["UIController"](this.state, this.options, this.resourceOptions, manifest, template)
+    this.doc.body.addEventListener('Alpheios_Embedded_Check', event => { this.notifyExtension(event) })
+    Object.assign(this.ui.panel.panelData, panelData)
+    Object.assign(this.ui.popup.popupData, popupData)
+  }
+
+  notifyExtension (event) {
+    this.doc.body.dispatchEvent(new Event('Alpheios_Embedded_Response'))
+  }
+
+  optionSaver () {
+    return new Promise((resolve, reject) => {
+      reject(new Error('save not implemented'))
+    })
+  }
+
+  optionLoader () {
+    return new Promise((resolve, reject) => {
+      reject(new Error('load not implemented'))
+    })
+  }
+
+  activate () {
+    let elem = this.doc.querySelector(this.anchor)
+    if (!elem) {
+      throw new Error(`anchor element ${elem} is missing`)
+    }
+    console.log(elem.dataset)
+    let selector = elem.dataset.selector
+    let trigger = elem.dataset.trigger.split(/,/)
+    if (!selector || !trigger) {
+      throw new Error(`anchor element ${this.anchor} must define both trigger and selector`)
+    }
+    let activateOn = this.doc.querySelectorAll(selector)
+    if (activateOn.length === 0) {
+      throw new Error(`activation element ${activateOn} is missing`)
+    }
+    for (let o of activateOn) {
+      for (let t of trigger) {
+        o.addEventListener(t, event => { this.handler(event) })
+      }
+    }
+  }
+
+  handler (event) {
+    let htmlSelector = new __WEBPACK_IMPORTED_MODULE_4_alpheios_components__["HTMLSelector"](event, this.options.items.preferredLanguage.currentValue)
+    let textSelector = htmlSelector.createTextSelector()
+
+    if (!textSelector.isEmpty()) {
+      this.ui.updateLanguage(textSelector.languageCode)
+      __WEBPACK_IMPORTED_MODULE_4_alpheios_components__["LexicalQuery"].create(textSelector, {
+        htmlSelector: htmlSelector,
+        uiController: this.ui,
+        maAdapter: this.maAdapter,
+        langData: this.langData,
+        lexicons: __WEBPACK_IMPORTED_MODULE_3_alpheios_lexicon_client__["a" /* Lexicons */],
+        resourceOptions: this.resourceOptions,
+        langOpts: { [__WEBPACK_IMPORTED_MODULE_1_alpheios_data_models__["Constants"].LANG_PERSIAN]: { lookupMorphLast: true } } // TODO this should be externalized
+      }
+      ).getData()
+    }
+  }
+}
+
+
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__ = __webpack_require__(0);
+
+
+/**
+ * Base Adapter Class for a Morphology Service Client
+ */
+class BaseAdapter {
+  /**
+   * Method which is used to prepare a lookup request according
+   * to the adapter specific logic
+   * @param {string} lang - the language code
+   * @param {string} word - the word to lookup
+   * @returns {string} the url for the request
+   */
+  prepareRequestUrl (lang, word) {
+      /** must be overridden in the adapter implementation class **/
+    return null
+  }
+
+  /**
+   * Fetch response from a remote URL
+   * @param {string} lang - the language code
+   * @param {string} word - the word to lookup
+   * @returns {Promise} a promse which if successful resolves to json response object
+   *                    with the results of the analysis
+   */
+  fetch (lang, word) {
+    let url = this.prepareRequestUrl(lang, word);
+    return new Promise((resolve, reject) => {
+      if (url) {
+        window.fetch(url).then(
+            function (response) {
+              try {
+                if (response.ok) {
+                  let json = response.json();
+                  resolve(json);
+                } else {
+                  reject(response.statusText);
+                }
+              } catch (error) {
+                reject(error);
+              }
+            }
+          ).catch((error) => {
+            reject(error);
+          }
+        );
+      } else {
+        reject(new Error(`Unable to prepare parser request url for ${lang}`));
+      }
+    })
+  }
+
+  /**
+   * Fetch test data to test the adapter
+   * @param {string} lang - the language code
+   * @param {string} word - the word to lookup
+   * @returns {Promise} a promse which if successful resolves to json response object
+   *                    with the test data
+   */
+  fetchTestData (lang, word) {
+    return new Promise((resolve, reject) => {
+      try {
+        let data = {};
+        resolve(data);
+      } catch (error) {
+        reject(error);
+      }
+    })
+  }
+
+  /**
+   * A function that maps a morphological service's specific data types and values into an inflection library standard.
+   * @param {object} jsonObj - A JSON data from the fetch request
+   * @param {object} targetWord - the original target word of the analysis
+   * @returns {Homonym} A library standard Homonym object.
+   */
+  transform (jsonObj, targetWord) {
+    return {}
+  }
+}
+
+/*
+Objects of a morphology analyzer's library
+ */
+/**
+ * Holds all information required to transform from morphological analyzer's grammatical feature values to the
+ * library standards. There is one ImportData object per language.
+ */
+class ImportData {
+    /**
+     * Creates an InmportData object for the language provided.
+     * @param {Models.LanguageModel} language - A language of the import data.
+     * @param {string} engine - engine code
+     */
+  constructor (language, engine) {
+    'use strict';
+    this.language = language;
+    this.engine = engine;
+    // add all the features that the language supports so that we
+    // can return the default values if we don't need to import a mapping
+    for (let featureName of Object.keys(language.features)) {
+      this.addFeature(featureName);
+    }
+    // may be overridden by specific engine use via setLemmaParser
+    this.parseLemma = function (lemma) { return new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Lemma"](lemma, this.language.toCode()) };
+    // may be overridden by specific engine use via setPropertyParser - default just returns the property value
+    // as a list
+    this.parseProperty = function (propertyName, propertyValue) {
+      let propertyValues = [];
+      if (propertyName === 'decl') {
+        propertyValues = propertyValue.split('&').map((p) => p.trim());
+      } else if (propertyName === 'comp' && propertyValue === 'positive') {
+        propertyValues = [];
+      } else {
+        propertyValues = [propertyValue];
+      }
+      return propertyValues
+    };
+    // may be overridden by specifc engine use via setLexemeFilter - default assumes we will have a part of speech
+    this.reportLexeme = function (lexeme) {
+      return lexeme.lemma.features[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.part]
+    };
+  }
+
+    /**
+     * Adds a grammatical feature whose values to be mapped.
+     * @param {string} featureName - A name of a grammatical feature (i.e. declension, number, etc.)
+     * @return {Object} An object that represent a newly created grammatical feature.
+     */
+  addFeature (featureName) {
+    this[featureName] = {};
+    let language = this.language;
+
+    this[featureName].add = function add (providerValue, alpheiosValue) {
+      this[providerValue] = alpheiosValue;
+      return this
+    };
+
+    this[featureName].get = function get (providerValue, sortOrder = 1, allowUnknownValues = false) {
+      let mappedValue = [];
+      if (!this.importer.has(providerValue)) {
+        // if the providerValue matches the model value or the model value
+        // is unrestricted, return a feature with the providerValue and order
+        if (language.features[featureName][providerValue] ||
+            language.features[featureName].hasUnrestrictedValue()) {
+          mappedValue = language.features[featureName].get(providerValue, sortOrder);
+        } else {
+          let message = `Unknown value "${providerValue}" of feature "${featureName}" for ${language} (allowed = ${allowUnknownValues})`;
+          if (allowUnknownValues) {
+            console.log(message);
+            mappedValue = language.features[featureName].get(providerValue, sortOrder);
+          } else {
+            throw new Error(message)
+          }
+        }
+      } else {
+        let tempValue = this.importer.get(providerValue);
+        if (Array.isArray(tempValue)) {
+          mappedValue = [];
+          for (let feature of tempValue) {
+            mappedValue.push(language.features[featureName].get(feature.value, sortOrder));
+          }
+        } else {
+          mappedValue = language.features[featureName].get(tempValue.value, sortOrder);
+        }
+      }
+      return mappedValue
+    };
+
+    this[featureName].importer = new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["FeatureImporter"]();
+
+    return this[featureName]
+  }
+
+  /**
+   * Add an engine-specific lemma parser
+   */
+  setLemmaParser (callback) {
+    this.parseLemma = callback;
+  }
+
+  /**
+   * Add an engine-specific property parser
+   */
+  setPropertyParser (callback) {
+    this.parseProperty = callback;
+  }
+
+  /**
+   * Add an engine-specific lexeme filter
+   */
+  setLexemeFilter (callback) {
+    this.reportLexeme = callback;
+  }
+
+  /**
+   * map property to one or more Features and add it to the supplied model object
+   * @param {object} model the model object to which the feature will be added
+   * @param {object} inputElem the input data element
+   * @param {object} inputName the  property name in the input data
+   * @param {string} featureName the name of the feature it will be mapped to
+   * @param {boolean} allowUnknownValues flag to indicate if unknown values are allowed
+   */
+  mapFeature (model, inputElem, inputName, featureName, allowUnknownValues) {
+    let mapped = [];
+    let values = [];
+    if (inputElem[inputName]) {
+      if (Array.isArray(inputElem[inputName])) {
+        for (let e of inputElem[inputName]) {
+          values.push(...this.parseProperty(inputName, e.$));
+        }
+      } else {
+        values = this.parseProperty(inputName, inputElem[inputName].$);
+      }
+    }
+    for (let value of values) {
+      let features = this[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types[featureName]].get(
+        value, inputElem[inputName].order, allowUnknownValues);
+      if (Array.isArray(features)) {
+        mapped.push(...features);
+      } else {
+        mapped.push(features);
+      }
+    }
+    if (mapped.length > 0) {
+      model.feature = mapped;
+    }
+  }
+}
+
+let data = new ImportData(new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["LatinLanguageModel"](), 'whitakerLat');
+let types = __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types;
+
+/*
+Below are value conversion maps for each grammatical feature to be parsed.
+Format:
+data.addFeature(typeName).add(providerValueName, LibValueName);
+(functions are chainable)
+Types and values that are unknown (undefined) will be skipped during parsing.
+ */
+
+ // TODO  - per inflections.xsd
+ // Whitakers Words uses packon and tackon in POFS, not sure how
+
+data.addFeature(__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.gender).importer
+    .map('common',
+  [ data.language.features[types.gender][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].GEND_MASCULINE],
+    data.language.features[types.gender][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].GEND_FEMININE]
+  ])
+    .map('all',
+  [ data.language.features[types.gender][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].GEND_MASCULINE],
+    data.language.features[types.gender][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].GEND_FEMININE],
+    data.language.features[types.gender][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].GEND_NEUTER]
+  ]);
+
+data.addFeature(__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.tense).importer
+    .map('future_perfect', data.language.features[types.tense][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].TENSE_FUTURE_PERFECT]);
+
+data.setLemmaParser(function (lemma) {
+  // Whitaker's Words returns principal parts for some words
+  // and sometimes has a space separted stem and suffix
+  let parsed, primary;
+  let parts = [];
+  let lemmas = lemma.split(', ');
+  for (let [index, l] of lemmas.entries()) {
+    let normalized = l.split(' ')[0];
+    if (index === 0) {
+      primary = normalized;
+    }
+    parts.push(normalized);
+  }
+  if (primary) {
+    parsed = new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Lemma"](primary, this.language.toCode(), parts);
+  }
+
+  return parsed
+});
+
+let data$1 = new ImportData(new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["GreekLanguageModel"](), 'morpheusgrc');
+let types$1 = __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types;
+
+/*
+Below are value conversion maps for each grammatical feature to be parsed.
+Format:
+data.addFeature(typeName).add(providerValueName, LibValueName);
+(functions are chainable)
+Types and values that are unknown (undefined) will be skipped during parsing.
+ */
+
+data$1.addFeature(__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.gender).importer
+    .map('masculine feminine',
+  [ data$1.language.features[types$1.gender][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].GEND_MASCULINE],
+    data$1.language.features[types$1.gender][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].GEND_FEMININE]
+  ]);
+
+data$1.addFeature(__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.declension).importer
+    .map('1st & 2nd',
+  [ data$1.language.features[types$1.declension][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].ORD_1ST],
+    data$1.language.features[types$1.declension][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].ORD_2ND]
+  ]);
+
+let data$2 = new ImportData(new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["ArabicLanguageModel"](), 'aramorph');
+let types$2 = __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types;
+
+data$2.addFeature(__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.part).importer
+    .map('proper noun', [data$2.language.features[types$2.part][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].POFS_NOUN]]);
+
+let data$3 = new ImportData(new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["PersianLanguageModel"](), 'hazm');
+let types$3 = __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types;
+
+data$3.addFeature(__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.part).importer
+    .map('proper noun', [data$3.language.features[types$3.part][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].POFS_NOUN]]);
+
+// hazm allow all lemmas in without respect features as all we use it for is lemmatizing
+data$3.setLexemeFilter(function (lexeme) { return Boolean(lexeme.lemma.word) });
+
+var Cupidinibus = "{\n  \"RDF\": {\n    \"Annotation\": {\n      \"about\": \"urn:TuftsMorphologyService:cupidinibus:whitakerLat\",\n      \"creator\": {\n        \"Agent\": {\n          \"about\": \"net.alpheios:tools:wordsxml.v1\"\n        }\n      },\n      \"created\": {\n        \"$\": \"2017-08-10T23:15:29.185581\"\n      },\n      \"hasTarget\": {\n        \"Description\": {\n          \"about\": \"urn:word:cupidinibus\"\n        }\n      },\n      \"title\": {},\n      \"hasBody\": [\n        {\n          \"resource\": \"urn:uuid:idm140578094883136\"\n        },\n        {\n          \"resource\": \"urn:uuid:idm140578158026160\"\n        }\n      ],\n      \"Body\": [\n        {\n          \"about\": \"urn:uuid:idm140578094883136\",\n          \"type\": {\n            \"resource\": \"cnt:ContentAsXML\"\n          },\n          \"rest\": {\n            \"entry\": {\n              \"infl\": [\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"cupidin\"\n                    },\n                    \"suff\": {\n                      \"$\": \"ibus\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 5,\n                    \"$\": \"noun\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"var\": {\n                    \"$\": \"1st\"\n                  },\n                  \"case\": {\n                    \"order\": 2,\n                    \"$\": \"locative\"\n                  },\n                  \"num\": {\n                    \"$\": \"plural\"\n                  },\n                  \"gend\": {\n                    \"$\": \"masculine\"\n                  }\n                },\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"cupidin\"\n                    },\n                    \"suff\": {\n                      \"$\": \"ibus\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 5,\n                    \"$\": \"noun\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"var\": {\n                    \"$\": \"1st\"\n                  },\n                  \"case\": {\n                    \"order\": 5,\n                    \"$\": \"dative\"\n                  },\n                  \"num\": {\n                    \"$\": \"plural\"\n                  },\n                  \"gend\": {\n                    \"$\": \"masculine\"\n                  }\n                },\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"cupidin\"\n                    },\n                    \"suff\": {\n                      \"$\": \"ibus\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 5,\n                    \"$\": \"noun\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"var\": {\n                    \"$\": \"1st\"\n                  },\n                  \"case\": {\n                    \"order\": 3,\n                    \"$\": \"ablative\"\n                  },\n                  \"num\": {\n                    \"$\": \"plural\"\n                  },\n                  \"gend\": {\n                    \"$\": \"masculine\"\n                  }\n                }\n              ],\n              \"dict\": {\n                \"hdwd\": {\n                  \"lang\": \"lat\",\n                  \"$\": \"Cupido, Cupidinis\"\n                },\n                \"pofs\": {\n                  \"order\": 5,\n                  \"$\": \"noun\"\n                },\n                \"decl\": {\n                  \"$\": \"3rd\"\n                },\n                \"gend\": {\n                  \"$\": \"masculine\"\n                },\n                \"area\": {\n                  \"$\": \"religion\"\n                },\n                \"freq\": {\n                  \"order\": 4,\n                  \"$\": \"common\"\n                },\n                \"src\": {\n                  \"$\": \"Ox.Lat.Dict.\"\n                }\n              },\n              \"mean\": {\n                \"$\": \"Cupid, son of Venus; personification of carnal desire;\"\n              }\n            }\n          }\n        },\n        {\n          \"about\": \"urn:uuid:idm140578158026160\",\n          \"type\": {\n            \"resource\": \"cnt:ContentAsXML\"\n          },\n          \"rest\": {\n            \"entry\": {\n              \"infl\": [\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"cupidin\"\n                    },\n                    \"suff\": {\n                      \"$\": \"ibus\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 5,\n                    \"$\": \"noun\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"var\": {\n                    \"$\": \"1st\"\n                  },\n                  \"case\": {\n                    \"order\": 2,\n                    \"$\": \"locative\"\n                  },\n                  \"num\": {\n                    \"$\": \"plural\"\n                  },\n                  \"gend\": {\n                    \"$\": \"common\"\n                  }\n                },\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"cupidin\"\n                    },\n                    \"suff\": {\n                      \"$\": \"ibus\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 5,\n                    \"$\": \"noun\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"var\": {\n                    \"$\": \"1st\"\n                  },\n                  \"case\": {\n                    \"order\": 5,\n                    \"$\": \"dative\"\n                  },\n                  \"num\": {\n                    \"$\": \"plural\"\n                  },\n                  \"gend\": {\n                    \"$\": \"common\"\n                  }\n                },\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"cupidin\"\n                    },\n                    \"suff\": {\n                      \"$\": \"ibus\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 5,\n                    \"$\": \"noun\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"var\": {\n                    \"$\": \"1st\"\n                  },\n                  \"case\": {\n                    \"order\": 3,\n                    \"$\": \"ablative\"\n                  },\n                  \"num\": {\n                    \"$\": \"plural\"\n                  },\n                  \"gend\": {\n                    \"$\": \"common\"\n                  }\n                }\n              ],\n              \"dict\": {\n                \"hdwd\": {\n                  \"lang\": \"lat\",\n                  \"$\": \"cupido, cupidinis\"\n                },\n                \"pofs\": {\n                  \"order\": 5,\n                  \"$\": \"noun\"\n                },\n                \"decl\": {\n                  \"$\": \"3rd\"\n                },\n                \"gend\": {\n                  \"$\": \"common\"\n                },\n                \"freq\": {\n                  \"order\": 5,\n                  \"$\": \"frequent\"\n                },\n                \"src\": {\n                  \"$\": \"Ox.Lat.Dict.\"\n                }\n              },\n              \"mean\": {\n                \"$\": \"desire/love/wish/longing (passionate); lust; greed, appetite; desire for gain;\"\n              }\n            }\n          }\n        }\n      ]\n    }\n  }\n}\n";
+
+var Mare = "{\n  \"RDF\": {\n    \"Annotation\": {\n      \"about\": \"urn:TuftsMorphologyService:mare:morpheuslat\",\n      \"creator\": {\n        \"Agent\": {\n          \"about\": \"org.perseus:tools:morpheus.v1\"\n        }\n      },\n      \"created\": {\n        \"$\": \"2017-09-08T06:59:48.639180\"\n      },\n      \"rights\": {\n        \"$\": \"Morphology provided by Morpheus from the Perseus Digital Library at Tufts University.\"\n      },\n      \"hasTarget\": {\n        \"Description\": {\n          \"about\": \"urn:word:mare\"\n        }\n      },\n      \"title\": {},\n      \"hasBody\": [\n        {\n          \"resource\": \"urn:uuid:idm140446402389888\"\n        },\n        {\n          \"resource\": \"urn:uuid:idm140446402332400\"\n        },\n        {\n          \"resource\": \"urn:uuid:idm140446402303648\"\n        }\n      ],\n      \"Body\": [\n        {\n          \"about\": \"urn:uuid:idm140446402389888\",\n          \"type\": {\n            \"resource\": \"cnt:ContentAsXML\"\n          },\n          \"rest\": {\n            \"entry\": {\n              \"uri\": \"http://data.perseus.org/collections/urn:cite:perseus:latlexent.lex34070.1\",\n              \"dict\": {\n                \"hdwd\": {\n                  \"lang\": \"lat\",\n                  \"$\": \"mare\"\n                },\n                \"pofs\": {\n                  \"order\": 3,\n                  \"$\": \"noun\"\n                },\n                \"decl\": {\n                  \"$\": \"3rd\"\n                },\n                \"gend\": {\n                  \"$\": \"neuter\"\n                }\n              },\n              \"infl\": [\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"mar\"\n                    },\n                    \"suff\": {\n                      \"$\": \"e\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 3,\n                    \"$\": \"noun\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"case\": {\n                    \"order\": 3,\n                    \"$\": \"ablative\"\n                  },\n                  \"gend\": {\n                    \"$\": \"neuter\"\n                  },\n                  \"num\": {\n                    \"$\": \"singular\"\n                  },\n                  \"stemtype\": {\n                    \"$\": \"is_is\"\n                  }\n                },\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"mar\"\n                    },\n                    \"suff\": {\n                      \"$\": \"e\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 3,\n                    \"$\": \"noun\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"case\": {\n                    \"order\": 7,\n                    \"$\": \"nominative\"\n                  },\n                  \"gend\": {\n                    \"$\": \"neuter\"\n                  },\n                  \"num\": {\n                    \"$\": \"singular\"\n                  },\n                  \"stemtype\": {\n                    \"$\": \"is_is\"\n                  }\n                },\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"mar\"\n                    },\n                    \"suff\": {\n                      \"$\": \"e\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 3,\n                    \"$\": \"noun\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"case\": {\n                    \"order\": 1,\n                    \"$\": \"vocative\"\n                  },\n                  \"gend\": {\n                    \"$\": \"neuter\"\n                  },\n                  \"num\": {\n                    \"$\": \"singular\"\n                  },\n                  \"stemtype\": {\n                    \"$\": \"is_is\"\n                  }\n                },\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"mar\"\n                    },\n                    \"suff\": {\n                      \"$\": \"e\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 3,\n                    \"$\": \"noun\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"case\": {\n                    \"order\": 4,\n                    \"$\": \"accusative\"\n                  },\n                  \"gend\": {\n                    \"$\": \"neuter\"\n                  },\n                  \"num\": {\n                    \"$\": \"singular\"\n                  },\n                  \"stemtype\": {\n                    \"$\": \"is_is\"\n                  }\n                }\n              ],\n              \"mean\": {\n                \"$\": \"the sea\"\n              }\n            }\n          }\n        },\n        {\n          \"about\": \"urn:uuid:idm140446402332400\",\n          \"type\": {\n            \"resource\": \"cnt:ContentAsXML\"\n          },\n          \"rest\": {\n            \"entry\": {\n              \"uri\": \"http://data.perseus.org/collections/urn:cite:perseus:latlexent.lex34118.1\",\n              \"dict\": {\n                \"hdwd\": {\n                  \"lang\": \"lat\",\n                  \"$\": \"marum\"\n                },\n                \"pofs\": {\n                  \"order\": 3,\n                  \"$\": \"noun\"\n                },\n                \"decl\": {\n                  \"$\": \"2nd\"\n                },\n                \"gend\": {\n                  \"$\": \"neuter\"\n                }\n              },\n              \"infl\": {\n                \"term\": {\n                  \"lang\": \"lat\",\n                  \"stem\": {\n                    \"$\": \"mar\"\n                  },\n                  \"suff\": {\n                    \"$\": \"e\"\n                  }\n                },\n                \"pofs\": {\n                  \"order\": 3,\n                  \"$\": \"noun\"\n                },\n                \"decl\": {\n                  \"$\": \"2nd\"\n                },\n                \"case\": {\n                  \"order\": 1,\n                  \"$\": \"vocative\"\n                },\n                \"gend\": {\n                  \"$\": \"neuter\"\n                },\n                \"num\": {\n                  \"$\": \"singular\"\n                },\n                \"stemtype\": {\n                  \"$\": \"us_i\"\n                }\n              }\n            }\n          }\n        },\n        {\n          \"about\": \"urn:uuid:idm140446402303648\",\n          \"type\": {\n            \"resource\": \"cnt:ContentAsXML\"\n          },\n          \"rest\": {\n            \"entry\": {\n              \"uri\": \"http://data.perseus.org/collections/urn:cite:perseus:latlexent.lex34119.1\",\n              \"dict\": {\n                \"hdwd\": {\n                  \"lang\": \"lat\",\n                  \"$\": \"mas\"\n                },\n                \"pofs\": {\n                  \"order\": 2,\n                  \"$\": \"adjective\"\n                },\n                \"decl\": {\n                  \"$\": \"3rd\"\n                }\n              },\n              \"infl\": [\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"mare\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 2,\n                    \"$\": \"adjective\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"case\": {\n                    \"order\": 3,\n                    \"$\": \"ablative\"\n                  },\n                  \"gend\": {\n                    \"$\": \"masculine\"\n                  },\n                  \"num\": {\n                    \"$\": \"singular\"\n                  },\n                  \"stemtype\": {\n                    \"$\": \"irreg_adj3\"\n                  },\n                  \"morph\": {\n                    \"$\": \"indeclform\"\n                  }\n                },\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"mare\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 2,\n                    \"$\": \"adjective\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"case\": {\n                    \"order\": 3,\n                    \"$\": \"ablative\"\n                  },\n                  \"gend\": {\n                    \"$\": \"feminine\"\n                  },\n                  \"num\": {\n                    \"$\": \"singular\"\n                  },\n                  \"stemtype\": {\n                    \"$\": \"irreg_adj3\"\n                  },\n                  \"morph\": {\n                    \"$\": \"indeclform\"\n                  }\n                },\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"mare\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 2,\n                    \"$\": \"adjective\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"case\": {\n                    \"order\": 3,\n                    \"$\": \"ablative\"\n                  },\n                  \"gend\": {\n                    \"$\": \"neuter\"\n                  },\n                  \"num\": {\n                    \"$\": \"singular\"\n                  },\n                  \"stemtype\": {\n                    \"$\": \"irreg_adj3\"\n                  },\n                  \"morph\": {\n                    \"$\": \"indeclform\"\n                  }\n                }\n              ]\n            }\n          }\n        }\n      ]\n    }\n  }\n}\n";
+
+var Cepit = "{\n  \"RDF\": {\n    \"Annotation\": {\n      \"about\": \"urn:TuftsMorphologyService:cepit:whitakerLat\",\n      \"creator\": {\n        \"Agent\": {\n          \"about\": \"net.alpheios:tools:wordsxml.v1\"\n        }\n      },\n      \"created\": {\n        \"$\": \"2017-08-10T23:16:53.672068\"\n      },\n      \"hasTarget\": {\n        \"Description\": {\n          \"about\": \"urn:word:cepit\"\n        }\n      },\n      \"title\": {},\n      \"hasBody\": {\n        \"resource\": \"urn:uuid:idm140578133848416\"\n      },\n      \"Body\": {\n        \"about\": \"urn:uuid:idm140578133848416\",\n        \"type\": {\n          \"resource\": \"cnt:ContentAsXML\"\n        },\n        \"rest\": {\n          \"entry\": {\n            \"infl\": {\n              \"term\": {\n                \"lang\": \"lat\",\n                \"stem\": {\n                  \"$\": \"cep\"\n                },\n                \"suff\": {\n                  \"$\": \"it\"\n                }\n              },\n              \"pofs\": {\n                \"order\": 3,\n                \"$\": \"verb\"\n              },\n              \"conj\": {\n                \"$\": \"3rd\"\n              },\n              \"var\": {\n                \"$\": \"1st\"\n              },\n              \"tense\": {\n                \"$\": \"perfect\"\n              },\n              \"voice\": {\n                \"$\": \"active\"\n              },\n              \"mood\": {\n                \"$\": \"indicative\"\n              },\n              \"pers\": {\n                \"$\": \"3rd\"\n              },\n              \"num\": {\n                \"$\": \"singular\"\n              }\n            },\n            \"dict\": {\n              \"hdwd\": {\n                \"lang\": \"lat\",\n                \"$\": \"capio, capere, cepi, captus\"\n              },\n              \"pofs\": {\n                \"order\": 3,\n                \"$\": \"verb\"\n              },\n              \"conj\": {\n                \"$\": \"3rd\"\n              },\n              \"kind\": {\n                \"$\": \"transitive\"\n              },\n              \"freq\": {\n                \"order\": 6,\n                \"$\": \"very frequent\"\n              },\n              \"src\": {\n                \"$\": \"Ox.Lat.Dict.\"\n              }\n            },\n            \"mean\": {\n              \"$\": \"take hold, seize; grasp; take bribe; arrest/capture; put on; occupy; captivate;\"\n            }\n          }\n        }\n      }\n    }\n  }\n}\n";
+
+var Pilsopo = "{\n  \"RDF\": {\n    \"Annotation\": {\n      \"about\": \"urn:TuftsMorphologyService:φιλόσοφος:morpheuslat\",\n      \"creator\": {\n        \"Agent\": {\n          \"about\": \"org.perseus:tools:morpheus.v1\"\n        }\n      },\n      \"created\": {\n        \"$\": \"2017-10-15T14:06:40.522369\"\n      },\n      \"hasTarget\": {\n        \"Description\": {\n          \"about\": \"urn:word:φιλόσοφος\"\n        }\n      },\n      \"title\": {},\n      \"hasBody\": {\n        \"resource\": \"urn:uuid:idm140446394225264\"\n      },\n      \"Body\": {\n        \"about\": \"urn:uuid:idm140446394225264\",\n        \"type\": {\n          \"resource\": \"cnt:ContentAsXML\"\n        },\n        \"rest\": {\n          \"entry\": {\n            \"uri\": \"http://data.perseus.org/collections/urn:cite:perseus:grclexent.lex78378.1\",\n            \"dict\": {\n              \"hdwd\": {\n                \"lang\": \"grc\",\n                \"$\": \"φιλόσοφος\"\n              },\n              \"pofs\": {\n                \"order\": 3,\n                \"$\": \"noun\"\n              },\n              \"decl\": {\n                \"$\": \"2nd\"\n              },\n              \"gend\": {\n                \"$\": \"masculine\"\n              }\n            },\n            \"infl\": {\n              \"term\": {\n                \"lang\": \"grc\",\n                \"stem\": {\n                  \"$\": \"φιλοσοφ\"\n                },\n                \"suff\": {\n                  \"$\": \"ος\"\n                }\n              },\n              \"pofs\": {\n                \"order\": 3,\n                \"$\": \"noun\"\n              },\n              \"decl\": {\n                \"$\": \"2nd\"\n              },\n              \"case\": {\n                \"order\": 7,\n                \"$\": \"nominative\"\n              },\n              \"gend\": {\n                \"$\": \"masculine\"\n              },\n              \"num\": {\n                \"$\": \"singular\"\n              },\n              \"stemtype\": {\n                \"$\": \"os_ou\"\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}";
+
+class WordTestData {
+  constructor () {
+    this._words = {
+      'cupidinibus': Cupidinibus,
+      'mare': Mare,
+      'cepit': Cepit,
+      'φιλόσοφος': Pilsopo
+    };
+  }
+
+  get (word) {
+    if (this._words.hasOwnProperty(word)) {
+      return this._words[word]
+    }
+    throw new Error(`Word "${word}" does not exist in test data`)
+  }
+}
+
+var DefaultConfig = "{\n  \"engine\": {\n    \"lat\": [\"whitakerLat\"],\n    \"grc\": [\"morpheusgrc\"],\n    \"ara\": [\"aramorph\"],\n    \"per\": [\"hazm\"]\n  },\n  \"url\": \"https://morph.alpheios.net/api/v1/analysis/word?word=r_WORD&engine=r_ENGINE&lang=r_LANG\",\n  \"allowUnknownValues\": true\n}\n";
+
+class TuftsAdapter extends BaseAdapter {
+  /**
+   * A Morph Client Adapter for the Tufts Morphology Service
+   * @constructor
+   * @param {object} config configuraiton object
+   */
+  constructor (config = {}) {
+    super();
+    try {
+      this.config = JSON.parse(DefaultConfig);
+    } catch (e) {
+      this.config = Object.assign({}, DefaultConfig);
+    }
+    Object.assign(this.config, config);
+    this.engineMap = new Map(([ data, data$1, data$2, data$3 ]).map((e) => { return [ e.engine, e ] }));
+  }
+
+  getEngineLanguageMap (lang) {
+    if (this.config.engine[lang]) {
+      return this.engineMap.get(this.config.engine[lang][0])
+    } else {
+      return null
+    }
+  }
+
+  prepareRequestUrl (lang, word) {
+    let engine = this.getEngineLanguageMap(lang);
+    if (engine) {
+      let code = engine.engine;
+      return this.config.url.replace('r_WORD', word).replace('r_ENGINE', code).replace('r_LANG', lang)
+    } else {
+      return null
+    }
+  }
+
+  fetchTestData (lang, word) {
+    return new Promise((resolve, reject) => {
+      try {
+        let wordData = new WordTestData().get(word);
+        let json = JSON.parse(wordData);
+        resolve(json);
+      } catch (error) {
+                // Word is not found in test data
+        reject(error);
+      }
+    })
+  }
+
+  /**
+   * A function that maps a morphological service's specific data types and values into an inflection library standard.
+   * @param {object} jsonObj - A JSON data from a Morphological Analyzer.
+   * @param {object} targetWord - the target of the analysis
+   * @returns {Homonym} A library standard Homonym object.
+   */
+  transform (jsonObj, targetWord) {
+    'use strict';
+    let lexemes = [];
+    let annotationBody = jsonObj.RDF.Annotation.Body;
+    if (!Array.isArray(annotationBody)) {
+            /*
+            If only one lexeme is returned, Annotation Body will not be an array but rather a single object.
+            Let's convert it to an array so we can work with it in the same way no matter what format it is.
+             */
+      if (annotationBody) {
+        annotationBody = [annotationBody];
+      } else {
+        annotationBody = [];
+      }
+    }
+    let providerUri = jsonObj.RDF.Annotation.creator.Agent.about;
+    let providerRights = '';
+    if (jsonObj.RDF.Annotation.rights) {
+      providerRights = jsonObj.RDF.Annotation.rights.$;
+    }
+    let provider = new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["ResourceProvider"](providerUri, providerRights);
+    for (let lexeme of annotationBody) {
+      let inflectionsJSON = lexeme.rest.entry.infl;
+      if (!inflectionsJSON) {
+        inflectionsJSON = [];
+      } else if (!Array.isArray(inflectionsJSON)) {
+        // If only one inflection returned, it is a single object, not an array of objects.
+        // Convert it to an array for uniformity.
+        inflectionsJSON = [inflectionsJSON];
+      }
+      let lemmaElements;
+      if ((lexeme.rest.entry.dict && lexeme.rest.entry.dict.hdwd) || (Array.isArray(lexeme.rest.entry.dict) && lexeme.rest.entry.dict[0].hdwd)) {
+        if (Array.isArray(lexeme.rest.entry.dict)) {
+          lemmaElements = lexeme.rest.entry.dict;
+        } else {
+          lemmaElements = [lexeme.rest.entry.dict];
+        }
+      } else if (inflectionsJSON.length > 0 && inflectionsJSON[0].term) {
+        lemmaElements = [inflectionsJSON[0].term];
+      }
+      // in rare cases (e.g. conditum in Whitakers) multiple dict entries
+      // exist - always use the lemma and language from the first
+      let language = lemmaElements[0].hdwd ? lemmaElements[0].hdwd.lang : lemmaElements[0].lang;
+      // Get importer based on the language
+      let mappingData = this.getEngineLanguageMap(language);
+      let features = [
+        ['pofs', 'part'],
+        ['case', 'grmCase'],
+        ['gend', 'gender'],
+        ['decl', 'declension'],
+        ['conj', 'conjugation'],
+        ['area', 'area'],
+        ['age', 'age'],
+        ['geo', 'geo'],
+        ['freq', 'frequency'],
+        ['note', 'note'],
+        ['pron', 'pronunciation'],
+        ['src', 'source']
+      ];
+      let lemmas = [];
+      let lexemeSet = [];
+      for (let entry of lemmaElements.entries()) {
+        let shortdefs = [];
+        let index = entry[0];
+        let elem = entry[1];
+        let lemmaText;
+        if (elem.hdwd) {
+          lemmaText = elem.hdwd.$;
+        } else {
+          // term
+          if (elem.stem) {
+            lemmaText = elem.stem.$;
+          }
+          if (elem.suff) {
+            lemmaText += elem.suff.$;
+          }
+        }
+        if (!lemmaText || !language) {
+          continue
+        }
+        let lemma = mappingData.parseLemma(lemmaText, language);
+        lemmas.push(lemma);
+        for (let feature of features) {
+          mappingData.mapFeature(lemma, elem, ...feature, this.config.allowUnknownValues);
+        }
+        let meanings = lexeme.rest.entry.mean;
+        if (!Array.isArray(meanings)) {
+          meanings = [meanings];
+        }
+        meanings = meanings.filter((m) => m);
+        // if we have multiple dictionary elements, take the meaning with the matching index
+        if (lemmaElements.length > 1) {
+          if (meanings && meanings[index]) {
+            let meaning = meanings[index];
+            // TODO: convert a source-specific language code to ISO 639-3 if don't match
+            let lang = meaning.lang ? meaning.lang : 'eng';
+            shortdefs.push(__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["ResourceProvider"].getProxy(provider,
+              new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Definition"](meaning.$, lang, 'text/plain', lemmas[index].word)));
+          }
+        } else {
+          for (let meaning of meanings) {
+            let lang = meaning.lang ? meaning.lang : 'eng';
+            shortdefs.push(__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["ResourceProvider"].getProxy(provider,
+              new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Definition"](meaning.$, lang, 'text/plain', lemma.word)));
+          }
+        }
+        let lexmodel = new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Lexeme"](lemma, []);
+
+        lexmodel.meaning.appendShortDefs(shortdefs);
+        lexemeSet.push(__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["ResourceProvider"].getProxy(provider, lexmodel));
+      }
+      if (lemmas.length === 0) {
+        continue
+      }
+      let inflections = [];
+      for (let inflectionJSON of inflectionsJSON) {
+        let inflection = new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Inflection"](inflectionJSON.term.stem.$, mappingData.language.toCode());
+        if (inflectionJSON.term.suff) {
+                    // Set suffix if provided by a morphological analyzer
+          inflection.suffix = inflectionJSON.term.suff.$;
+        }
+
+        if (inflectionJSON.xmpl) {
+          inflection.example = inflectionJSON.xmpl.$;
+        }
+        // Parse whatever grammatical features we're interested in
+        mappingData.mapFeature(inflection, inflectionJSON, 'pofs', 'part', this.config.allowUnknownValues);
+        mappingData.mapFeature(inflection, inflectionJSON, 'case', 'grmCase', this.config.allowUnknownValues);
+        mappingData.mapFeature(inflection, inflectionJSON, 'decl', 'declension', this.config.allowUnknownValues);
+        mappingData.mapFeature(inflection, inflectionJSON, 'num', 'number', this.config.allowUnknownValues);
+        mappingData.mapFeature(inflection, inflectionJSON, 'gend', 'gender', this.config.allowUnknownValues);
+        mappingData.mapFeature(inflection, inflectionJSON, 'conj', 'conjugation', this.config.allowUnknownValues);
+        mappingData.mapFeature(inflection, inflectionJSON, 'tense', 'tense', this.config.allowUnknownValues);
+        mappingData.mapFeature(inflection, inflectionJSON, 'voice', 'voice', this.config.allowUnknownValues);
+        mappingData.mapFeature(inflection, inflectionJSON, 'mood', 'mood', this.config.allowUnknownValues);
+        mappingData.mapFeature(inflection, inflectionJSON, 'pers', 'person', this.config.allowUnknownValues);
+        mappingData.mapFeature(inflection, inflectionJSON, 'comp', 'comparison', this.config.allowUnknownValues);
+        if (inflectionJSON.stemtype) {
+          mappingData.mapFeature(inflection, inflectionJSON, 'stemtype', 'stemtype', this.config.allowUnknownValues);
+        }
+        if (inflectionJSON.derivtype) {
+          mappingData.mapFeature(inflection, inflectionJSON, 'derivtype', 'derivtype', this.config.allowUnknownValues);
+        }
+        if (inflectionJSON.dial) {
+          mappingData.mapFeature(inflection, inflectionJSON, 'dial', 'dialect', this.config.allowUnknownValues);
+        }
+        if (inflectionJSON.morph) {
+          mappingData.mapFeature(inflection, inflectionJSON, 'morph', 'morph', this.config.allowUnknownValues);
+        }
+        // we only use the inflection if it tells us something the dictionary details do not
+        if (inflection[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.grmCase] ||
+          inflection[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.tense] ||
+          inflection[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.mood] ||
+          inflection[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.voice] ||
+          inflection[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.person] ||
+          inflection[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.comparison] ||
+          inflection[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.stemtype] ||
+          inflection[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.derivtype] ||
+          inflection[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.dialect] ||
+          inflection[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.morph] ||
+          inflection[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.example]) {
+          inflections.push(inflection);
+        }
+        // inflection can provide lemma decl, pofs, conj
+        for (let lemma of lemmas) {
+          if (!lemma.features[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.declension]) {
+            mappingData.mapFeature(lemma, inflectionJSON, 'decl', 'declension', this.config.allowUnknownValues);
+          }
+          if (!lemma.features[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.part]) {
+            mappingData.mapFeature(lemma, inflectionJSON, 'pofs', 'part', this.config.allowUnknownValues);
+          }
+          if (!lemma.features[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.conjugation]) {
+            mappingData.mapFeature(lemma, inflectionJSON, 'conj', 'conjugation', this.config.allowUnknownValues);
+          }
+        }
+      }
+      for (let lex of lexemeSet) {
+        // only process if we have a lemma that differs from the target
+        // word or if we have at least a part of speech
+        if (mappingData.reportLexeme(lex)) {
+          lex.inflections = inflections;
+          lexemes.push(lex);
+        }
+      }
+    }
+    if (lexemes.length > 0) {
+      return new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Homonym"](lexemes, targetWord)
+    } else {
+      return undefined
+    }
+  }
+
+  async getHomonym (lang, word) {
+    let jsonObj = await this.fetch(lang, word);
+    if (jsonObj) {
+      let homonym = this.transform(jsonObj, word);
+      return homonym
+    } else {
+        // No data found for this word
+      return undefined
+    }
+  }
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (TuftsAdapter);
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Lexicons; });
+/* unused harmony export AlpheiosLexAdapter */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__ = __webpack_require__(0);
+
+
+/**
+ * Base Adapter Class for a Lexicon Service
+ */
+class BaseLexiconAdapter {
+  /**
+   * Lookup a short definition in a lexicon
+   * @param {Lemma} lemma Lemma to lookup
+   * @return {Promise} a Promise that resolves to an array Definition objects
+   */
+  async lookupShortDef (lemma) {
+    throw new Error('Unimplemented')
+  }
+
+  /**
+   * Lookup a full definition in a lexicon
+   * @param {Lemma} lemma Lemma to lookup
+   * @return {Promise} a Promise that resolves to an array of Definition objects
+   */
+  async lookupFullDef (lemma) {
+    throw new Error('Unimplemented')
+  }
+
+  /**
+   * Get the available lexicons provided by this adapter class for the
+   * requested language
+   * @param {string} language languageCode
+   * @return {Array} a Map of lexicon objects. Keys are lexicon uris, values are the lexicon description.
+   */
+  static getLexicons (language) {
+    return []
+  }
+}
+
+function createCommonjsModule(fn, module) {
+	return module = { exports: {} }, fn(module, module.exports), module.exports;
+}
+
+var papaparse = createCommonjsModule(function (module, exports) {
+/*!
+	Papa Parse
+	v4.3.6
+	https://github.com/mholt/PapaParse
+	License: MIT
+*/
+(function(root, factory)
+{
+	if (false)
+	{
+		// AMD. Register as an anonymous module.
+		undefined([], factory);
+	}
+	else {
+		// Node. Does not work with strict CommonJS, but
+		// only CommonJS-like environments that support module.exports,
+		// like Node.
+		module.exports = factory();
+	}
+}(this, function()
+{
+	'use strict';
+
+	var global = (function () {
+		// alternative method, similar to `Function('return this')()`
+		// but without using `eval` (which is disabled when
+		// using Content Security Policy).
+
+		if (typeof self !== 'undefined') { return self; }
+		if (typeof window !== 'undefined') { return window; }
+		if (typeof global !== 'undefined') { return global; }
+
+		// When running tests none of the above have been defined
+		return {};
+	})();
+
+
+	var IS_WORKER = !global.document && !!global.postMessage,
+		IS_PAPA_WORKER = IS_WORKER && /(\?|&)papaworker(=|&|$)/.test(global.location.search),
+		LOADED_SYNC = false, AUTO_SCRIPT_PATH;
+	var workers = {}, workerIdCounter = 0;
+
+	var Papa = {};
+
+	Papa.parse = CsvToJson;
+	Papa.unparse = JsonToCsv;
+
+	Papa.RECORD_SEP = String.fromCharCode(30);
+	Papa.UNIT_SEP = String.fromCharCode(31);
+	Papa.BYTE_ORDER_MARK = '\ufeff';
+	Papa.BAD_DELIMITERS = ['\r', '\n', '"', Papa.BYTE_ORDER_MARK];
+	Papa.WORKERS_SUPPORTED = !IS_WORKER && !!global.Worker;
+	Papa.SCRIPT_PATH = null;	// Must be set by your code if you use workers and this lib is loaded asynchronously
+
+	// Configurable chunk sizes for local and remote files, respectively
+	Papa.LocalChunkSize = 1024 * 1024 * 10;	// 10 MB
+	Papa.RemoteChunkSize = 1024 * 1024 * 5;	// 5 MB
+	Papa.DefaultDelimiter = ',';			// Used if not specified and detection fails
+
+	// Exposed for testing and development only
+	Papa.Parser = Parser;
+	Papa.ParserHandle = ParserHandle;
+	Papa.NetworkStreamer = NetworkStreamer;
+	Papa.FileStreamer = FileStreamer;
+	Papa.StringStreamer = StringStreamer;
+	Papa.ReadableStreamStreamer = ReadableStreamStreamer;
+
+	if (global.jQuery)
+	{
+		var $ = global.jQuery;
+		$.fn.parse = function(options)
+		{
+			var config = options.config || {};
+			var queue = [];
+
+			this.each(function(idx)
+			{
+				var supported = $(this).prop('tagName').toUpperCase() === 'INPUT'
+								&& $(this).attr('type').toLowerCase() === 'file'
+								&& global.FileReader;
+
+				if (!supported || !this.files || this.files.length === 0)
+					return true;	// continue to next input element
+
+				for (var i = 0; i < this.files.length; i++)
+				{
+					queue.push({
+						file: this.files[i],
+						inputElem: this,
+						instanceConfig: $.extend({}, config)
+					});
+				}
+			});
+
+			parseNextFile();	// begin parsing
+			return this;		// maintains chainability
+
+
+			function parseNextFile()
+			{
+				if (queue.length === 0)
+				{
+					if (isFunction(options.complete))
+						options.complete();
+					return;
+				}
+
+				var f = queue[0];
+
+				if (isFunction(options.before))
+				{
+					var returned = options.before(f.file, f.inputElem);
+
+					if (typeof returned === 'object')
+					{
+						if (returned.action === 'abort')
+						{
+							error('AbortError', f.file, f.inputElem, returned.reason);
+							return;	// Aborts all queued files immediately
+						}
+						else if (returned.action === 'skip')
+						{
+							fileComplete();	// parse the next file in the queue, if any
+							return;
+						}
+						else if (typeof returned.config === 'object')
+							f.instanceConfig = $.extend(f.instanceConfig, returned.config);
+					}
+					else if (returned === 'skip')
+					{
+						fileComplete();	// parse the next file in the queue, if any
+						return;
+					}
+				}
+
+				// Wrap up the user's complete callback, if any, so that ours also gets executed
+				var userCompleteFunc = f.instanceConfig.complete;
+				f.instanceConfig.complete = function(results)
+				{
+					if (isFunction(userCompleteFunc))
+						userCompleteFunc(results, f.file, f.inputElem);
+					fileComplete();
+				};
+
+				Papa.parse(f.file, f.instanceConfig);
+			}
+
+			function error(name, file, elem, reason)
+			{
+				if (isFunction(options.error))
+					options.error({name: name}, file, elem, reason);
+			}
+
+			function fileComplete()
+			{
+				queue.splice(0, 1);
+				parseNextFile();
+			}
+		};
+	}
+
+
+	if (IS_PAPA_WORKER)
+	{
+		global.onmessage = workerThreadReceivedMessage;
+	}
+	else if (Papa.WORKERS_SUPPORTED)
+	{
+		AUTO_SCRIPT_PATH = getScriptPath();
+
+		// Check if the script was loaded synchronously
+		if (!document.body)
+		{
+			// Body doesn't exist yet, must be synchronous
+			LOADED_SYNC = true;
+		}
+		else
+		{
+			document.addEventListener('DOMContentLoaded', function () {
+				LOADED_SYNC = true;
+			}, true);
+		}
+	}
+
+
+
+
+	function CsvToJson(_input, _config)
+	{
+		_config = _config || {};
+		var dynamicTyping = _config.dynamicTyping || false;
+		if (isFunction(dynamicTyping)) {
+			_config.dynamicTypingFunction = dynamicTyping;
+			// Will be filled on first row call
+			dynamicTyping = {};
+		}
+		_config.dynamicTyping = dynamicTyping;
+
+		if (_config.worker && Papa.WORKERS_SUPPORTED)
+		{
+			var w = newWorker();
+
+			w.userStep = _config.step;
+			w.userChunk = _config.chunk;
+			w.userComplete = _config.complete;
+			w.userError = _config.error;
+
+			_config.step = isFunction(_config.step);
+			_config.chunk = isFunction(_config.chunk);
+			_config.complete = isFunction(_config.complete);
+			_config.error = isFunction(_config.error);
+			delete _config.worker;	// prevent infinite loop
+
+			w.postMessage({
+				input: _input,
+				config: _config,
+				workerId: w.id
+			});
+
+			return;
+		}
+
+		var streamer = null;
+		if (typeof _input === 'string')
+		{
+			if (_config.download)
+				streamer = new NetworkStreamer(_config);
+			else
+				streamer = new StringStreamer(_config);
+		}
+		else if (_input.readable === true && isFunction(_input.read) && isFunction(_input.on))
+		{
+			streamer = new ReadableStreamStreamer(_config);
+		}
+		else if ((global.File && _input instanceof File) || _input instanceof Object)	// ...Safari. (see issue #106)
+			streamer = new FileStreamer(_config);
+
+		return streamer.stream(_input);
+	}
+
+
+
+
+
+
+	function JsonToCsv(_input, _config)
+	{
+		var _output = '';
+		var _fields = [];
+
+		// Default configuration
+
+		/** whether to surround every datum with quotes */
+		var _quotes = false;
+
+		/** whether to write headers */
+		var _writeHeader = true;
+
+		/** delimiting character */
+		var _delimiter = ',';
+
+		/** newline character(s) */
+		var _newline = '\r\n';
+
+		/** quote character */
+		var _quoteChar = '"';
+
+		unpackConfig();
+
+		var quoteCharRegex = new RegExp(_quoteChar, 'g');
+
+		if (typeof _input === 'string')
+			_input = JSON.parse(_input);
+
+		if (_input instanceof Array)
+		{
+			if (!_input.length || _input[0] instanceof Array)
+				return serialize(null, _input);
+			else if (typeof _input[0] === 'object')
+				return serialize(objectKeys(_input[0]), _input);
+		}
+		else if (typeof _input === 'object')
+		{
+			if (typeof _input.data === 'string')
+				_input.data = JSON.parse(_input.data);
+
+			if (_input.data instanceof Array)
+			{
+				if (!_input.fields)
+					_input.fields =  _input.meta && _input.meta.fields;
+
+				if (!_input.fields)
+					_input.fields =  _input.data[0] instanceof Array
+									? _input.fields
+									: objectKeys(_input.data[0]);
+
+				if (!(_input.data[0] instanceof Array) && typeof _input.data[0] !== 'object')
+					_input.data = [_input.data];	// handles input like [1,2,3] or ['asdf']
+			}
+
+			return serialize(_input.fields || [], _input.data || []);
+		}
+
+		// Default (any valid paths should return before this)
+		throw 'exception: Unable to serialize unrecognized input';
+
+
+		function unpackConfig()
+		{
+			if (typeof _config !== 'object')
+				return;
+
+			if (typeof _config.delimiter === 'string'
+				&& _config.delimiter.length === 1
+				&& Papa.BAD_DELIMITERS.indexOf(_config.delimiter) === -1)
+			{
+				_delimiter = _config.delimiter;
+			}
+
+			if (typeof _config.quotes === 'boolean'
+				|| _config.quotes instanceof Array)
+				_quotes = _config.quotes;
+
+			if (typeof _config.newline === 'string')
+				_newline = _config.newline;
+
+			if (typeof _config.quoteChar === 'string')
+				_quoteChar = _config.quoteChar;
+
+			if (typeof _config.header === 'boolean')
+				_writeHeader = _config.header;
+		}
+
+
+		/** Turns an object's keys into an array */
+		function objectKeys(obj)
+		{
+			if (typeof obj !== 'object')
+				return [];
+			var keys = [];
+			for (var key in obj)
+				keys.push(key);
+			return keys;
+		}
+
+		/** The double for loop that iterates the data and writes out a CSV string including header row */
+		function serialize(fields, data)
+		{
+			var csv = '';
+
+			if (typeof fields === 'string')
+				fields = JSON.parse(fields);
+			if (typeof data === 'string')
+				data = JSON.parse(data);
+
+			var hasHeader = fields instanceof Array && fields.length > 0;
+			var dataKeyedByField = !(data[0] instanceof Array);
+
+			// If there a header row, write it first
+			if (hasHeader && _writeHeader)
+			{
+				for (var i = 0; i < fields.length; i++)
+				{
+					if (i > 0)
+						csv += _delimiter;
+					csv += safe(fields[i], i);
+				}
+				if (data.length > 0)
+					csv += _newline;
+			}
+
+			// Then write out the data
+			for (var row = 0; row < data.length; row++)
+			{
+				var maxCol = hasHeader ? fields.length : data[row].length;
+
+				for (var col = 0; col < maxCol; col++)
+				{
+					if (col > 0)
+						csv += _delimiter;
+					var colIdx = hasHeader && dataKeyedByField ? fields[col] : col;
+					csv += safe(data[row][colIdx], col);
+				}
+
+				if (row < data.length - 1)
+					csv += _newline;
+			}
+
+			return csv;
+		}
+
+		/** Encloses a value around quotes if needed (makes a value safe for CSV insertion) */
+		function safe(str, col)
+		{
+			if (typeof str === 'undefined' || str === null)
+				return '';
+
+			str = str.toString().replace(quoteCharRegex, _quoteChar+_quoteChar);
+
+			var needsQuotes = (typeof _quotes === 'boolean' && _quotes)
+							|| (_quotes instanceof Array && _quotes[col])
+							|| hasAny(str, Papa.BAD_DELIMITERS)
+							|| str.indexOf(_delimiter) > -1
+							|| str.charAt(0) === ' '
+							|| str.charAt(str.length - 1) === ' ';
+
+			return needsQuotes ? _quoteChar + str + _quoteChar : str;
+		}
+
+		function hasAny(str, substrings)
+		{
+			for (var i = 0; i < substrings.length; i++)
+				if (str.indexOf(substrings[i]) > -1)
+					return true;
+			return false;
+		}
+	}
+
+	/** ChunkStreamer is the base prototype for various streamer implementations. */
+	function ChunkStreamer(config)
+	{
+		this._handle = null;
+		this._paused = false;
+		this._finished = false;
+		this._input = null;
+		this._baseIndex = 0;
+		this._partialLine = '';
+		this._rowCount = 0;
+		this._start = 0;
+		this._nextChunk = null;
+		this.isFirstChunk = true;
+		this._completeResults = {
+			data: [],
+			errors: [],
+			meta: {}
+		};
+		replaceConfig.call(this, config);
+
+		this.parseChunk = function(chunk)
+		{
+			// First chunk pre-processing
+			if (this.isFirstChunk && isFunction(this._config.beforeFirstChunk))
+			{
+				var modifiedChunk = this._config.beforeFirstChunk(chunk);
+				if (modifiedChunk !== undefined)
+					chunk = modifiedChunk;
+			}
+			this.isFirstChunk = false;
+
+			// Rejoin the line we likely just split in two by chunking the file
+			var aggregate = this._partialLine + chunk;
+			this._partialLine = '';
+
+			var results = this._handle.parse(aggregate, this._baseIndex, !this._finished);
+
+			if (this._handle.paused() || this._handle.aborted())
+				return;
+
+			var lastIndex = results.meta.cursor;
+
+			if (!this._finished)
+			{
+				this._partialLine = aggregate.substring(lastIndex - this._baseIndex);
+				this._baseIndex = lastIndex;
+			}
+
+			if (results && results.data)
+				this._rowCount += results.data.length;
+
+			var finishedIncludingPreview = this._finished || (this._config.preview && this._rowCount >= this._config.preview);
+
+			if (IS_PAPA_WORKER)
+			{
+				global.postMessage({
+					results: results,
+					workerId: Papa.WORKER_ID,
+					finished: finishedIncludingPreview
+				});
+			}
+			else if (isFunction(this._config.chunk))
+			{
+				this._config.chunk(results, this._handle);
+				if (this._paused)
+					return;
+				results = undefined;
+				this._completeResults = undefined;
+			}
+
+			if (!this._config.step && !this._config.chunk) {
+				this._completeResults.data = this._completeResults.data.concat(results.data);
+				this._completeResults.errors = this._completeResults.errors.concat(results.errors);
+				this._completeResults.meta = results.meta;
+			}
+
+			if (finishedIncludingPreview && isFunction(this._config.complete) && (!results || !results.meta.aborted))
+				this._config.complete(this._completeResults, this._input);
+
+			if (!finishedIncludingPreview && (!results || !results.meta.paused))
+				this._nextChunk();
+
+			return results;
+		};
+
+		this._sendError = function(error)
+		{
+			if (isFunction(this._config.error))
+				this._config.error(error);
+			else if (IS_PAPA_WORKER && this._config.error)
+			{
+				global.postMessage({
+					workerId: Papa.WORKER_ID,
+					error: error,
+					finished: false
+				});
+			}
+		};
+
+		function replaceConfig(config)
+		{
+			// Deep-copy the config so we can edit it
+			var configCopy = copy(config);
+			configCopy.chunkSize = parseInt(configCopy.chunkSize);	// parseInt VERY important so we don't concatenate strings!
+			if (!config.step && !config.chunk)
+				configCopy.chunkSize = null;  // disable Range header if not streaming; bad values break IIS - see issue #196
+			this._handle = new ParserHandle(configCopy);
+			this._handle.streamer = this;
+			this._config = configCopy;	// persist the copy to the caller
+		}
+	}
+
+
+	function NetworkStreamer(config)
+	{
+		config = config || {};
+		if (!config.chunkSize)
+			config.chunkSize = Papa.RemoteChunkSize;
+		ChunkStreamer.call(this, config);
+
+		var xhr;
+
+		if (IS_WORKER)
+		{
+			this._nextChunk = function()
+			{
+				this._readChunk();
+				this._chunkLoaded();
+			};
+		}
+		else
+		{
+			this._nextChunk = function()
+			{
+				this._readChunk();
+			};
+		}
+
+		this.stream = function(url)
+		{
+			this._input = url;
+			this._nextChunk();	// Starts streaming
+		};
+
+		this._readChunk = function()
+		{
+			if (this._finished)
+			{
+				this._chunkLoaded();
+				return;
+			}
+
+			xhr = new XMLHttpRequest();
+
+			if (this._config.withCredentials)
+			{
+				xhr.withCredentials = this._config.withCredentials;
+			}
+
+			if (!IS_WORKER)
+			{
+				xhr.onload = bindFunction(this._chunkLoaded, this);
+				xhr.onerror = bindFunction(this._chunkError, this);
+			}
+
+			xhr.open('GET', this._input, !IS_WORKER);
+			// Headers can only be set when once the request state is OPENED
+			if (this._config.downloadRequestHeaders)
+			{
+				var headers = this._config.downloadRequestHeaders;
+
+				for (var headerName in headers)
+				{
+					xhr.setRequestHeader(headerName, headers[headerName]);
+				}
+			}
+
+			if (this._config.chunkSize)
+			{
+				var end = this._start + this._config.chunkSize - 1;	// minus one because byte range is inclusive
+				xhr.setRequestHeader('Range', 'bytes='+this._start+'-'+end);
+				xhr.setRequestHeader('If-None-Match', 'webkit-no-cache'); // https://bugs.webkit.org/show_bug.cgi?id=82672
+			}
+
+			try {
+				xhr.send();
+			}
+			catch (err) {
+				this._chunkError(err.message);
+			}
+
+			if (IS_WORKER && xhr.status === 0)
+				this._chunkError();
+			else
+				this._start += this._config.chunkSize;
+		};
+
+		this._chunkLoaded = function()
+		{
+			if (xhr.readyState != 4)
+				return;
+
+			if (xhr.status < 200 || xhr.status >= 400)
+			{
+				this._chunkError();
+				return;
+			}
+
+			this._finished = !this._config.chunkSize || this._start > getFileSize(xhr);
+			this.parseChunk(xhr.responseText);
+		};
+
+		this._chunkError = function(errorMessage)
+		{
+			var errorText = xhr.statusText || errorMessage;
+			this._sendError(errorText);
+		};
+
+		function getFileSize(xhr)
+		{
+			var contentRange = xhr.getResponseHeader('Content-Range');
+			if (contentRange === null) { // no content range, then finish!
+					return -1;
+					}
+			return parseInt(contentRange.substr(contentRange.lastIndexOf('/') + 1));
+		}
+	}
+	NetworkStreamer.prototype = Object.create(ChunkStreamer.prototype);
+	NetworkStreamer.prototype.constructor = NetworkStreamer;
+
+
+	function FileStreamer(config)
+	{
+		config = config || {};
+		if (!config.chunkSize)
+			config.chunkSize = Papa.LocalChunkSize;
+		ChunkStreamer.call(this, config);
+
+		var reader, slice;
+
+		// FileReader is better than FileReaderSync (even in worker) - see http://stackoverflow.com/q/24708649/1048862
+		// But Firefox is a pill, too - see issue #76: https://github.com/mholt/PapaParse/issues/76
+		var usingAsyncReader = typeof FileReader !== 'undefined';	// Safari doesn't consider it a function - see issue #105
+
+		this.stream = function(file)
+		{
+			this._input = file;
+			slice = file.slice || file.webkitSlice || file.mozSlice;
+
+			if (usingAsyncReader)
+			{
+				reader = new FileReader();		// Preferred method of reading files, even in workers
+				reader.onload = bindFunction(this._chunkLoaded, this);
+				reader.onerror = bindFunction(this._chunkError, this);
+			}
+			else
+				reader = new FileReaderSync();	// Hack for running in a web worker in Firefox
+
+			this._nextChunk();	// Starts streaming
+		};
+
+		this._nextChunk = function()
+		{
+			if (!this._finished && (!this._config.preview || this._rowCount < this._config.preview))
+				this._readChunk();
+		};
+
+		this._readChunk = function()
+		{
+			var input = this._input;
+			if (this._config.chunkSize)
+			{
+				var end = Math.min(this._start + this._config.chunkSize, this._input.size);
+				input = slice.call(input, this._start, end);
+			}
+			var txt = reader.readAsText(input, this._config.encoding);
+			if (!usingAsyncReader)
+				this._chunkLoaded({ target: { result: txt } });	// mimic the async signature
+		};
+
+		this._chunkLoaded = function(event)
+		{
+			// Very important to increment start each time before handling results
+			this._start += this._config.chunkSize;
+			this._finished = !this._config.chunkSize || this._start >= this._input.size;
+			this.parseChunk(event.target.result);
+		};
+
+		this._chunkError = function()
+		{
+			this._sendError(reader.error);
+		};
+
+	}
+	FileStreamer.prototype = Object.create(ChunkStreamer.prototype);
+	FileStreamer.prototype.constructor = FileStreamer;
+
+
+	function StringStreamer(config)
+	{
+		config = config || {};
+		ChunkStreamer.call(this, config);
+
+		var string;
+		var remaining;
+		this.stream = function(s)
+		{
+			string = s;
+			remaining = s;
+			return this._nextChunk();
+		};
+		this._nextChunk = function()
+		{
+			if (this._finished) return;
+			var size = this._config.chunkSize;
+			var chunk = size ? remaining.substr(0, size) : remaining;
+			remaining = size ? remaining.substr(size) : '';
+			this._finished = !remaining;
+			return this.parseChunk(chunk);
+		};
+	}
+	StringStreamer.prototype = Object.create(StringStreamer.prototype);
+	StringStreamer.prototype.constructor = StringStreamer;
+
+
+	function ReadableStreamStreamer(config)
+	{
+		config = config || {};
+
+		ChunkStreamer.call(this, config);
+
+		var queue = [];
+		var parseOnData = true;
+
+		this.stream = function(stream)
+		{
+			this._input = stream;
+
+			this._input.on('data', this._streamData);
+			this._input.on('end', this._streamEnd);
+			this._input.on('error', this._streamError);
+		};
+
+		this._nextChunk = function()
+		{
+			if (queue.length)
+			{
+				this.parseChunk(queue.shift());
+			}
+			else
+			{
+				parseOnData = true;
+			}
+		};
+
+		this._streamData = bindFunction(function(chunk)
+		{
+			try
+			{
+				queue.push(typeof chunk === 'string' ? chunk : chunk.toString(this._config.encoding));
+
+				if (parseOnData)
+				{
+					parseOnData = false;
+					this.parseChunk(queue.shift());
+				}
+			}
+			catch (error)
+			{
+				this._streamError(error);
+			}
+		}, this);
+
+		this._streamError = bindFunction(function(error)
+		{
+			this._streamCleanUp();
+			this._sendError(error.message);
+		}, this);
+
+		this._streamEnd = bindFunction(function()
+		{
+			this._streamCleanUp();
+			this._finished = true;
+			this._streamData('');
+		}, this);
+
+		this._streamCleanUp = bindFunction(function()
+		{
+			this._input.removeListener('data', this._streamData);
+			this._input.removeListener('end', this._streamEnd);
+			this._input.removeListener('error', this._streamError);
+		}, this);
+	}
+	ReadableStreamStreamer.prototype = Object.create(ChunkStreamer.prototype);
+	ReadableStreamStreamer.prototype.constructor = ReadableStreamStreamer;
+
+
+	// Use one ParserHandle per entire CSV file or string
+	function ParserHandle(_config)
+	{
+		// One goal is to minimize the use of regular expressions...
+		var FLOAT = /^\s*-?(\d*\.?\d+|\d+\.?\d*)(e[-+]?\d+)?\s*$/i;
+
+		var self = this;
+		var _stepCounter = 0;	// Number of times step was called (number of rows parsed)
+		var _input;				// The input being parsed
+		var _parser;			// The core parser being used
+		var _paused = false;	// Whether we are paused or not
+		var _aborted = false;	// Whether the parser has aborted or not
+		var _delimiterError;	// Temporary state between delimiter detection and processing results
+		var _fields = [];		// Fields are from the header row of the input, if there is one
+		var _results = {		// The last results returned from the parser
+			data: [],
+			errors: [],
+			meta: {}
+		};
+
+		if (isFunction(_config.step))
+		{
+			var userStep = _config.step;
+			_config.step = function(results)
+			{
+				_results = results;
+
+				if (needsHeaderRow())
+					processResults();
+				else	// only call user's step function after header row
+				{
+					processResults();
+
+					// It's possbile that this line was empty and there's no row here after all
+					if (_results.data.length === 0)
+						return;
+
+					_stepCounter += results.data.length;
+					if (_config.preview && _stepCounter > _config.preview)
+						_parser.abort();
+					else
+						userStep(_results, self);
+				}
+			};
+		}
+
+		/**
+		 * Parses input. Most users won't need, and shouldn't mess with, the baseIndex
+		 * and ignoreLastRow parameters. They are used by streamers (wrapper functions)
+		 * when an input comes in multiple chunks, like from a file.
+		 */
+		this.parse = function(input, baseIndex, ignoreLastRow)
+		{
+			if (!_config.newline)
+				_config.newline = guessLineEndings(input);
+
+			_delimiterError = false;
+			if (!_config.delimiter)
+			{
+				var delimGuess = guessDelimiter(input, _config.newline, _config.skipEmptyLines);
+				if (delimGuess.successful)
+					_config.delimiter = delimGuess.bestDelimiter;
+				else
+				{
+					_delimiterError = true;	// add error after parsing (otherwise it would be overwritten)
+					_config.delimiter = Papa.DefaultDelimiter;
+				}
+				_results.meta.delimiter = _config.delimiter;
+			}
+			else if(isFunction(_config.delimiter))
+			{
+				_config.delimiter = _config.delimiter(input);
+				_results.meta.delimiter = _config.delimiter;
+			}
+
+			var parserConfig = copy(_config);
+			if (_config.preview && _config.header)
+				parserConfig.preview++;	// to compensate for header row
+
+			_input = input;
+			_parser = new Parser(parserConfig);
+			_results = _parser.parse(_input, baseIndex, ignoreLastRow);
+			processResults();
+			return _paused ? { meta: { paused: true } } : (_results || { meta: { paused: false } });
+		};
+
+		this.paused = function()
+		{
+			return _paused;
+		};
+
+		this.pause = function()
+		{
+			_paused = true;
+			_parser.abort();
+			_input = _input.substr(_parser.getCharIndex());
+		};
+
+		this.resume = function()
+		{
+			_paused = false;
+			self.streamer.parseChunk(_input);
+		};
+
+		this.aborted = function ()
+		{
+			return _aborted;
+		};
+
+		this.abort = function()
+		{
+			_aborted = true;
+			_parser.abort();
+			_results.meta.aborted = true;
+			if (isFunction(_config.complete))
+				_config.complete(_results);
+			_input = '';
+		};
+
+		function processResults()
+		{
+			if (_results && _delimiterError)
+			{
+				addError('Delimiter', 'UndetectableDelimiter', 'Unable to auto-detect delimiting character; defaulted to \''+Papa.DefaultDelimiter+'\'');
+				_delimiterError = false;
+			}
+
+			if (_config.skipEmptyLines)
+			{
+				for (var i = 0; i < _results.data.length; i++)
+					if (_results.data[i].length === 1 && _results.data[i][0] === '')
+						_results.data.splice(i--, 1);
+			}
+
+			if (needsHeaderRow())
+				fillHeaderFields();
+
+			return applyHeaderAndDynamicTyping();
+		}
+
+		function needsHeaderRow()
+		{
+			return _config.header && _fields.length === 0;
+		}
+
+		function fillHeaderFields()
+		{
+			if (!_results)
+				return;
+			for (var i = 0; needsHeaderRow() && i < _results.data.length; i++)
+				for (var j = 0; j < _results.data[i].length; j++)
+					_fields.push(_results.data[i][j]);
+			_results.data.splice(0, 1);
+		}
+
+		function shouldApplyDynamicTyping(field) {
+			// Cache function values to avoid calling it for each row
+			if (_config.dynamicTypingFunction && _config.dynamicTyping[field] === undefined) {
+				_config.dynamicTyping[field] = _config.dynamicTypingFunction(field);
+			}
+			return (_config.dynamicTyping[field] || _config.dynamicTyping) === true
+		}
+
+		function parseDynamic(field, value)
+		{
+			if (shouldApplyDynamicTyping(field))
+			{
+				if (value === 'true' || value === 'TRUE')
+					return true;
+				else if (value === 'false' || value === 'FALSE')
+					return false;
+				else
+					return tryParseFloat(value);
+			}
+			return value;
+		}
+
+		function applyHeaderAndDynamicTyping()
+		{
+			if (!_results || (!_config.header && !_config.dynamicTyping))
+				return _results;
+
+			for (var i = 0; i < _results.data.length; i++)
+			{
+				var row = _config.header ? {} : [];
+
+				for (var j = 0; j < _results.data[i].length; j++)
+				{
+					var field = j;
+					var value = _results.data[i][j];
+
+					if (_config.header)
+						field = j >= _fields.length ? '__parsed_extra' : _fields[j];
+
+					value = parseDynamic(field, value);
+
+					if (field === '__parsed_extra')
+					{
+						row[field] = row[field] || [];
+						row[field].push(value);
+					}
+					else
+						row[field] = value;
+				}
+
+				_results.data[i] = row;
+
+				if (_config.header)
+				{
+					if (j > _fields.length)
+						addError('FieldMismatch', 'TooManyFields', 'Too many fields: expected ' + _fields.length + ' fields but parsed ' + j, i);
+					else if (j < _fields.length)
+						addError('FieldMismatch', 'TooFewFields', 'Too few fields: expected ' + _fields.length + ' fields but parsed ' + j, i);
+				}
+			}
+
+			if (_config.header && _results.meta)
+				_results.meta.fields = _fields;
+			return _results;
+		}
+
+		function guessDelimiter(input, newline, skipEmptyLines)
+		{
+			var delimChoices = [',', '\t', '|', ';', Papa.RECORD_SEP, Papa.UNIT_SEP];
+			var bestDelim, bestDelta, fieldCountPrevRow;
+
+			for (var i = 0; i < delimChoices.length; i++)
+			{
+				var delim = delimChoices[i];
+				var delta = 0, avgFieldCount = 0, emptyLinesCount = 0;
+				fieldCountPrevRow = undefined;
+
+				var preview = new Parser({
+					delimiter: delim,
+					newline: newline,
+					preview: 10
+				}).parse(input);
+
+				for (var j = 0; j < preview.data.length; j++)
+				{
+					if (skipEmptyLines && preview.data[j].length === 1 && preview.data[j][0].length === 0) {
+						emptyLinesCount++;
+						continue
+					}
+					var fieldCount = preview.data[j].length;
+					avgFieldCount += fieldCount;
+
+					if (typeof fieldCountPrevRow === 'undefined')
+					{
+						fieldCountPrevRow = fieldCount;
+						continue;
+					}
+					else if (fieldCount > 1)
+					{
+						delta += Math.abs(fieldCount - fieldCountPrevRow);
+						fieldCountPrevRow = fieldCount;
+					}
+				}
+
+				if (preview.data.length > 0)
+					avgFieldCount /= (preview.data.length - emptyLinesCount);
+
+				if ((typeof bestDelta === 'undefined' || delta < bestDelta)
+					&& avgFieldCount > 1.99)
+				{
+					bestDelta = delta;
+					bestDelim = delim;
+				}
+			}
+
+			_config.delimiter = bestDelim;
+
+			return {
+				successful: !!bestDelim,
+				bestDelimiter: bestDelim
+			}
+		}
+
+		function guessLineEndings(input)
+		{
+			input = input.substr(0, 1024*1024);	// max length 1 MB
+
+			var r = input.split('\r');
+
+			var n = input.split('\n');
+
+			var nAppearsFirst = (n.length > 1 && n[0].length < r[0].length);
+
+			if (r.length === 1 || nAppearsFirst)
+				return '\n';
+
+			var numWithN = 0;
+			for (var i = 0; i < r.length; i++)
+			{
+				if (r[i][0] === '\n')
+					numWithN++;
+			}
+
+			return numWithN >= r.length / 2 ? '\r\n' : '\r';
+		}
+
+		function tryParseFloat(val)
+		{
+			var isNumber = FLOAT.test(val);
+			return isNumber ? parseFloat(val) : val;
+		}
+
+		function addError(type, code, msg, row)
+		{
+			_results.errors.push({
+				type: type,
+				code: code,
+				message: msg,
+				row: row
+			});
+		}
+	}
+
+
+
+
+
+	/** The core parser implements speedy and correct CSV parsing */
+	function Parser(config)
+	{
+		// Unpack the config object
+		config = config || {};
+		var delim = config.delimiter;
+		var newline = config.newline;
+		var comments = config.comments;
+		var step = config.step;
+		var preview = config.preview;
+		var fastMode = config.fastMode;
+		var quoteChar = config.quoteChar || '"';
+
+		// Delimiter must be valid
+		if (typeof delim !== 'string'
+			|| Papa.BAD_DELIMITERS.indexOf(delim) > -1)
+			delim = ',';
+
+		// Comment character must be valid
+		if (comments === delim)
+			throw 'Comment character same as delimiter';
+		else if (comments === true)
+			comments = '#';
+		else if (typeof comments !== 'string'
+			|| Papa.BAD_DELIMITERS.indexOf(comments) > -1)
+			comments = false;
+
+		// Newline must be valid: \r, \n, or \r\n
+		if (newline != '\n' && newline != '\r' && newline != '\r\n')
+			newline = '\n';
+
+		// We're gonna need these at the Parser scope
+		var cursor = 0;
+		var aborted = false;
+
+		this.parse = function(input, baseIndex, ignoreLastRow)
+		{
+			// For some reason, in Chrome, this speeds things up (!?)
+			if (typeof input !== 'string')
+				throw 'Input must be a string';
+
+			// We don't need to compute some of these every time parse() is called,
+			// but having them in a more local scope seems to perform better
+			var inputLen = input.length,
+				delimLen = delim.length,
+				newlineLen = newline.length,
+				commentsLen = comments.length;
+			var stepIsFunction = isFunction(step);
+
+			// Establish starting state
+			cursor = 0;
+			var data = [], errors = [], row = [], lastCursor = 0;
+
+			if (!input)
+				return returnable();
+
+			if (fastMode || (fastMode !== false && input.indexOf(quoteChar) === -1))
+			{
+				var rows = input.split(newline);
+				for (var i = 0; i < rows.length; i++)
+				{
+					var row = rows[i];
+					cursor += row.length;
+					if (i !== rows.length - 1)
+						cursor += newline.length;
+					else if (ignoreLastRow)
+						return returnable();
+					if (comments && row.substr(0, commentsLen) === comments)
+						continue;
+					if (stepIsFunction)
+					{
+						data = [];
+						pushRow(row.split(delim));
+						doStep();
+						if (aborted)
+							return returnable();
+					}
+					else
+						pushRow(row.split(delim));
+					if (preview && i >= preview)
+					{
+						data = data.slice(0, preview);
+						return returnable(true);
+					}
+				}
+				return returnable();
+			}
+
+			var nextDelim = input.indexOf(delim, cursor);
+			var nextNewline = input.indexOf(newline, cursor);
+			var quoteCharRegex = new RegExp(quoteChar+quoteChar, 'g');
+
+			// Parser loop
+			for (;;)
+			{
+				// Field has opening quote
+				if (input[cursor] === quoteChar)
+				{
+					// Start our search for the closing quote where the cursor is
+					var quoteSearch = cursor;
+
+					// Skip the opening quote
+					cursor++;
+
+					for (;;)
+					{
+						// Find closing quote
+						var quoteSearch = input.indexOf(quoteChar, quoteSearch+1);
+
+						//No other quotes are found - no other delimiters
+						if (quoteSearch === -1)
+						{
+							if (!ignoreLastRow) {
+								// No closing quote... what a pity
+								errors.push({
+									type: 'Quotes',
+									code: 'MissingQuotes',
+									message: 'Quoted field unterminated',
+									row: data.length,	// row has yet to be inserted
+									index: cursor
+								});
+							}
+							return finish();
+						}
+
+						// Closing quote at EOF
+						if (quoteSearch === inputLen-1)
+						{
+							var value = input.substring(cursor, quoteSearch).replace(quoteCharRegex, quoteChar);
+							return finish(value);
+						}
+
+						// If this quote is escaped, it's part of the data; skip it
+						if (input[quoteSearch+1] === quoteChar)
+						{
+							quoteSearch++;
+							continue;
+						}
+
+						// Closing quote followed by delimiter
+						if (input[quoteSearch+1] === delim)
+						{
+							row.push(input.substring(cursor, quoteSearch).replace(quoteCharRegex, quoteChar));
+							cursor = quoteSearch + 1 + delimLen;
+							nextDelim = input.indexOf(delim, cursor);
+							nextNewline = input.indexOf(newline, cursor);
+							break;
+						}
+
+						// Closing quote followed by newline
+						if (input.substr(quoteSearch+1, newlineLen) === newline)
+						{
+							row.push(input.substring(cursor, quoteSearch).replace(quoteCharRegex, quoteChar));
+							saveRow(quoteSearch + 1 + newlineLen);
+							nextDelim = input.indexOf(delim, cursor);	// because we may have skipped the nextDelim in the quoted field
+
+							if (stepIsFunction)
+							{
+								doStep();
+								if (aborted)
+									return returnable();
+							}
+
+							if (preview && data.length >= preview)
+								return returnable(true);
+
+							break;
+						}
+
+
+						// Checks for valid closing quotes are complete (escaped quotes or quote followed by EOF/delimiter/newline) -- assume these quotes are part of an invalid text string
+						errors.push({
+							type: 'Quotes',
+							code: 'InvalidQuotes',
+							message: 'Trailing quote on quoted field is malformed',
+							row: data.length,	// row has yet to be inserted
+							index: cursor
+						});
+
+						quoteSearch++;
+						continue;
+
+					}
+
+					continue;
+				}
+
+				// Comment found at start of new line
+				if (comments && row.length === 0 && input.substr(cursor, commentsLen) === comments)
+				{
+					if (nextNewline === -1)	// Comment ends at EOF
+						return returnable();
+					cursor = nextNewline + newlineLen;
+					nextNewline = input.indexOf(newline, cursor);
+					nextDelim = input.indexOf(delim, cursor);
+					continue;
+				}
+
+				// Next delimiter comes before next newline, so we've reached end of field
+				if (nextDelim !== -1 && (nextDelim < nextNewline || nextNewline === -1))
+				{
+					row.push(input.substring(cursor, nextDelim));
+					cursor = nextDelim + delimLen;
+					nextDelim = input.indexOf(delim, cursor);
+					continue;
+				}
+
+				// End of row
+				if (nextNewline !== -1)
+				{
+					row.push(input.substring(cursor, nextNewline));
+					saveRow(nextNewline + newlineLen);
+
+					if (stepIsFunction)
+					{
+						doStep();
+						if (aborted)
+							return returnable();
+					}
+
+					if (preview && data.length >= preview)
+						return returnable(true);
+
+					continue;
+				}
+
+				break;
+			}
+
+
+			return finish();
+
+
+			function pushRow(row)
+			{
+				data.push(row);
+				lastCursor = cursor;
+			}
+
+			/**
+			 * Appends the remaining input from cursor to the end into
+			 * row, saves the row, calls step, and returns the results.
+			 */
+			function finish(value)
+			{
+				if (ignoreLastRow)
+					return returnable();
+				if (typeof value === 'undefined')
+					value = input.substr(cursor);
+				row.push(value);
+				cursor = inputLen;	// important in case parsing is paused
+				pushRow(row);
+				if (stepIsFunction)
+					doStep();
+				return returnable();
+			}
+
+			/**
+			 * Appends the current row to the results. It sets the cursor
+			 * to newCursor and finds the nextNewline. The caller should
+			 * take care to execute user's step function and check for
+			 * preview and end parsing if necessary.
+			 */
+			function saveRow(newCursor)
+			{
+				cursor = newCursor;
+				pushRow(row);
+				row = [];
+				nextNewline = input.indexOf(newline, cursor);
+			}
+
+			/** Returns an object with the results, errors, and meta. */
+			function returnable(stopped)
+			{
+				return {
+					data: data,
+					errors: errors,
+					meta: {
+						delimiter: delim,
+						linebreak: newline,
+						aborted: aborted,
+						truncated: !!stopped,
+						cursor: lastCursor + (baseIndex || 0)
+					}
+				};
+			}
+
+			/** Executes the user's step function and resets data & errors. */
+			function doStep()
+			{
+				step(returnable());
+				data = [], errors = [];
+			}
+		};
+
+		/** Sets the abort flag */
+		this.abort = function()
+		{
+			aborted = true;
+		};
+
+		/** Gets the cursor position */
+		this.getCharIndex = function()
+		{
+			return cursor;
+		};
+	}
+
+
+	// If you need to load Papa Parse asynchronously and you also need worker threads, hard-code
+	// the script path here. See: https://github.com/mholt/PapaParse/issues/87#issuecomment-57885358
+	function getScriptPath()
+	{
+		var scripts = document.getElementsByTagName('script');
+		return scripts.length ? scripts[scripts.length - 1].src : '';
+	}
+
+	function newWorker()
+	{
+		if (!Papa.WORKERS_SUPPORTED)
+			return false;
+		if (!LOADED_SYNC && Papa.SCRIPT_PATH === null)
+			throw new Error(
+				'Script path cannot be determined automatically when Papa Parse is loaded asynchronously. ' +
+				'You need to set Papa.SCRIPT_PATH manually.'
+			);
+		var workerUrl = Papa.SCRIPT_PATH || AUTO_SCRIPT_PATH;
+		// Append 'papaworker' to the search string to tell papaparse that this is our worker.
+		workerUrl += (workerUrl.indexOf('?') !== -1 ? '&' : '?') + 'papaworker';
+		var w = new global.Worker(workerUrl);
+		w.onmessage = mainThreadReceivedMessage;
+		w.id = workerIdCounter++;
+		workers[w.id] = w;
+		return w;
+	}
+
+	/** Callback when main thread receives a message */
+	function mainThreadReceivedMessage(e)
+	{
+		var msg = e.data;
+		var worker = workers[msg.workerId];
+		var aborted = false;
+
+		if (msg.error)
+			worker.userError(msg.error, msg.file);
+		else if (msg.results && msg.results.data)
+		{
+			var abort = function() {
+				aborted = true;
+				completeWorker(msg.workerId, { data: [], errors: [], meta: { aborted: true } });
+			};
+
+			var handle = {
+				abort: abort,
+				pause: notImplemented,
+				resume: notImplemented
+			};
+
+			if (isFunction(worker.userStep))
+			{
+				for (var i = 0; i < msg.results.data.length; i++)
+				{
+					worker.userStep({
+						data: [msg.results.data[i]],
+						errors: msg.results.errors,
+						meta: msg.results.meta
+					}, handle);
+					if (aborted)
+						break;
+				}
+				delete msg.results;	// free memory ASAP
+			}
+			else if (isFunction(worker.userChunk))
+			{
+				worker.userChunk(msg.results, handle, msg.file);
+				delete msg.results;
+			}
+		}
+
+		if (msg.finished && !aborted)
+			completeWorker(msg.workerId, msg.results);
+	}
+
+	function completeWorker(workerId, results) {
+		var worker = workers[workerId];
+		if (isFunction(worker.userComplete))
+			worker.userComplete(results);
+		worker.terminate();
+		delete workers[workerId];
+	}
+
+	function notImplemented() {
+		throw 'Not implemented.';
+	}
+
+	/** Callback when worker thread receives a message */
+	function workerThreadReceivedMessage(e)
+	{
+		var msg = e.data;
+
+		if (typeof Papa.WORKER_ID === 'undefined' && msg)
+			Papa.WORKER_ID = msg.workerId;
+
+		if (typeof msg.input === 'string')
+		{
+			global.postMessage({
+				workerId: Papa.WORKER_ID,
+				results: Papa.parse(msg.input, msg.config),
+				finished: true
+			});
+		}
+		else if ((global.File && msg.input instanceof File) || msg.input instanceof Object)	// thank you, Safari (see issue #106)
+		{
+			var results = Papa.parse(msg.input, msg.config);
+			if (results)
+				global.postMessage({
+					workerId: Papa.WORKER_ID,
+					results: results,
+					finished: true
+				});
+		}
+	}
+
+	/** Makes a deep copy of an array or object (mostly) */
+	function copy(obj)
+	{
+		if (typeof obj !== 'object')
+			return obj;
+		var cpy = obj instanceof Array ? [] : {};
+		for (var key in obj)
+			cpy[key] = copy(obj[key]);
+		return cpy;
+	}
+
+	function bindFunction(f, self)
+	{
+		return function() { f.apply(self, arguments); };
+	}
+
+	function isFunction(func)
+	{
+		return typeof func === 'function';
+	}
+
+	return Papa;
+}));
+});
+
+var DefaultConfig = "{\n  \"https://github.com/alpheios-project/lsj\": {\n    \"urls\": {\n      \"short\": \"https://repos1.alpheios.net/lexdata/lsj/dat/grc-lsj-defs.dat\",\n      \"index\": \"https://repos1.alpheios.net/lexdata/lsj/dat/grc-lsj-ids.dat\",\n      \"full\": \"https://repos1.alpheios.net/exist/rest/db/xq/lexi-get.xq?lx=lsj&lg=grc&out=html\"\n    },\n    \"langs\": {\n      \"source\": \"grc\",\n      \"target\": \"en\"\n    },\n    \"description\": \"\\\"A Greek-English Lexicon\\\" (Henry George Liddell, Robert Scott)\",\n    \"rights\": \"\\\"A Greek-English Lexicon\\\" (Henry George Liddell, Robert Scott). Provided by the Perseus Digital Library at Tufts University.\"\n  },\n  \"https://github.com/alpheios-project/aut\": {\n    \"urls\": {\n      \"short\": \"https://repos1.alpheios.net/lexdata/aut/dat/grc-aut-defs.dat\",\n      \"index\": \"https://repos1.alpheios.net/lexdata/aut//dat/grc-aut-ids.dat\",\n      \"full\": \"https://repos1.alpheios.net/exist/rest/db/xq/lexi-get.xq?lx=aut&lg=grc&out=html\"\n    },\n    \"langs\": {\n      \"source\": \"grc\",\n      \"target\": \"en\"\n    },\n    \"description\": \"\\\"Autenrieth Homeric Dictionary\\\" (Geoerge Autenrieth)\",\n    \"rights\": \"\\\"Autenrieth Homeric Dictionary\\\" (Geoerge Autenrieth). Provided by the Perseus Digital Library at Tufts University\"\n  },\n  \"https://github.com/alpheios-project/ml\": {\n    \"urls\": {\n      \"short\": \"https://repos1.alpheios.net/lexdata/ml/dat/grc-ml-defs.dat\",\n      \"index\": \"https://repos1.alpheios.net/lexdata/ml/dat/grc-ml-ids.dat\",\n      \"full\": \"https://repos1.alpheios.net/exist/rest/db/xq/lexi-get.xq?lx=ml&lg=grc&out=html\"\n    },\n    \"langs\": {\n      \"source\": \"grc\",\n      \"target\": \"en\"\n    },\n    \"description\": \"\\\"Middle Liddell\\\"\",\n    \"rights\": \"\\\"An Intermediate Greek-English Lexicon\\\" (Henry George Liddell, Robert Scott). Provided by the Perseus Digital Library at Tufts University\"\n  },\n  \"https://github.com/alpheios-project/as\": {\n    \"urls\": {\n      \"short\": \"https://repos1.alpheios.net/lexdata/as/dat/grc-as-defs.dat\",\n      \"index\": \"https://repos1.alpheios.net/lexdata/as/dat/grc-as-ids.dat\",\n      \"full\": \"https://repos1.alpheios.net/exist/rest/db/xq/lexi-get.xq?lx=as&lg=grc&out=html\"\n    },\n    \"langs\": {\n      \"source\": \"grc\",\n      \"target\": \"en\"\n    },\n    \"description\": \"\\\"A Manual Greek Lexicon of the New Testament\\\"\",\n    \"rights\": \"\\\"A Manual Greek Lexicon of the New Testament\\\" (G. Abbott-Smith). Provided by biblicalhumanities.org.\"\n  },\n  \"https://github.com/alpheios-project/dod\": {\n    \"urls\": {\n      \"short\": \"https://repos1.alpheios.net/lexdata/dod/dat/grc-dod-defs.dat\",\n      \"index\": \"https://repos1.alpheios.net/lexdata/dod/dat/grc-dod-ids.dat\",\n      \"full\": null\n    },\n    \"langs\": {\n      \"source\": \"grc\",\n      \"target\": \"en\"\n    },\n    \"description\": \"\\\"Dodson\\\"\",\n    \"rights\": \"\\\"A Public Domain lexicon by John Jeffrey Dodson (2010)\\\". Provided by biblicalhumanities.org.\"\n  },\n  \"https://github.com/alpheios-project/ls\": {\n    \"urls\": {\n      \"short\": null,\n      \"index\": \"https://repos1.alpheios.net/lexdata/ls/dat/lat-ls-ids.dat\",\n      \"full\": \"https://repos1.alpheios.net/exist/rest/db/xq/lexi-get.xq?lx=ls&lg=lat&out=html\"\n    },\n    \"langs\": {\n      \"source\": \"lat\",\n      \"target\": \"en\"\n    },\n    \"description\": \"\\\"A Latin Dictionary\\\" (Charlton T. Lewis, Charles Short)\",\n    \"rights\": \"\\\"A Latin Dictionary\\\" (Charlton T. Lewis, Charles Short). Provided by the Perseus Digital Library at Tufts University.\"\n  },\n  \"https://github.com/alpheios-project/lan\": {\n    \"urls\": {\n      \"short\": null,\n      \"index\": \"https://repos1.alpheios.net/lexdata/lan/dat/ara-lan-ids.dat\",\n      \"full\": \"https://repos1.alpheios.net/exist/rest/db/xq/lexi-get.xq?lx=lan&lg=ara&out=html\"\n    },\n    \"langs\": {\n      \"source\": \"ara\",\n      \"target\": \"en\"\n    },\n    \"description\": \"\\\"The Arabic-English Lexicon\\\" (Edward Lane)\",\n    \"rights\": \"\\\"The Arabic-English Lexicon\\\" (Edward Lane). Provided by the Perseus Digital Library at Tufts University.\"\n  },\n  \"https://github.com/alpheios-project/sal\": {\n    \"urls\": {\n      \"short\": null,\n      \"index\": \"https://repos1.alpheios.net/lexdata/sal/dat/ara-sal-ids.dat\",\n      \"full\": \"https://repos1.alpheios.net/exist/rest/db/xq/lexi-get.xq?lx=sal&lg=ara&out=html\"\n    },\n    \"langs\": {\n      \"source\": \"ara\",\n      \"target\": \"en\"\n    },\n    \"description\": \"\\\"An Advanced Learner's Arabic Dictionary\\\" (H. Anthony Salmone)\",\n    \"rights\": \"\\\"An Advanced Learner's Arabic Dictionary\\\" (H. Anthony Salmone). Provided by the Perseus Digital Library at Tufts University.\"\n  },\n  \"https://github.com/alpheios-project/stg\": {\n    \"urls\": {\n      \"short\": \"https://repos1.alpheios.net/lexdata/stg/dat/per-stg-defs.dat\",\n      \"index\": \"https://repos1.alpheios.net/lexdata/stg/dat/per-stg-ids.dat\",\n      \"full\": null\n    },\n    \"langs\": {\n      \"source\": \"per\",\n      \"target\": \"en\"\n    },\n    \"description\": \"\\\"A Comprehensive Persian-English Dictionary\\\" (Francis Joseph Steingass)\",\n    \"rights\": \"\\\"A Comprehensive Persian-English Dictionary\\\" (Francis Joseph Steingass). Provided by the Center for Advanced Study of Language (CASL) at the University of Maryland, College Park.\"\n  }\n}\n";
+
+class AlpheiosLexAdapter extends BaseLexiconAdapter {
+  /**
+   * A Client Adapter for the Alpheios V1 Lexicon service
+   * @constructor
+   * @param {string} lexid - the idenitifer code for the lexicon this instance
+   *                         provides access to
+   * @param {Object} config - JSON configuration object override
+   */
+  constructor (lexid = null, config = null) {
+    super();
+    this.lexid = lexid;
+    this.data = null;
+    this.index = null;
+    // this is a bit of a hack to enable inclusion of a JSON config file
+    // in a way that works both pre and post-rollup. Our rollup config
+    // will stringify the file and then we can parse it but if we want to
+    // run unit tests on pre-rolled up code, then we need to have a fallback
+    // which works with the raw ES6 import
+    if (config == null) {
+      try {
+        let fullconfig = JSON.parse(DefaultConfig);
+        this.config = fullconfig[lexid];
+      } catch (e) {
+        this.config = DefaultConfig[lexid];
+      }
+    } else {
+      this.config = config;
+    }
+    this.provider = new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["ResourceProvider"](this.lexid, this.config.rights);
+  }
+
+  /**
+   * @override BaseLexiconAdapter#lookupFullDef
+   */
+  async lookupFullDef (lemma = null) {
+    // TODO figure out the best way to handle initial reading of the data file
+    if (this.index === null && this.getConfig('urls').index) {
+      let url = this.getConfig('urls').index;
+      let unparsed = await this._loadData(url);
+      let parsed = papaparse.parse(unparsed, {});
+      this.index = this._fillMap(parsed.data);
+    }
+    let ids;
+    if (this.index) {
+      let model = __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["LanguageModelFactory"].getLanguageForCode(lemma.language);
+      ids = this._lookupInDataIndex(this.index, lemma, model);
+    }
+    let url = this.getConfig('urls').full;
+    if (!url) { throw new Error(`URL data is not available`) }
+    let requests = [];
+    if (ids) {
+      for (let id of ids) {
+        requests.push(`${url}&n=${id}`);
+      }
+    } else {
+      requests.push(`${url}&l=${lemma.word}`);
+    }
+    let targetLanguage = this.getConfig('langs').target;
+    let promises = [];
+    for (let r of requests) {
+      let p = new Promise((resolve, reject) => {
+        window.fetch(r).then(
+            function (response) {
+              let text = response.text();
+              resolve(text);
+            }
+          ).catch((error) => {
+            reject(error);
+          });
+      }).then((result) => {
+        if (result.match(/No entries found/)) {
+          throw new Error('Not Found')
+        } else {
+          let def = new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Definition"](result, targetLanguage, 'text/html', lemma.word);
+          return __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["ResourceProvider"].getProxy(this.provider, def)
+        }
+      });
+      promises.push(p);
+    }
+    return Promise.all(promises).then(
+      values => {
+        return values.filter(value => { return value })
+      },
+      error => {
+        console.log(error);
+        throw (error)
+        // quietly fail?
+      }
+    )
+  }
+
+  /**
+   * @override BaseLexiconAdapter#lookupShortDef
+   */
+  async lookupShortDef (lemma = null) {
+    if (this.data === null) {
+      let url = this.getConfig('urls').short;
+      if (!url) { throw new Error(`URL data is not available`) }
+      let unparsed = await this._loadData(url);
+      // the PapaParse algorigthm doesn't deal well with fields with start with data
+      // in quotes but doesn't use quotes to enclose the entire field contents.
+      // eg. a row like
+      //   lemma|"some def" and more def.
+      // throws it off. Since these data files don't contain quoted
+      // fields just use a non-printable unicode char as the quoteChar
+      // (i.e. one which is unlikely to appear in the data) as the
+      // in the papaparse config to prevent it from doing this
+      let parsed = papaparse.parse(unparsed, {quoteChar: '\u{0000}', delimiter: '|'});
+      this.data = this._fillMap(parsed.data);
+    }
+    let model = __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["LanguageModelFactory"].getLanguageForCode(lemma.language);
+    let deftexts = this._lookupInDataIndex(this.data, lemma, model);
+    let promises = [];
+    if (deftexts) {
+      for (let d of deftexts) {
+        promises.push(new Promise((resolve, reject) => {
+          let def = new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Definition"](d, this.getConfig('langs').target, 'text/plain', lemma.word);
+          resolve(__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["ResourceProvider"].getProxy(this.provider, def));
+        }));
+      }
+    } else {
+      promises.push(new Promise((resolve, reject) => {
+        reject(new Error('Not Found'));
+      }
+      ));
+    }
+    return Promise.all(promises).then(
+      values => {
+        return values.filter(value => { return value })
+      },
+      error => {
+        throw (error)
+      }
+    )
+  }
+
+  /**
+   * Lookup a Lemma object in an Alpheios v1 data index
+   * @param {Map} data the data inddex
+   * @param {Lemma} lemma the lemma to lookupInDataIndex
+   * @param {LanguageModel} model a language model for language specific methods
+   * @return {string} the index entry as a text string
+   */
+  _lookupInDataIndex (data, lemma, model) {
+    // legacy behavior from Alpheios lemma data file indices
+    // first look to see if we explicitly have an instance of this lemma
+    // with capitalization retained
+    let found;
+
+    let alternatives = [];
+    let altEncodings = [];
+    for (let l of [lemma.word, ...lemma.principalParts]) {
+      alternatives.push(l);
+      for (let a of model.alternateWordEncodings(l)) {
+        // we gather altEncodings separately because they should
+        // be tried last after the lemma and principalParts in their
+        // original form
+        altEncodings.push(a);
+      }
+      let nosense = l.replace(/_?\d+$/, '');
+      if (l !== nosense) {
+        alternatives.push(nosense);
+      }
+    }
+    alternatives = [...alternatives, ...altEncodings];
+
+    for (let lookup of alternatives) {
+      found = data.get(lookup.toLocaleLowerCase());
+      if (found && found.length === 1 && found[0] === '@') {
+        found = data.get(`@${lookup}`);
+      }
+      if (found) {
+        break
+      }
+    }
+    return found
+  }
+
+  /**
+   * Loads a data file from a URL
+   * @param {string} url - the url of the file
+   * @returns {Promise} a Promise that resolves to the text contents of the loaded file
+   */
+  _loadData (url) {
+    // TODO figure out best way to load this data
+    return new Promise((resolve, reject) => {
+      window.fetch(url).then(
+          function (response) {
+            let text = response.text();
+            resolve(text);
+          }
+        ).catch((error) => {
+          reject(error);
+        });
+    })
+  }
+
+  /**
+   * fills the data map with the rows from the parsed file
+   * we need a method to do this because there may be homonyms in
+   * the files
+   * @param {string[]} rows
+   * @return {Map} the filled map
+   */
+  _fillMap (rows) {
+    let data = new Map();
+    for (let row of rows) {
+      if (data.has(row[0])) {
+        data.get(row[0]).push(row[1]);
+      } else {
+        data.set(row[0], [ row[1] ]);
+      }
+    }
+    return data
+  }
+
+  /**
+   * Get a configuration setting for this lexicon client instance
+   * @param {string} property
+   * @returns {string} the value of the property
+   */
+  getConfig (property) {
+    return this.config[property]
+  }
+
+  /**
+   * @override BaseAdapter#getLexicons
+   */
+  static getLexicons (language) {
+    let fullconfig;
+    let lexicons = new Map();
+    try {
+      fullconfig = JSON.parse(DefaultConfig);
+    } catch (e) {
+      fullconfig = DefaultConfig;
+    }
+    for (let l of Object.keys(fullconfig)) {
+      if (fullconfig[l].langs.source === language) {
+        lexicons.set(l, fullconfig[l].description);
+      }
+    }
+    return lexicons
+  }
+}
+
+let lexicons = new Map(); // Maps a language ID into an array of lexicons
+
+class Lexicons {
+  /**
+   * Default request parameters
+   * @return {{timeout: number}}
+   */
+  static get defaults () {
+    return {
+      timeout: 0 // If zero, no timeout will be used
+    }
+  }
+
+  /**
+   * A short definition request wrapper. See fetchFullDefs for more details.
+   * @param lemma
+   * @param options
+   * @return {Promise[]}
+   */
+  static fetchShortDefs (lemma, options = {}) {
+    return Lexicons.fetchDefinitions(lemma, options, 'lookupShortDef')
+  }
+
+  /**
+   * A full definition request wrapper. See fetchFullDefs for more details.
+   * @param lemma
+   * @param options
+   * @return {Promise[]}
+   */
+  static fetchFullDefs (lemma, options = {}) {
+    return Lexicons.fetchDefinitions(lemma, options, 'lookupFullDef')
+  }
+
+  /**
+   * Send requests to either short of full definitions depending on the `lookupFunction` value.
+   * @param {Lemma} lemma - A lemma we need definitions for.
+   * @param {Object} requestOptions - With what options run a request.
+   * @param {String} lookupFunction - A name of an adapter lookup function to use for a request.
+   * @return {Promise[]} Array of Promises, one for each request. They will be either fulfilled with
+   * a Definition object or resolved with an error if request cannot be made/failed/timeout expired.
+   */
+  static fetchDefinitions (lemma, requestOptions, lookupFunction) {
+    let options = Object.assign(Lexicons.defaults, requestOptions);
+    let requests = [];
+    try {
+      let adapters = Lexicons._filterAdapters(lemma, requestOptions);
+      requests = adapters.map(adapter => {
+        console.log(`Preparing a request to "${adapter.config.description}"`);
+        return new Promise((resolve, reject) => {
+          let timeout = 0;
+          if (options.timeout > 0) {
+            timeout = window.setTimeout(() => {
+              reject(new Error(`Timeout of ${options.timeout} ms has been expired for a request to "${adapter.config.description}"`));
+            }, options.timeout);
+          }
+
+          try {
+            adapter[lookupFunction](lemma)
+              .then(value => {
+                console.log(`A definition object has been returned from "${adapter.config.description}"`, value);
+                if (timeout) { window.clearTimeout(timeout); }
+                // value is a Definition object wrapped in a Proxy
+                resolve(value);
+              }).catch(error => {
+                if (timeout) { window.clearTimeout(timeout); }
+                reject(error);
+              });
+          } catch (error) {
+            reject(error);
+          }
+        })
+      });
+
+      return requests
+    } catch (error) {
+      console.log(`Unable to fetch full definitions due to: ${error}`);
+      return []
+    }
+  }
+
+  /**
+   * Filter the adapters for a request according to the options
+   * @param {Lemma} lemma - the requested lemma
+   * @param {Object} objects - the request options
+   * @return the list of applicable Adapters
+   */
+  static _filterAdapters (lemma, options) {
+    console.log('Request Options', options);
+    let adapters = Lexicons.getLexiconAdapters(lemma.languageID);
+    if (adapters && options.allow) {
+      adapters = adapters.filter((a) => options.allow.includes(a.lexid));
+    }
+    if (!adapters || adapters.length === 0) { return [] } // No adapters found for this language
+    return adapters
+  }
+
+  /**
+   * Returns a list of suitable lexicon adapters for a given language ID.
+   * @param {Symbol} languageID - A language ID of adapters returned.
+   * @return {BaseLexiconAdapter[]} An array of lexicon adapters for a given language.
+   */
+  static getLexiconAdapters (languageID) {
+    if (!lexicons.has(languageID)) {
+      // As getLexicons need a language code, let's convert a language ID to a code
+      let languageCode = __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["LanguageModelFactory"].getLanguageCodeFromId(languageID);
+
+      let lexiconsList = AlpheiosLexAdapter.getLexicons(languageCode);
+      lexicons.set(languageID, Array.from(lexiconsList.keys()).map(id => new AlpheiosLexAdapter(id)));
+    }
+    return lexicons.get(languageID)
+  }
+}
+
+
+
+
+/***/ }),
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -38062,2728 +40786,6 @@ class ResourceOptions {
 //# sourceMappingURL=alpheios-components.js.map
 
 /***/ }),
-/* 3 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Embedded", function() { return Embedded; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_alpheios_inflection_tables__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_alpheios_data_models__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_alpheios_tufts_adapter__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_alpheios_lexicon_client__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_alpheios_components__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_alpheios_components___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_alpheios_components__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__state__ = __webpack_require__(7);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__template_htmlf__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__template_htmlf___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__template_htmlf__);
-
-
-
-
-
-
-
-
-/**
- * Encapsulation of Alpheios functionality which can be embedded in a webpage
- */
-class Embedded {
-  /**
-   * @constructor
-   * @param {string} anchor - CSS selector for the HTML element containing Alpheios configuration (default is '#alpheios-main')
-   *                          the anchor element should contain the following attributes:
-                              data-selector: a CSS Selector string identifying the page elements for which Alpheios should be activated
-                              data-trigger: the DOM event to which Alpheios functionality should be attached
-   * @param {Document} doc - the parent document
-   * @param {Object} popupData - popup data overrides
-   * @param {Object} panelData - panel data overrides
-   */
-  constructor (anchor = '#alpheios-main', doc = document, popupData = {}, panelData = {}) {
-    this.anchor = anchor
-    this.doc = doc
-    this.state = new __WEBPACK_IMPORTED_MODULE_5__state__["a" /* default */]()
-    this.options = new __WEBPACK_IMPORTED_MODULE_4_alpheios_components__["ContentOptions"](this.optionSaver, this.optionLoader)
-    this.resourceOptions = new __WEBPACK_IMPORTED_MODULE_4_alpheios_components__["ResourceOptions"](this.optionSaver, this.optionLoader)
-    this.maAdapter = new __WEBPACK_IMPORTED_MODULE_2_alpheios_tufts_adapter__["a" /* default */]() // Morphological analyzer adapter, with default arguments
-    this.langData = new __WEBPACK_IMPORTED_MODULE_0_alpheios_inflection_tables__["LanguageDataList"]().loadData()
-    let manifest = { version: '1.0', name: 'Alpheios Embedded Library' }
-    let template = { html: __WEBPACK_IMPORTED_MODULE_6__template_htmlf___default.a, panelId: 'alpheios-panel-embedded', popupId: 'alpheios-popup-embedded' }
-    this.ui = new __WEBPACK_IMPORTED_MODULE_4_alpheios_components__["UIController"](this.state, this.options, this.resourceOptions, manifest,template)
-    this.doc.body.addEventListener('Alpheios_Embedded_Check', event => { this.notifyExtension(event)})
-    Object.assign(this.ui.panel.panelData, panelData)
-    Object.assign(this.ui.popup.popupData, popupData)
-  }
-
-  notifyExtension(event) {
-    this.doc.body.dispatchEvent(new Event('Alpheios_Embedded_Response'))
-  }
-
-  optionSaver () {
-    return new Promise((resolve, reject) => {
-      reject(new Error('save not implemented'))
-    })
-  }
-
-  optionLoader () {
-    return new Promise((resolve, reject) => {
-      reject(new Error('load not implemented'))
-    })
-  }
-
-  activate () {
-    let elem = this.doc.querySelector(this.anchor)
-    if (!elem) {
-      throw new Error(`anchor element ${elem} is missing`)
-    }
-    console.log(elem.dataset)
-    let selector = elem.dataset.selector
-    let trigger = elem.dataset.trigger.split(/,/)
-    if (!selector || !trigger) {
-      throw new Error(`anchor element ${this.anchor} must define both trigger and selector`)
-    }
-    let activateOn = this.doc.querySelectorAll(selector)
-    if (activateOn.length === 0) {
-      throw new Error(`activation element ${activateOn} is missing`)
-    }
-    for (let o of activateOn) {
-      for (let t of trigger) {
-        o.addEventListener(t, event => { this.handler(event) })
-      }
-    }
-  }
-
-  handler (event) {
-    let htmlSelector = new __WEBPACK_IMPORTED_MODULE_4_alpheios_components__["HTMLSelector"](event, this.options.items.preferredLanguage.currentValue)
-    let textSelector = htmlSelector.createTextSelector()
-
-    if (!textSelector.isEmpty()) {
-      this.ui.updateLanguage(textSelector.languageCode)
-      __WEBPACK_IMPORTED_MODULE_4_alpheios_components__["LexicalQuery"].create(textSelector, {
-        htmlSelector: htmlSelector,
-        uiController: this.ui,
-        maAdapter: this.maAdapter,
-        langData: this.langData,
-        lexicons: __WEBPACK_IMPORTED_MODULE_3_alpheios_lexicon_client__["a" /* Lexicons */],
-        resourceOptions: this.resourceOptions,
-        langOpts: { [__WEBPACK_IMPORTED_MODULE_1_alpheios_data_models__["Constants"].LANG_PERSIAN]: { lookupMorphLast: true } } // TODO this should be externalized
-      }
-      ).getData()
-    }
-  }
-}
-
-
-
-
-/***/ }),
-/* 4 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__ = __webpack_require__(0);
-
-
-/**
- * Base Adapter Class for a Morphology Service Client
- */
-class BaseAdapter {
-  /**
-   * Method which is used to prepare a lookup request according
-   * to the adapter specific logic
-   * @param {string} lang - the language code
-   * @param {string} word - the word to lookup
-   * @returns {string} the url for the request
-   */
-  prepareRequestUrl (lang, word) {
-      /** must be overridden in the adapter implementation class **/
-    return null
-  }
-
-  /**
-   * Fetch response from a remote URL
-   * @param {string} lang - the language code
-   * @param {string} word - the word to lookup
-   * @returns {Promise} a promse which if successful resolves to json response object
-   *                    with the results of the analysis
-   */
-  fetch (lang, word) {
-    let url = this.prepareRequestUrl(lang, word);
-    return new Promise((resolve, reject) => {
-      if (url) {
-        window.fetch(url).then(
-            function (response) {
-              try {
-                if (response.ok) {
-                  let json = response.json();
-                  resolve(json);
-                } else {
-                  reject(response.statusText);
-                }
-              } catch (error) {
-                reject(error);
-              }
-            }
-          ).catch((error) => {
-            reject(error);
-          }
-        );
-      } else {
-        reject(new Error(`Unable to prepare parser request url for ${lang}`));
-      }
-    })
-  }
-
-  /**
-   * Fetch test data to test the adapter
-   * @param {string} lang - the language code
-   * @param {string} word - the word to lookup
-   * @returns {Promise} a promse which if successful resolves to json response object
-   *                    with the test data
-   */
-  fetchTestData (lang, word) {
-    return new Promise((resolve, reject) => {
-      try {
-        let data = {};
-        resolve(data);
-      } catch (error) {
-        reject(error);
-      }
-    })
-  }
-
-  /**
-   * A function that maps a morphological service's specific data types and values into an inflection library standard.
-   * @param {object} jsonObj - A JSON data from the fetch request
-   * @param {object} targetWord - the original target word of the analysis
-   * @returns {Homonym} A library standard Homonym object.
-   */
-  transform (jsonObj, targetWord) {
-    return {}
-  }
-}
-
-/*
-Objects of a morphology analyzer's library
- */
-/**
- * Holds all information required to transform from morphological analyzer's grammatical feature values to the
- * library standards. There is one ImportData object per language.
- */
-class ImportData {
-    /**
-     * Creates an InmportData object for the language provided.
-     * @param {Models.LanguageModel} language - A language of the import data.
-     * @param {string} engine - engine code
-     */
-  constructor (language, engine) {
-    'use strict';
-    this.language = language;
-    this.engine = engine;
-    // add all the features that the language supports so that we
-    // can return the default values if we don't need to import a mapping
-    for (let featureName of Object.keys(language.features)) {
-      this.addFeature(featureName);
-    }
-    // may be overridden by specific engine use via setLemmaParser
-    this.parseLemma = function (lemma) { return new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Lemma"](lemma, this.language.toCode()) };
-    // may be overridden by specific engine use via setPropertyParser - default just returns the property value
-    // as a list
-    this.parseProperty = function (propertyName, propertyValue) {
-      let propertyValues = [];
-      if (propertyName === 'decl') {
-        propertyValues = propertyValue.split('&').map((p) => p.trim());
-      } else if (propertyName === 'comp' && propertyValue === 'positive') {
-        propertyValues = [];
-      } else {
-        propertyValues = [propertyValue];
-      }
-      return propertyValues
-    };
-    // may be overridden by specifc engine use via setLexemeFilter - default assumes we will have a part of speech
-    this.reportLexeme = function (lexeme) {
-      return lexeme.lemma.features[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.part]
-    };
-  }
-
-    /**
-     * Adds a grammatical feature whose values to be mapped.
-     * @param {string} featureName - A name of a grammatical feature (i.e. declension, number, etc.)
-     * @return {Object} An object that represent a newly created grammatical feature.
-     */
-  addFeature (featureName) {
-    this[featureName] = {};
-    let language = this.language;
-
-    this[featureName].add = function add (providerValue, alpheiosValue) {
-      this[providerValue] = alpheiosValue;
-      return this
-    };
-
-    this[featureName].get = function get (providerValue, sortOrder = 1, allowUnknownValues = false) {
-      let mappedValue = [];
-      if (!this.importer.has(providerValue)) {
-        // if the providerValue matches the model value or the model value
-        // is unrestricted, return a feature with the providerValue and order
-        if (language.features[featureName][providerValue] ||
-            language.features[featureName].hasUnrestrictedValue()) {
-          mappedValue = language.features[featureName].get(providerValue, sortOrder);
-        } else {
-          let message = `Unknown value "${providerValue}" of feature "${featureName}" for ${language} (allowed = ${allowUnknownValues})`;
-          if (allowUnknownValues) {
-            console.log(message);
-            mappedValue = language.features[featureName].get(providerValue, sortOrder);
-          } else {
-            throw new Error(message)
-          }
-        }
-      } else {
-        let tempValue = this.importer.get(providerValue);
-        if (Array.isArray(tempValue)) {
-          mappedValue = [];
-          for (let feature of tempValue) {
-            mappedValue.push(language.features[featureName].get(feature.value, sortOrder));
-          }
-        } else {
-          mappedValue = language.features[featureName].get(tempValue.value, sortOrder);
-        }
-      }
-      return mappedValue
-    };
-
-    this[featureName].importer = new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["FeatureImporter"]();
-
-    return this[featureName]
-  }
-
-  /**
-   * Add an engine-specific lemma parser
-   */
-  setLemmaParser (callback) {
-    this.parseLemma = callback;
-  }
-
-  /**
-   * Add an engine-specific property parser
-   */
-  setPropertyParser (callback) {
-    this.parseProperty = callback;
-  }
-
-  /**
-   * Add an engine-specific lexeme filter
-   */
-  setLexemeFilter (callback) {
-    this.reportLexeme = callback;
-  }
-
-  /**
-   * map property to one or more Features and add it to the supplied model object
-   * @param {object} model the model object to which the feature will be added
-   * @param {object} inputElem the input data element
-   * @param {object} inputName the  property name in the input data
-   * @param {string} featureName the name of the feature it will be mapped to
-   * @param {boolean} allowUnknownValues flag to indicate if unknown values are allowed
-   */
-  mapFeature (model, inputElem, inputName, featureName, allowUnknownValues) {
-    let mapped = [];
-    let values = [];
-    if (inputElem[inputName]) {
-      if (Array.isArray(inputElem[inputName])) {
-        for (let e of inputElem[inputName]) {
-          values.push(...this.parseProperty(inputName, e.$));
-        }
-      } else {
-        values = this.parseProperty(inputName, inputElem[inputName].$);
-      }
-    }
-    for (let value of values) {
-      let features = this[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types[featureName]].get(
-        value, inputElem[inputName].order, allowUnknownValues);
-      if (Array.isArray(features)) {
-        mapped.push(...features);
-      } else {
-        mapped.push(features);
-      }
-    }
-    if (mapped.length > 0) {
-      model.feature = mapped;
-    }
-  }
-}
-
-let data = new ImportData(new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["LatinLanguageModel"](), 'whitakerLat');
-let types = __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types;
-
-/*
-Below are value conversion maps for each grammatical feature to be parsed.
-Format:
-data.addFeature(typeName).add(providerValueName, LibValueName);
-(functions are chainable)
-Types and values that are unknown (undefined) will be skipped during parsing.
- */
-
- // TODO  - per inflections.xsd
- // Whitakers Words uses packon and tackon in POFS, not sure how
-
-data.addFeature(__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.gender).importer
-    .map('common',
-  [ data.language.features[types.gender][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].GEND_MASCULINE],
-    data.language.features[types.gender][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].GEND_FEMININE]
-  ])
-    .map('all',
-  [ data.language.features[types.gender][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].GEND_MASCULINE],
-    data.language.features[types.gender][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].GEND_FEMININE],
-    data.language.features[types.gender][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].GEND_NEUTER]
-  ]);
-
-data.addFeature(__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.tense).importer
-    .map('future_perfect', data.language.features[types.tense][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].TENSE_FUTURE_PERFECT]);
-
-data.setLemmaParser(function (lemma) {
-  // Whitaker's Words returns principal parts for some words
-  // and sometimes has a space separted stem and suffix
-  let parsed, primary;
-  let parts = [];
-  let lemmas = lemma.split(', ');
-  for (let [index, l] of lemmas.entries()) {
-    let normalized = l.split(' ')[0];
-    if (index === 0) {
-      primary = normalized;
-    }
-    parts.push(normalized);
-  }
-  if (primary) {
-    parsed = new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Lemma"](primary, this.language.toCode(), parts);
-  }
-
-  return parsed
-});
-
-let data$1 = new ImportData(new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["GreekLanguageModel"](), 'morpheusgrc');
-let types$1 = __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types;
-
-/*
-Below are value conversion maps for each grammatical feature to be parsed.
-Format:
-data.addFeature(typeName).add(providerValueName, LibValueName);
-(functions are chainable)
-Types and values that are unknown (undefined) will be skipped during parsing.
- */
-
-data$1.addFeature(__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.gender).importer
-    .map('masculine feminine',
-  [ data$1.language.features[types$1.gender][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].GEND_MASCULINE],
-    data$1.language.features[types$1.gender][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].GEND_FEMININE]
-  ]);
-
-data$1.addFeature(__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.declension).importer
-    .map('1st & 2nd',
-  [ data$1.language.features[types$1.declension][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].ORD_1ST],
-    data$1.language.features[types$1.declension][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].ORD_2ND]
-  ]);
-
-let data$2 = new ImportData(new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["ArabicLanguageModel"](), 'aramorph');
-let types$2 = __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types;
-
-data$2.addFeature(__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.part).importer
-    .map('proper noun', [data$2.language.features[types$2.part][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].POFS_NOUN]]);
-
-let data$3 = new ImportData(new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["PersianLanguageModel"](), 'hazm');
-let types$3 = __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types;
-
-data$3.addFeature(__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.part).importer
-    .map('proper noun', [data$3.language.features[types$3.part][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].POFS_NOUN]]);
-
-// hazm allow all lemmas in without respect features as all we use it for is lemmatizing
-data$3.setLexemeFilter(function (lexeme) { return Boolean(lexeme.lemma.word) });
-
-var Cupidinibus = "{\n  \"RDF\": {\n    \"Annotation\": {\n      \"about\": \"urn:TuftsMorphologyService:cupidinibus:whitakerLat\",\n      \"creator\": {\n        \"Agent\": {\n          \"about\": \"net.alpheios:tools:wordsxml.v1\"\n        }\n      },\n      \"created\": {\n        \"$\": \"2017-08-10T23:15:29.185581\"\n      },\n      \"hasTarget\": {\n        \"Description\": {\n          \"about\": \"urn:word:cupidinibus\"\n        }\n      },\n      \"title\": {},\n      \"hasBody\": [\n        {\n          \"resource\": \"urn:uuid:idm140578094883136\"\n        },\n        {\n          \"resource\": \"urn:uuid:idm140578158026160\"\n        }\n      ],\n      \"Body\": [\n        {\n          \"about\": \"urn:uuid:idm140578094883136\",\n          \"type\": {\n            \"resource\": \"cnt:ContentAsXML\"\n          },\n          \"rest\": {\n            \"entry\": {\n              \"infl\": [\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"cupidin\"\n                    },\n                    \"suff\": {\n                      \"$\": \"ibus\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 5,\n                    \"$\": \"noun\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"var\": {\n                    \"$\": \"1st\"\n                  },\n                  \"case\": {\n                    \"order\": 2,\n                    \"$\": \"locative\"\n                  },\n                  \"num\": {\n                    \"$\": \"plural\"\n                  },\n                  \"gend\": {\n                    \"$\": \"masculine\"\n                  }\n                },\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"cupidin\"\n                    },\n                    \"suff\": {\n                      \"$\": \"ibus\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 5,\n                    \"$\": \"noun\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"var\": {\n                    \"$\": \"1st\"\n                  },\n                  \"case\": {\n                    \"order\": 5,\n                    \"$\": \"dative\"\n                  },\n                  \"num\": {\n                    \"$\": \"plural\"\n                  },\n                  \"gend\": {\n                    \"$\": \"masculine\"\n                  }\n                },\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"cupidin\"\n                    },\n                    \"suff\": {\n                      \"$\": \"ibus\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 5,\n                    \"$\": \"noun\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"var\": {\n                    \"$\": \"1st\"\n                  },\n                  \"case\": {\n                    \"order\": 3,\n                    \"$\": \"ablative\"\n                  },\n                  \"num\": {\n                    \"$\": \"plural\"\n                  },\n                  \"gend\": {\n                    \"$\": \"masculine\"\n                  }\n                }\n              ],\n              \"dict\": {\n                \"hdwd\": {\n                  \"lang\": \"lat\",\n                  \"$\": \"Cupido, Cupidinis\"\n                },\n                \"pofs\": {\n                  \"order\": 5,\n                  \"$\": \"noun\"\n                },\n                \"decl\": {\n                  \"$\": \"3rd\"\n                },\n                \"gend\": {\n                  \"$\": \"masculine\"\n                },\n                \"area\": {\n                  \"$\": \"religion\"\n                },\n                \"freq\": {\n                  \"order\": 4,\n                  \"$\": \"common\"\n                },\n                \"src\": {\n                  \"$\": \"Ox.Lat.Dict.\"\n                }\n              },\n              \"mean\": {\n                \"$\": \"Cupid, son of Venus; personification of carnal desire;\"\n              }\n            }\n          }\n        },\n        {\n          \"about\": \"urn:uuid:idm140578158026160\",\n          \"type\": {\n            \"resource\": \"cnt:ContentAsXML\"\n          },\n          \"rest\": {\n            \"entry\": {\n              \"infl\": [\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"cupidin\"\n                    },\n                    \"suff\": {\n                      \"$\": \"ibus\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 5,\n                    \"$\": \"noun\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"var\": {\n                    \"$\": \"1st\"\n                  },\n                  \"case\": {\n                    \"order\": 2,\n                    \"$\": \"locative\"\n                  },\n                  \"num\": {\n                    \"$\": \"plural\"\n                  },\n                  \"gend\": {\n                    \"$\": \"common\"\n                  }\n                },\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"cupidin\"\n                    },\n                    \"suff\": {\n                      \"$\": \"ibus\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 5,\n                    \"$\": \"noun\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"var\": {\n                    \"$\": \"1st\"\n                  },\n                  \"case\": {\n                    \"order\": 5,\n                    \"$\": \"dative\"\n                  },\n                  \"num\": {\n                    \"$\": \"plural\"\n                  },\n                  \"gend\": {\n                    \"$\": \"common\"\n                  }\n                },\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"cupidin\"\n                    },\n                    \"suff\": {\n                      \"$\": \"ibus\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 5,\n                    \"$\": \"noun\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"var\": {\n                    \"$\": \"1st\"\n                  },\n                  \"case\": {\n                    \"order\": 3,\n                    \"$\": \"ablative\"\n                  },\n                  \"num\": {\n                    \"$\": \"plural\"\n                  },\n                  \"gend\": {\n                    \"$\": \"common\"\n                  }\n                }\n              ],\n              \"dict\": {\n                \"hdwd\": {\n                  \"lang\": \"lat\",\n                  \"$\": \"cupido, cupidinis\"\n                },\n                \"pofs\": {\n                  \"order\": 5,\n                  \"$\": \"noun\"\n                },\n                \"decl\": {\n                  \"$\": \"3rd\"\n                },\n                \"gend\": {\n                  \"$\": \"common\"\n                },\n                \"freq\": {\n                  \"order\": 5,\n                  \"$\": \"frequent\"\n                },\n                \"src\": {\n                  \"$\": \"Ox.Lat.Dict.\"\n                }\n              },\n              \"mean\": {\n                \"$\": \"desire/love/wish/longing (passionate); lust; greed, appetite; desire for gain;\"\n              }\n            }\n          }\n        }\n      ]\n    }\n  }\n}\n";
-
-var Mare = "{\n  \"RDF\": {\n    \"Annotation\": {\n      \"about\": \"urn:TuftsMorphologyService:mare:morpheuslat\",\n      \"creator\": {\n        \"Agent\": {\n          \"about\": \"org.perseus:tools:morpheus.v1\"\n        }\n      },\n      \"created\": {\n        \"$\": \"2017-09-08T06:59:48.639180\"\n      },\n      \"rights\": {\n        \"$\": \"Morphology provided by Morpheus from the Perseus Digital Library at Tufts University.\"\n      },\n      \"hasTarget\": {\n        \"Description\": {\n          \"about\": \"urn:word:mare\"\n        }\n      },\n      \"title\": {},\n      \"hasBody\": [\n        {\n          \"resource\": \"urn:uuid:idm140446402389888\"\n        },\n        {\n          \"resource\": \"urn:uuid:idm140446402332400\"\n        },\n        {\n          \"resource\": \"urn:uuid:idm140446402303648\"\n        }\n      ],\n      \"Body\": [\n        {\n          \"about\": \"urn:uuid:idm140446402389888\",\n          \"type\": {\n            \"resource\": \"cnt:ContentAsXML\"\n          },\n          \"rest\": {\n            \"entry\": {\n              \"uri\": \"http://data.perseus.org/collections/urn:cite:perseus:latlexent.lex34070.1\",\n              \"dict\": {\n                \"hdwd\": {\n                  \"lang\": \"lat\",\n                  \"$\": \"mare\"\n                },\n                \"pofs\": {\n                  \"order\": 3,\n                  \"$\": \"noun\"\n                },\n                \"decl\": {\n                  \"$\": \"3rd\"\n                },\n                \"gend\": {\n                  \"$\": \"neuter\"\n                }\n              },\n              \"infl\": [\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"mar\"\n                    },\n                    \"suff\": {\n                      \"$\": \"e\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 3,\n                    \"$\": \"noun\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"case\": {\n                    \"order\": 3,\n                    \"$\": \"ablative\"\n                  },\n                  \"gend\": {\n                    \"$\": \"neuter\"\n                  },\n                  \"num\": {\n                    \"$\": \"singular\"\n                  },\n                  \"stemtype\": {\n                    \"$\": \"is_is\"\n                  }\n                },\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"mar\"\n                    },\n                    \"suff\": {\n                      \"$\": \"e\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 3,\n                    \"$\": \"noun\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"case\": {\n                    \"order\": 7,\n                    \"$\": \"nominative\"\n                  },\n                  \"gend\": {\n                    \"$\": \"neuter\"\n                  },\n                  \"num\": {\n                    \"$\": \"singular\"\n                  },\n                  \"stemtype\": {\n                    \"$\": \"is_is\"\n                  }\n                },\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"mar\"\n                    },\n                    \"suff\": {\n                      \"$\": \"e\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 3,\n                    \"$\": \"noun\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"case\": {\n                    \"order\": 1,\n                    \"$\": \"vocative\"\n                  },\n                  \"gend\": {\n                    \"$\": \"neuter\"\n                  },\n                  \"num\": {\n                    \"$\": \"singular\"\n                  },\n                  \"stemtype\": {\n                    \"$\": \"is_is\"\n                  }\n                },\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"mar\"\n                    },\n                    \"suff\": {\n                      \"$\": \"e\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 3,\n                    \"$\": \"noun\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"case\": {\n                    \"order\": 4,\n                    \"$\": \"accusative\"\n                  },\n                  \"gend\": {\n                    \"$\": \"neuter\"\n                  },\n                  \"num\": {\n                    \"$\": \"singular\"\n                  },\n                  \"stemtype\": {\n                    \"$\": \"is_is\"\n                  }\n                }\n              ],\n              \"mean\": {\n                \"$\": \"the sea\"\n              }\n            }\n          }\n        },\n        {\n          \"about\": \"urn:uuid:idm140446402332400\",\n          \"type\": {\n            \"resource\": \"cnt:ContentAsXML\"\n          },\n          \"rest\": {\n            \"entry\": {\n              \"uri\": \"http://data.perseus.org/collections/urn:cite:perseus:latlexent.lex34118.1\",\n              \"dict\": {\n                \"hdwd\": {\n                  \"lang\": \"lat\",\n                  \"$\": \"marum\"\n                },\n                \"pofs\": {\n                  \"order\": 3,\n                  \"$\": \"noun\"\n                },\n                \"decl\": {\n                  \"$\": \"2nd\"\n                },\n                \"gend\": {\n                  \"$\": \"neuter\"\n                }\n              },\n              \"infl\": {\n                \"term\": {\n                  \"lang\": \"lat\",\n                  \"stem\": {\n                    \"$\": \"mar\"\n                  },\n                  \"suff\": {\n                    \"$\": \"e\"\n                  }\n                },\n                \"pofs\": {\n                  \"order\": 3,\n                  \"$\": \"noun\"\n                },\n                \"decl\": {\n                  \"$\": \"2nd\"\n                },\n                \"case\": {\n                  \"order\": 1,\n                  \"$\": \"vocative\"\n                },\n                \"gend\": {\n                  \"$\": \"neuter\"\n                },\n                \"num\": {\n                  \"$\": \"singular\"\n                },\n                \"stemtype\": {\n                  \"$\": \"us_i\"\n                }\n              }\n            }\n          }\n        },\n        {\n          \"about\": \"urn:uuid:idm140446402303648\",\n          \"type\": {\n            \"resource\": \"cnt:ContentAsXML\"\n          },\n          \"rest\": {\n            \"entry\": {\n              \"uri\": \"http://data.perseus.org/collections/urn:cite:perseus:latlexent.lex34119.1\",\n              \"dict\": {\n                \"hdwd\": {\n                  \"lang\": \"lat\",\n                  \"$\": \"mas\"\n                },\n                \"pofs\": {\n                  \"order\": 2,\n                  \"$\": \"adjective\"\n                },\n                \"decl\": {\n                  \"$\": \"3rd\"\n                }\n              },\n              \"infl\": [\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"mare\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 2,\n                    \"$\": \"adjective\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"case\": {\n                    \"order\": 3,\n                    \"$\": \"ablative\"\n                  },\n                  \"gend\": {\n                    \"$\": \"masculine\"\n                  },\n                  \"num\": {\n                    \"$\": \"singular\"\n                  },\n                  \"stemtype\": {\n                    \"$\": \"irreg_adj3\"\n                  },\n                  \"morph\": {\n                    \"$\": \"indeclform\"\n                  }\n                },\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"mare\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 2,\n                    \"$\": \"adjective\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"case\": {\n                    \"order\": 3,\n                    \"$\": \"ablative\"\n                  },\n                  \"gend\": {\n                    \"$\": \"feminine\"\n                  },\n                  \"num\": {\n                    \"$\": \"singular\"\n                  },\n                  \"stemtype\": {\n                    \"$\": \"irreg_adj3\"\n                  },\n                  \"morph\": {\n                    \"$\": \"indeclform\"\n                  }\n                },\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"mare\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 2,\n                    \"$\": \"adjective\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"case\": {\n                    \"order\": 3,\n                    \"$\": \"ablative\"\n                  },\n                  \"gend\": {\n                    \"$\": \"neuter\"\n                  },\n                  \"num\": {\n                    \"$\": \"singular\"\n                  },\n                  \"stemtype\": {\n                    \"$\": \"irreg_adj3\"\n                  },\n                  \"morph\": {\n                    \"$\": \"indeclform\"\n                  }\n                }\n              ]\n            }\n          }\n        }\n      ]\n    }\n  }\n}\n";
-
-var Cepit = "{\n  \"RDF\": {\n    \"Annotation\": {\n      \"about\": \"urn:TuftsMorphologyService:cepit:whitakerLat\",\n      \"creator\": {\n        \"Agent\": {\n          \"about\": \"net.alpheios:tools:wordsxml.v1\"\n        }\n      },\n      \"created\": {\n        \"$\": \"2017-08-10T23:16:53.672068\"\n      },\n      \"hasTarget\": {\n        \"Description\": {\n          \"about\": \"urn:word:cepit\"\n        }\n      },\n      \"title\": {},\n      \"hasBody\": {\n        \"resource\": \"urn:uuid:idm140578133848416\"\n      },\n      \"Body\": {\n        \"about\": \"urn:uuid:idm140578133848416\",\n        \"type\": {\n          \"resource\": \"cnt:ContentAsXML\"\n        },\n        \"rest\": {\n          \"entry\": {\n            \"infl\": {\n              \"term\": {\n                \"lang\": \"lat\",\n                \"stem\": {\n                  \"$\": \"cep\"\n                },\n                \"suff\": {\n                  \"$\": \"it\"\n                }\n              },\n              \"pofs\": {\n                \"order\": 3,\n                \"$\": \"verb\"\n              },\n              \"conj\": {\n                \"$\": \"3rd\"\n              },\n              \"var\": {\n                \"$\": \"1st\"\n              },\n              \"tense\": {\n                \"$\": \"perfect\"\n              },\n              \"voice\": {\n                \"$\": \"active\"\n              },\n              \"mood\": {\n                \"$\": \"indicative\"\n              },\n              \"pers\": {\n                \"$\": \"3rd\"\n              },\n              \"num\": {\n                \"$\": \"singular\"\n              }\n            },\n            \"dict\": {\n              \"hdwd\": {\n                \"lang\": \"lat\",\n                \"$\": \"capio, capere, cepi, captus\"\n              },\n              \"pofs\": {\n                \"order\": 3,\n                \"$\": \"verb\"\n              },\n              \"conj\": {\n                \"$\": \"3rd\"\n              },\n              \"kind\": {\n                \"$\": \"transitive\"\n              },\n              \"freq\": {\n                \"order\": 6,\n                \"$\": \"very frequent\"\n              },\n              \"src\": {\n                \"$\": \"Ox.Lat.Dict.\"\n              }\n            },\n            \"mean\": {\n              \"$\": \"take hold, seize; grasp; take bribe; arrest/capture; put on; occupy; captivate;\"\n            }\n          }\n        }\n      }\n    }\n  }\n}\n";
-
-var Pilsopo = "{\n  \"RDF\": {\n    \"Annotation\": {\n      \"about\": \"urn:TuftsMorphologyService:φιλόσοφος:morpheuslat\",\n      \"creator\": {\n        \"Agent\": {\n          \"about\": \"org.perseus:tools:morpheus.v1\"\n        }\n      },\n      \"created\": {\n        \"$\": \"2017-10-15T14:06:40.522369\"\n      },\n      \"hasTarget\": {\n        \"Description\": {\n          \"about\": \"urn:word:φιλόσοφος\"\n        }\n      },\n      \"title\": {},\n      \"hasBody\": {\n        \"resource\": \"urn:uuid:idm140446394225264\"\n      },\n      \"Body\": {\n        \"about\": \"urn:uuid:idm140446394225264\",\n        \"type\": {\n          \"resource\": \"cnt:ContentAsXML\"\n        },\n        \"rest\": {\n          \"entry\": {\n            \"uri\": \"http://data.perseus.org/collections/urn:cite:perseus:grclexent.lex78378.1\",\n            \"dict\": {\n              \"hdwd\": {\n                \"lang\": \"grc\",\n                \"$\": \"φιλόσοφος\"\n              },\n              \"pofs\": {\n                \"order\": 3,\n                \"$\": \"noun\"\n              },\n              \"decl\": {\n                \"$\": \"2nd\"\n              },\n              \"gend\": {\n                \"$\": \"masculine\"\n              }\n            },\n            \"infl\": {\n              \"term\": {\n                \"lang\": \"grc\",\n                \"stem\": {\n                  \"$\": \"φιλοσοφ\"\n                },\n                \"suff\": {\n                  \"$\": \"ος\"\n                }\n              },\n              \"pofs\": {\n                \"order\": 3,\n                \"$\": \"noun\"\n              },\n              \"decl\": {\n                \"$\": \"2nd\"\n              },\n              \"case\": {\n                \"order\": 7,\n                \"$\": \"nominative\"\n              },\n              \"gend\": {\n                \"$\": \"masculine\"\n              },\n              \"num\": {\n                \"$\": \"singular\"\n              },\n              \"stemtype\": {\n                \"$\": \"os_ou\"\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}";
-
-class WordTestData {
-  constructor () {
-    this._words = {
-      'cupidinibus': Cupidinibus,
-      'mare': Mare,
-      'cepit': Cepit,
-      'φιλόσοφος': Pilsopo
-    };
-  }
-
-  get (word) {
-    if (this._words.hasOwnProperty(word)) {
-      return this._words[word]
-    }
-    throw new Error(`Word "${word}" does not exist in test data`)
-  }
-}
-
-var DefaultConfig = "{\n  \"engine\": {\n    \"lat\": [\"whitakerLat\"],\n    \"grc\": [\"morpheusgrc\"],\n    \"ara\": [\"aramorph\"],\n    \"per\": [\"hazm\"]\n  },\n  \"url\": \"https://morph.alpheios.net/api/v1/analysis/word?word=r_WORD&engine=r_ENGINE&lang=r_LANG\",\n  \"allowUnknownValues\": true\n}\n";
-
-class TuftsAdapter extends BaseAdapter {
-  /**
-   * A Morph Client Adapter for the Tufts Morphology Service
-   * @constructor
-   * @param {object} config configuraiton object
-   */
-  constructor (config = {}) {
-    super();
-    try {
-      this.config = JSON.parse(DefaultConfig);
-    } catch (e) {
-      this.config = Object.assign({}, DefaultConfig);
-    }
-    Object.assign(this.config, config);
-    this.engineMap = new Map(([ data, data$1, data$2, data$3 ]).map((e) => { return [ e.engine, e ] }));
-  }
-
-  getEngineLanguageMap (lang) {
-    if (this.config.engine[lang]) {
-      return this.engineMap.get(this.config.engine[lang][0])
-    } else {
-      return null
-    }
-  }
-
-  prepareRequestUrl (lang, word) {
-    let engine = this.getEngineLanguageMap(lang);
-    if (engine) {
-      let code = engine.engine;
-      return this.config.url.replace('r_WORD', word).replace('r_ENGINE', code).replace('r_LANG', lang)
-    } else {
-      return null
-    }
-  }
-
-  fetchTestData (lang, word) {
-    return new Promise((resolve, reject) => {
-      try {
-        let wordData = new WordTestData().get(word);
-        let json = JSON.parse(wordData);
-        resolve(json);
-      } catch (error) {
-                // Word is not found in test data
-        reject(error);
-      }
-    })
-  }
-
-  /**
-   * A function that maps a morphological service's specific data types and values into an inflection library standard.
-   * @param {object} jsonObj - A JSON data from a Morphological Analyzer.
-   * @param {object} targetWord - the target of the analysis
-   * @returns {Homonym} A library standard Homonym object.
-   */
-  transform (jsonObj, targetWord) {
-    'use strict';
-    let lexemes = [];
-    let annotationBody = jsonObj.RDF.Annotation.Body;
-    if (!Array.isArray(annotationBody)) {
-            /*
-            If only one lexeme is returned, Annotation Body will not be an array but rather a single object.
-            Let's convert it to an array so we can work with it in the same way no matter what format it is.
-             */
-      if (annotationBody) {
-        annotationBody = [annotationBody];
-      } else {
-        annotationBody = [];
-      }
-    }
-    let providerUri = jsonObj.RDF.Annotation.creator.Agent.about;
-    let providerRights = '';
-    if (jsonObj.RDF.Annotation.rights) {
-      providerRights = jsonObj.RDF.Annotation.rights.$;
-    }
-    let provider = new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["ResourceProvider"](providerUri, providerRights);
-    for (let lexeme of annotationBody) {
-      let inflectionsJSON = lexeme.rest.entry.infl;
-      if (!inflectionsJSON) {
-        inflectionsJSON = [];
-      } else if (!Array.isArray(inflectionsJSON)) {
-        // If only one inflection returned, it is a single object, not an array of objects.
-        // Convert it to an array for uniformity.
-        inflectionsJSON = [inflectionsJSON];
-      }
-      let lemmaElements;
-      if ((lexeme.rest.entry.dict && lexeme.rest.entry.dict.hdwd) || (Array.isArray(lexeme.rest.entry.dict) && lexeme.rest.entry.dict[0].hdwd)) {
-        if (Array.isArray(lexeme.rest.entry.dict)) {
-          lemmaElements = lexeme.rest.entry.dict;
-        } else {
-          lemmaElements = [lexeme.rest.entry.dict];
-        }
-      } else if (inflectionsJSON.length > 0 && inflectionsJSON[0].term) {
-        lemmaElements = [inflectionsJSON[0].term];
-      }
-      // in rare cases (e.g. conditum in Whitakers) multiple dict entries
-      // exist - always use the lemma and language from the first
-      let language = lemmaElements[0].hdwd ? lemmaElements[0].hdwd.lang : lemmaElements[0].lang;
-      // Get importer based on the language
-      let mappingData = this.getEngineLanguageMap(language);
-      let features = [
-        ['pofs', 'part'],
-        ['case', 'grmCase'],
-        ['gend', 'gender'],
-        ['decl', 'declension'],
-        ['conj', 'conjugation'],
-        ['area', 'area'],
-        ['age', 'age'],
-        ['geo', 'geo'],
-        ['freq', 'frequency'],
-        ['note', 'note'],
-        ['pron', 'pronunciation'],
-        ['src', 'source']
-      ];
-      let lemmas = [];
-      let lexemeSet = [];
-      for (let entry of lemmaElements.entries()) {
-        let shortdefs = [];
-        let index = entry[0];
-        let elem = entry[1];
-        let lemmaText;
-        if (elem.hdwd) {
-          lemmaText = elem.hdwd.$;
-        } else {
-          // term
-          if (elem.stem) {
-            lemmaText = elem.stem.$;
-          }
-          if (elem.suff) {
-            lemmaText += elem.suff.$;
-          }
-        }
-        if (!lemmaText || !language) {
-          continue
-        }
-        let lemma = mappingData.parseLemma(lemmaText, language);
-        lemmas.push(lemma);
-        for (let feature of features) {
-          mappingData.mapFeature(lemma, elem, ...feature, this.config.allowUnknownValues);
-        }
-        let meanings = lexeme.rest.entry.mean;
-        if (!Array.isArray(meanings)) {
-          meanings = [meanings];
-        }
-        meanings = meanings.filter((m) => m);
-        // if we have multiple dictionary elements, take the meaning with the matching index
-        if (lemmaElements.length > 1) {
-          if (meanings && meanings[index]) {
-            let meaning = meanings[index];
-            // TODO: convert a source-specific language code to ISO 639-3 if don't match
-            let lang = meaning.lang ? meaning.lang : 'eng';
-            shortdefs.push(__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["ResourceProvider"].getProxy(provider,
-              new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Definition"](meaning.$, lang, 'text/plain', lemmas[index].word)));
-          }
-        } else {
-          for (let meaning of meanings) {
-            let lang = meaning.lang ? meaning.lang : 'eng';
-            shortdefs.push(__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["ResourceProvider"].getProxy(provider,
-              new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Definition"](meaning.$, lang, 'text/plain', lemma.word)));
-          }
-        }
-        let lexmodel = new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Lexeme"](lemma, []);
-
-        lexmodel.meaning.appendShortDefs(shortdefs);
-        lexemeSet.push(__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["ResourceProvider"].getProxy(provider, lexmodel));
-      }
-      if (lemmas.length === 0) {
-        continue
-      }
-      let inflections = [];
-      for (let inflectionJSON of inflectionsJSON) {
-        let inflection = new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Inflection"](inflectionJSON.term.stem.$, mappingData.language.toCode());
-        if (inflectionJSON.term.suff) {
-                    // Set suffix if provided by a morphological analyzer
-          inflection.suffix = inflectionJSON.term.suff.$;
-        }
-
-        if (inflectionJSON.xmpl) {
-          inflection.example = inflectionJSON.xmpl.$;
-        }
-        // Parse whatever grammatical features we're interested in
-        mappingData.mapFeature(inflection, inflectionJSON, 'pofs', 'part', this.config.allowUnknownValues);
-        mappingData.mapFeature(inflection, inflectionJSON, 'case', 'grmCase', this.config.allowUnknownValues);
-        mappingData.mapFeature(inflection, inflectionJSON, 'decl', 'declension', this.config.allowUnknownValues);
-        mappingData.mapFeature(inflection, inflectionJSON, 'num', 'number', this.config.allowUnknownValues);
-        mappingData.mapFeature(inflection, inflectionJSON, 'gend', 'gender', this.config.allowUnknownValues);
-        mappingData.mapFeature(inflection, inflectionJSON, 'conj', 'conjugation', this.config.allowUnknownValues);
-        mappingData.mapFeature(inflection, inflectionJSON, 'tense', 'tense', this.config.allowUnknownValues);
-        mappingData.mapFeature(inflection, inflectionJSON, 'voice', 'voice', this.config.allowUnknownValues);
-        mappingData.mapFeature(inflection, inflectionJSON, 'mood', 'mood', this.config.allowUnknownValues);
-        mappingData.mapFeature(inflection, inflectionJSON, 'pers', 'person', this.config.allowUnknownValues);
-        mappingData.mapFeature(inflection, inflectionJSON, 'comp', 'comparison', this.config.allowUnknownValues);
-        if (inflectionJSON.stemtype) {
-          mappingData.mapFeature(inflection, inflectionJSON, 'stemtype', 'stemtype', this.config.allowUnknownValues);
-        }
-        if (inflectionJSON.derivtype) {
-          mappingData.mapFeature(inflection, inflectionJSON, 'derivtype', 'derivtype', this.config.allowUnknownValues);
-        }
-        if (inflectionJSON.dial) {
-          mappingData.mapFeature(inflection, inflectionJSON, 'dial', 'dialect', this.config.allowUnknownValues);
-        }
-        if (inflectionJSON.morph) {
-          mappingData.mapFeature(inflection, inflectionJSON, 'morph', 'morph', this.config.allowUnknownValues);
-        }
-        // we only use the inflection if it tells us something the dictionary details do not
-        if (inflection[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.grmCase] ||
-          inflection[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.tense] ||
-          inflection[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.mood] ||
-          inflection[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.voice] ||
-          inflection[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.person] ||
-          inflection[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.comparison] ||
-          inflection[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.stemtype] ||
-          inflection[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.derivtype] ||
-          inflection[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.dialect] ||
-          inflection[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.morph] ||
-          inflection[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.example]) {
-          inflections.push(inflection);
-        }
-        // inflection can provide lemma decl, pofs, conj
-        for (let lemma of lemmas) {
-          if (!lemma.features[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.declension]) {
-            mappingData.mapFeature(lemma, inflectionJSON, 'decl', 'declension', this.config.allowUnknownValues);
-          }
-          if (!lemma.features[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.part]) {
-            mappingData.mapFeature(lemma, inflectionJSON, 'pofs', 'part', this.config.allowUnknownValues);
-          }
-          if (!lemma.features[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.conjugation]) {
-            mappingData.mapFeature(lemma, inflectionJSON, 'conj', 'conjugation', this.config.allowUnknownValues);
-          }
-        }
-      }
-      for (let lex of lexemeSet) {
-        // only process if we have a lemma that differs from the target
-        // word or if we have at least a part of speech
-        if (mappingData.reportLexeme(lex)) {
-          lex.inflections = inflections;
-          lexemes.push(lex);
-        }
-      }
-    }
-    if (lexemes.length > 0) {
-      return new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Homonym"](lexemes, targetWord)
-    } else {
-      return undefined
-    }
-  }
-
-  async getHomonym (lang, word) {
-    let jsonObj = await this.fetch(lang, word);
-    if (jsonObj) {
-      let homonym = this.transform(jsonObj, word);
-      return homonym
-    } else {
-        // No data found for this word
-      return undefined
-    }
-  }
-}
-
-/* harmony default export */ __webpack_exports__["a"] = (TuftsAdapter);
-
-
-/***/ }),
-/* 5 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Lexicons; });
-/* unused harmony export AlpheiosLexAdapter */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__ = __webpack_require__(0);
-
-
-/**
- * Base Adapter Class for a Lexicon Service
- */
-class BaseLexiconAdapter {
-  /**
-   * Lookup a short definition in a lexicon
-   * @param {Lemma} lemma Lemma to lookup
-   * @return {Promise} a Promise that resolves to an array Definition objects
-   */
-  async lookupShortDef (lemma) {
-    throw new Error('Unimplemented')
-  }
-
-  /**
-   * Lookup a full definition in a lexicon
-   * @param {Lemma} lemma Lemma to lookup
-   * @return {Promise} a Promise that resolves to an array of Definition objects
-   */
-  async lookupFullDef (lemma) {
-    throw new Error('Unimplemented')
-  }
-
-  /**
-   * Get the available lexicons provided by this adapter class for the
-   * requested language
-   * @param {string} language languageCode
-   * @return {Array} a Map of lexicon objects. Keys are lexicon uris, values are the lexicon description.
-   */
-  static getLexicons (language) {
-    return []
-  }
-}
-
-function createCommonjsModule(fn, module) {
-	return module = { exports: {} }, fn(module, module.exports), module.exports;
-}
-
-var papaparse = createCommonjsModule(function (module, exports) {
-/*!
-	Papa Parse
-	v4.3.6
-	https://github.com/mholt/PapaParse
-	License: MIT
-*/
-(function(root, factory)
-{
-	if (false)
-	{
-		// AMD. Register as an anonymous module.
-		undefined([], factory);
-	}
-	else {
-		// Node. Does not work with strict CommonJS, but
-		// only CommonJS-like environments that support module.exports,
-		// like Node.
-		module.exports = factory();
-	}
-}(this, function()
-{
-	'use strict';
-
-	var global = (function () {
-		// alternative method, similar to `Function('return this')()`
-		// but without using `eval` (which is disabled when
-		// using Content Security Policy).
-
-		if (typeof self !== 'undefined') { return self; }
-		if (typeof window !== 'undefined') { return window; }
-		if (typeof global !== 'undefined') { return global; }
-
-		// When running tests none of the above have been defined
-		return {};
-	})();
-
-
-	var IS_WORKER = !global.document && !!global.postMessage,
-		IS_PAPA_WORKER = IS_WORKER && /(\?|&)papaworker(=|&|$)/.test(global.location.search),
-		LOADED_SYNC = false, AUTO_SCRIPT_PATH;
-	var workers = {}, workerIdCounter = 0;
-
-	var Papa = {};
-
-	Papa.parse = CsvToJson;
-	Papa.unparse = JsonToCsv;
-
-	Papa.RECORD_SEP = String.fromCharCode(30);
-	Papa.UNIT_SEP = String.fromCharCode(31);
-	Papa.BYTE_ORDER_MARK = '\ufeff';
-	Papa.BAD_DELIMITERS = ['\r', '\n', '"', Papa.BYTE_ORDER_MARK];
-	Papa.WORKERS_SUPPORTED = !IS_WORKER && !!global.Worker;
-	Papa.SCRIPT_PATH = null;	// Must be set by your code if you use workers and this lib is loaded asynchronously
-
-	// Configurable chunk sizes for local and remote files, respectively
-	Papa.LocalChunkSize = 1024 * 1024 * 10;	// 10 MB
-	Papa.RemoteChunkSize = 1024 * 1024 * 5;	// 5 MB
-	Papa.DefaultDelimiter = ',';			// Used if not specified and detection fails
-
-	// Exposed for testing and development only
-	Papa.Parser = Parser;
-	Papa.ParserHandle = ParserHandle;
-	Papa.NetworkStreamer = NetworkStreamer;
-	Papa.FileStreamer = FileStreamer;
-	Papa.StringStreamer = StringStreamer;
-	Papa.ReadableStreamStreamer = ReadableStreamStreamer;
-
-	if (global.jQuery)
-	{
-		var $ = global.jQuery;
-		$.fn.parse = function(options)
-		{
-			var config = options.config || {};
-			var queue = [];
-
-			this.each(function(idx)
-			{
-				var supported = $(this).prop('tagName').toUpperCase() === 'INPUT'
-								&& $(this).attr('type').toLowerCase() === 'file'
-								&& global.FileReader;
-
-				if (!supported || !this.files || this.files.length === 0)
-					return true;	// continue to next input element
-
-				for (var i = 0; i < this.files.length; i++)
-				{
-					queue.push({
-						file: this.files[i],
-						inputElem: this,
-						instanceConfig: $.extend({}, config)
-					});
-				}
-			});
-
-			parseNextFile();	// begin parsing
-			return this;		// maintains chainability
-
-
-			function parseNextFile()
-			{
-				if (queue.length === 0)
-				{
-					if (isFunction(options.complete))
-						options.complete();
-					return;
-				}
-
-				var f = queue[0];
-
-				if (isFunction(options.before))
-				{
-					var returned = options.before(f.file, f.inputElem);
-
-					if (typeof returned === 'object')
-					{
-						if (returned.action === 'abort')
-						{
-							error('AbortError', f.file, f.inputElem, returned.reason);
-							return;	// Aborts all queued files immediately
-						}
-						else if (returned.action === 'skip')
-						{
-							fileComplete();	// parse the next file in the queue, if any
-							return;
-						}
-						else if (typeof returned.config === 'object')
-							f.instanceConfig = $.extend(f.instanceConfig, returned.config);
-					}
-					else if (returned === 'skip')
-					{
-						fileComplete();	// parse the next file in the queue, if any
-						return;
-					}
-				}
-
-				// Wrap up the user's complete callback, if any, so that ours also gets executed
-				var userCompleteFunc = f.instanceConfig.complete;
-				f.instanceConfig.complete = function(results)
-				{
-					if (isFunction(userCompleteFunc))
-						userCompleteFunc(results, f.file, f.inputElem);
-					fileComplete();
-				};
-
-				Papa.parse(f.file, f.instanceConfig);
-			}
-
-			function error(name, file, elem, reason)
-			{
-				if (isFunction(options.error))
-					options.error({name: name}, file, elem, reason);
-			}
-
-			function fileComplete()
-			{
-				queue.splice(0, 1);
-				parseNextFile();
-			}
-		};
-	}
-
-
-	if (IS_PAPA_WORKER)
-	{
-		global.onmessage = workerThreadReceivedMessage;
-	}
-	else if (Papa.WORKERS_SUPPORTED)
-	{
-		AUTO_SCRIPT_PATH = getScriptPath();
-
-		// Check if the script was loaded synchronously
-		if (!document.body)
-		{
-			// Body doesn't exist yet, must be synchronous
-			LOADED_SYNC = true;
-		}
-		else
-		{
-			document.addEventListener('DOMContentLoaded', function () {
-				LOADED_SYNC = true;
-			}, true);
-		}
-	}
-
-
-
-
-	function CsvToJson(_input, _config)
-	{
-		_config = _config || {};
-		var dynamicTyping = _config.dynamicTyping || false;
-		if (isFunction(dynamicTyping)) {
-			_config.dynamicTypingFunction = dynamicTyping;
-			// Will be filled on first row call
-			dynamicTyping = {};
-		}
-		_config.dynamicTyping = dynamicTyping;
-
-		if (_config.worker && Papa.WORKERS_SUPPORTED)
-		{
-			var w = newWorker();
-
-			w.userStep = _config.step;
-			w.userChunk = _config.chunk;
-			w.userComplete = _config.complete;
-			w.userError = _config.error;
-
-			_config.step = isFunction(_config.step);
-			_config.chunk = isFunction(_config.chunk);
-			_config.complete = isFunction(_config.complete);
-			_config.error = isFunction(_config.error);
-			delete _config.worker;	// prevent infinite loop
-
-			w.postMessage({
-				input: _input,
-				config: _config,
-				workerId: w.id
-			});
-
-			return;
-		}
-
-		var streamer = null;
-		if (typeof _input === 'string')
-		{
-			if (_config.download)
-				streamer = new NetworkStreamer(_config);
-			else
-				streamer = new StringStreamer(_config);
-		}
-		else if (_input.readable === true && isFunction(_input.read) && isFunction(_input.on))
-		{
-			streamer = new ReadableStreamStreamer(_config);
-		}
-		else if ((global.File && _input instanceof File) || _input instanceof Object)	// ...Safari. (see issue #106)
-			streamer = new FileStreamer(_config);
-
-		return streamer.stream(_input);
-	}
-
-
-
-
-
-
-	function JsonToCsv(_input, _config)
-	{
-		var _output = '';
-		var _fields = [];
-
-		// Default configuration
-
-		/** whether to surround every datum with quotes */
-		var _quotes = false;
-
-		/** whether to write headers */
-		var _writeHeader = true;
-
-		/** delimiting character */
-		var _delimiter = ',';
-
-		/** newline character(s) */
-		var _newline = '\r\n';
-
-		/** quote character */
-		var _quoteChar = '"';
-
-		unpackConfig();
-
-		var quoteCharRegex = new RegExp(_quoteChar, 'g');
-
-		if (typeof _input === 'string')
-			_input = JSON.parse(_input);
-
-		if (_input instanceof Array)
-		{
-			if (!_input.length || _input[0] instanceof Array)
-				return serialize(null, _input);
-			else if (typeof _input[0] === 'object')
-				return serialize(objectKeys(_input[0]), _input);
-		}
-		else if (typeof _input === 'object')
-		{
-			if (typeof _input.data === 'string')
-				_input.data = JSON.parse(_input.data);
-
-			if (_input.data instanceof Array)
-			{
-				if (!_input.fields)
-					_input.fields =  _input.meta && _input.meta.fields;
-
-				if (!_input.fields)
-					_input.fields =  _input.data[0] instanceof Array
-									? _input.fields
-									: objectKeys(_input.data[0]);
-
-				if (!(_input.data[0] instanceof Array) && typeof _input.data[0] !== 'object')
-					_input.data = [_input.data];	// handles input like [1,2,3] or ['asdf']
-			}
-
-			return serialize(_input.fields || [], _input.data || []);
-		}
-
-		// Default (any valid paths should return before this)
-		throw 'exception: Unable to serialize unrecognized input';
-
-
-		function unpackConfig()
-		{
-			if (typeof _config !== 'object')
-				return;
-
-			if (typeof _config.delimiter === 'string'
-				&& _config.delimiter.length === 1
-				&& Papa.BAD_DELIMITERS.indexOf(_config.delimiter) === -1)
-			{
-				_delimiter = _config.delimiter;
-			}
-
-			if (typeof _config.quotes === 'boolean'
-				|| _config.quotes instanceof Array)
-				_quotes = _config.quotes;
-
-			if (typeof _config.newline === 'string')
-				_newline = _config.newline;
-
-			if (typeof _config.quoteChar === 'string')
-				_quoteChar = _config.quoteChar;
-
-			if (typeof _config.header === 'boolean')
-				_writeHeader = _config.header;
-		}
-
-
-		/** Turns an object's keys into an array */
-		function objectKeys(obj)
-		{
-			if (typeof obj !== 'object')
-				return [];
-			var keys = [];
-			for (var key in obj)
-				keys.push(key);
-			return keys;
-		}
-
-		/** The double for loop that iterates the data and writes out a CSV string including header row */
-		function serialize(fields, data)
-		{
-			var csv = '';
-
-			if (typeof fields === 'string')
-				fields = JSON.parse(fields);
-			if (typeof data === 'string')
-				data = JSON.parse(data);
-
-			var hasHeader = fields instanceof Array && fields.length > 0;
-			var dataKeyedByField = !(data[0] instanceof Array);
-
-			// If there a header row, write it first
-			if (hasHeader && _writeHeader)
-			{
-				for (var i = 0; i < fields.length; i++)
-				{
-					if (i > 0)
-						csv += _delimiter;
-					csv += safe(fields[i], i);
-				}
-				if (data.length > 0)
-					csv += _newline;
-			}
-
-			// Then write out the data
-			for (var row = 0; row < data.length; row++)
-			{
-				var maxCol = hasHeader ? fields.length : data[row].length;
-
-				for (var col = 0; col < maxCol; col++)
-				{
-					if (col > 0)
-						csv += _delimiter;
-					var colIdx = hasHeader && dataKeyedByField ? fields[col] : col;
-					csv += safe(data[row][colIdx], col);
-				}
-
-				if (row < data.length - 1)
-					csv += _newline;
-			}
-
-			return csv;
-		}
-
-		/** Encloses a value around quotes if needed (makes a value safe for CSV insertion) */
-		function safe(str, col)
-		{
-			if (typeof str === 'undefined' || str === null)
-				return '';
-
-			str = str.toString().replace(quoteCharRegex, _quoteChar+_quoteChar);
-
-			var needsQuotes = (typeof _quotes === 'boolean' && _quotes)
-							|| (_quotes instanceof Array && _quotes[col])
-							|| hasAny(str, Papa.BAD_DELIMITERS)
-							|| str.indexOf(_delimiter) > -1
-							|| str.charAt(0) === ' '
-							|| str.charAt(str.length - 1) === ' ';
-
-			return needsQuotes ? _quoteChar + str + _quoteChar : str;
-		}
-
-		function hasAny(str, substrings)
-		{
-			for (var i = 0; i < substrings.length; i++)
-				if (str.indexOf(substrings[i]) > -1)
-					return true;
-			return false;
-		}
-	}
-
-	/** ChunkStreamer is the base prototype for various streamer implementations. */
-	function ChunkStreamer(config)
-	{
-		this._handle = null;
-		this._paused = false;
-		this._finished = false;
-		this._input = null;
-		this._baseIndex = 0;
-		this._partialLine = '';
-		this._rowCount = 0;
-		this._start = 0;
-		this._nextChunk = null;
-		this.isFirstChunk = true;
-		this._completeResults = {
-			data: [],
-			errors: [],
-			meta: {}
-		};
-		replaceConfig.call(this, config);
-
-		this.parseChunk = function(chunk)
-		{
-			// First chunk pre-processing
-			if (this.isFirstChunk && isFunction(this._config.beforeFirstChunk))
-			{
-				var modifiedChunk = this._config.beforeFirstChunk(chunk);
-				if (modifiedChunk !== undefined)
-					chunk = modifiedChunk;
-			}
-			this.isFirstChunk = false;
-
-			// Rejoin the line we likely just split in two by chunking the file
-			var aggregate = this._partialLine + chunk;
-			this._partialLine = '';
-
-			var results = this._handle.parse(aggregate, this._baseIndex, !this._finished);
-
-			if (this._handle.paused() || this._handle.aborted())
-				return;
-
-			var lastIndex = results.meta.cursor;
-
-			if (!this._finished)
-			{
-				this._partialLine = aggregate.substring(lastIndex - this._baseIndex);
-				this._baseIndex = lastIndex;
-			}
-
-			if (results && results.data)
-				this._rowCount += results.data.length;
-
-			var finishedIncludingPreview = this._finished || (this._config.preview && this._rowCount >= this._config.preview);
-
-			if (IS_PAPA_WORKER)
-			{
-				global.postMessage({
-					results: results,
-					workerId: Papa.WORKER_ID,
-					finished: finishedIncludingPreview
-				});
-			}
-			else if (isFunction(this._config.chunk))
-			{
-				this._config.chunk(results, this._handle);
-				if (this._paused)
-					return;
-				results = undefined;
-				this._completeResults = undefined;
-			}
-
-			if (!this._config.step && !this._config.chunk) {
-				this._completeResults.data = this._completeResults.data.concat(results.data);
-				this._completeResults.errors = this._completeResults.errors.concat(results.errors);
-				this._completeResults.meta = results.meta;
-			}
-
-			if (finishedIncludingPreview && isFunction(this._config.complete) && (!results || !results.meta.aborted))
-				this._config.complete(this._completeResults, this._input);
-
-			if (!finishedIncludingPreview && (!results || !results.meta.paused))
-				this._nextChunk();
-
-			return results;
-		};
-
-		this._sendError = function(error)
-		{
-			if (isFunction(this._config.error))
-				this._config.error(error);
-			else if (IS_PAPA_WORKER && this._config.error)
-			{
-				global.postMessage({
-					workerId: Papa.WORKER_ID,
-					error: error,
-					finished: false
-				});
-			}
-		};
-
-		function replaceConfig(config)
-		{
-			// Deep-copy the config so we can edit it
-			var configCopy = copy(config);
-			configCopy.chunkSize = parseInt(configCopy.chunkSize);	// parseInt VERY important so we don't concatenate strings!
-			if (!config.step && !config.chunk)
-				configCopy.chunkSize = null;  // disable Range header if not streaming; bad values break IIS - see issue #196
-			this._handle = new ParserHandle(configCopy);
-			this._handle.streamer = this;
-			this._config = configCopy;	// persist the copy to the caller
-		}
-	}
-
-
-	function NetworkStreamer(config)
-	{
-		config = config || {};
-		if (!config.chunkSize)
-			config.chunkSize = Papa.RemoteChunkSize;
-		ChunkStreamer.call(this, config);
-
-		var xhr;
-
-		if (IS_WORKER)
-		{
-			this._nextChunk = function()
-			{
-				this._readChunk();
-				this._chunkLoaded();
-			};
-		}
-		else
-		{
-			this._nextChunk = function()
-			{
-				this._readChunk();
-			};
-		}
-
-		this.stream = function(url)
-		{
-			this._input = url;
-			this._nextChunk();	// Starts streaming
-		};
-
-		this._readChunk = function()
-		{
-			if (this._finished)
-			{
-				this._chunkLoaded();
-				return;
-			}
-
-			xhr = new XMLHttpRequest();
-
-			if (this._config.withCredentials)
-			{
-				xhr.withCredentials = this._config.withCredentials;
-			}
-
-			if (!IS_WORKER)
-			{
-				xhr.onload = bindFunction(this._chunkLoaded, this);
-				xhr.onerror = bindFunction(this._chunkError, this);
-			}
-
-			xhr.open('GET', this._input, !IS_WORKER);
-			// Headers can only be set when once the request state is OPENED
-			if (this._config.downloadRequestHeaders)
-			{
-				var headers = this._config.downloadRequestHeaders;
-
-				for (var headerName in headers)
-				{
-					xhr.setRequestHeader(headerName, headers[headerName]);
-				}
-			}
-
-			if (this._config.chunkSize)
-			{
-				var end = this._start + this._config.chunkSize - 1;	// minus one because byte range is inclusive
-				xhr.setRequestHeader('Range', 'bytes='+this._start+'-'+end);
-				xhr.setRequestHeader('If-None-Match', 'webkit-no-cache'); // https://bugs.webkit.org/show_bug.cgi?id=82672
-			}
-
-			try {
-				xhr.send();
-			}
-			catch (err) {
-				this._chunkError(err.message);
-			}
-
-			if (IS_WORKER && xhr.status === 0)
-				this._chunkError();
-			else
-				this._start += this._config.chunkSize;
-		};
-
-		this._chunkLoaded = function()
-		{
-			if (xhr.readyState != 4)
-				return;
-
-			if (xhr.status < 200 || xhr.status >= 400)
-			{
-				this._chunkError();
-				return;
-			}
-
-			this._finished = !this._config.chunkSize || this._start > getFileSize(xhr);
-			this.parseChunk(xhr.responseText);
-		};
-
-		this._chunkError = function(errorMessage)
-		{
-			var errorText = xhr.statusText || errorMessage;
-			this._sendError(errorText);
-		};
-
-		function getFileSize(xhr)
-		{
-			var contentRange = xhr.getResponseHeader('Content-Range');
-			if (contentRange === null) { // no content range, then finish!
-					return -1;
-					}
-			return parseInt(contentRange.substr(contentRange.lastIndexOf('/') + 1));
-		}
-	}
-	NetworkStreamer.prototype = Object.create(ChunkStreamer.prototype);
-	NetworkStreamer.prototype.constructor = NetworkStreamer;
-
-
-	function FileStreamer(config)
-	{
-		config = config || {};
-		if (!config.chunkSize)
-			config.chunkSize = Papa.LocalChunkSize;
-		ChunkStreamer.call(this, config);
-
-		var reader, slice;
-
-		// FileReader is better than FileReaderSync (even in worker) - see http://stackoverflow.com/q/24708649/1048862
-		// But Firefox is a pill, too - see issue #76: https://github.com/mholt/PapaParse/issues/76
-		var usingAsyncReader = typeof FileReader !== 'undefined';	// Safari doesn't consider it a function - see issue #105
-
-		this.stream = function(file)
-		{
-			this._input = file;
-			slice = file.slice || file.webkitSlice || file.mozSlice;
-
-			if (usingAsyncReader)
-			{
-				reader = new FileReader();		// Preferred method of reading files, even in workers
-				reader.onload = bindFunction(this._chunkLoaded, this);
-				reader.onerror = bindFunction(this._chunkError, this);
-			}
-			else
-				reader = new FileReaderSync();	// Hack for running in a web worker in Firefox
-
-			this._nextChunk();	// Starts streaming
-		};
-
-		this._nextChunk = function()
-		{
-			if (!this._finished && (!this._config.preview || this._rowCount < this._config.preview))
-				this._readChunk();
-		};
-
-		this._readChunk = function()
-		{
-			var input = this._input;
-			if (this._config.chunkSize)
-			{
-				var end = Math.min(this._start + this._config.chunkSize, this._input.size);
-				input = slice.call(input, this._start, end);
-			}
-			var txt = reader.readAsText(input, this._config.encoding);
-			if (!usingAsyncReader)
-				this._chunkLoaded({ target: { result: txt } });	// mimic the async signature
-		};
-
-		this._chunkLoaded = function(event)
-		{
-			// Very important to increment start each time before handling results
-			this._start += this._config.chunkSize;
-			this._finished = !this._config.chunkSize || this._start >= this._input.size;
-			this.parseChunk(event.target.result);
-		};
-
-		this._chunkError = function()
-		{
-			this._sendError(reader.error);
-		};
-
-	}
-	FileStreamer.prototype = Object.create(ChunkStreamer.prototype);
-	FileStreamer.prototype.constructor = FileStreamer;
-
-
-	function StringStreamer(config)
-	{
-		config = config || {};
-		ChunkStreamer.call(this, config);
-
-		var string;
-		var remaining;
-		this.stream = function(s)
-		{
-			string = s;
-			remaining = s;
-			return this._nextChunk();
-		};
-		this._nextChunk = function()
-		{
-			if (this._finished) return;
-			var size = this._config.chunkSize;
-			var chunk = size ? remaining.substr(0, size) : remaining;
-			remaining = size ? remaining.substr(size) : '';
-			this._finished = !remaining;
-			return this.parseChunk(chunk);
-		};
-	}
-	StringStreamer.prototype = Object.create(StringStreamer.prototype);
-	StringStreamer.prototype.constructor = StringStreamer;
-
-
-	function ReadableStreamStreamer(config)
-	{
-		config = config || {};
-
-		ChunkStreamer.call(this, config);
-
-		var queue = [];
-		var parseOnData = true;
-
-		this.stream = function(stream)
-		{
-			this._input = stream;
-
-			this._input.on('data', this._streamData);
-			this._input.on('end', this._streamEnd);
-			this._input.on('error', this._streamError);
-		};
-
-		this._nextChunk = function()
-		{
-			if (queue.length)
-			{
-				this.parseChunk(queue.shift());
-			}
-			else
-			{
-				parseOnData = true;
-			}
-		};
-
-		this._streamData = bindFunction(function(chunk)
-		{
-			try
-			{
-				queue.push(typeof chunk === 'string' ? chunk : chunk.toString(this._config.encoding));
-
-				if (parseOnData)
-				{
-					parseOnData = false;
-					this.parseChunk(queue.shift());
-				}
-			}
-			catch (error)
-			{
-				this._streamError(error);
-			}
-		}, this);
-
-		this._streamError = bindFunction(function(error)
-		{
-			this._streamCleanUp();
-			this._sendError(error.message);
-		}, this);
-
-		this._streamEnd = bindFunction(function()
-		{
-			this._streamCleanUp();
-			this._finished = true;
-			this._streamData('');
-		}, this);
-
-		this._streamCleanUp = bindFunction(function()
-		{
-			this._input.removeListener('data', this._streamData);
-			this._input.removeListener('end', this._streamEnd);
-			this._input.removeListener('error', this._streamError);
-		}, this);
-	}
-	ReadableStreamStreamer.prototype = Object.create(ChunkStreamer.prototype);
-	ReadableStreamStreamer.prototype.constructor = ReadableStreamStreamer;
-
-
-	// Use one ParserHandle per entire CSV file or string
-	function ParserHandle(_config)
-	{
-		// One goal is to minimize the use of regular expressions...
-		var FLOAT = /^\s*-?(\d*\.?\d+|\d+\.?\d*)(e[-+]?\d+)?\s*$/i;
-
-		var self = this;
-		var _stepCounter = 0;	// Number of times step was called (number of rows parsed)
-		var _input;				// The input being parsed
-		var _parser;			// The core parser being used
-		var _paused = false;	// Whether we are paused or not
-		var _aborted = false;	// Whether the parser has aborted or not
-		var _delimiterError;	// Temporary state between delimiter detection and processing results
-		var _fields = [];		// Fields are from the header row of the input, if there is one
-		var _results = {		// The last results returned from the parser
-			data: [],
-			errors: [],
-			meta: {}
-		};
-
-		if (isFunction(_config.step))
-		{
-			var userStep = _config.step;
-			_config.step = function(results)
-			{
-				_results = results;
-
-				if (needsHeaderRow())
-					processResults();
-				else	// only call user's step function after header row
-				{
-					processResults();
-
-					// It's possbile that this line was empty and there's no row here after all
-					if (_results.data.length === 0)
-						return;
-
-					_stepCounter += results.data.length;
-					if (_config.preview && _stepCounter > _config.preview)
-						_parser.abort();
-					else
-						userStep(_results, self);
-				}
-			};
-		}
-
-		/**
-		 * Parses input. Most users won't need, and shouldn't mess with, the baseIndex
-		 * and ignoreLastRow parameters. They are used by streamers (wrapper functions)
-		 * when an input comes in multiple chunks, like from a file.
-		 */
-		this.parse = function(input, baseIndex, ignoreLastRow)
-		{
-			if (!_config.newline)
-				_config.newline = guessLineEndings(input);
-
-			_delimiterError = false;
-			if (!_config.delimiter)
-			{
-				var delimGuess = guessDelimiter(input, _config.newline, _config.skipEmptyLines);
-				if (delimGuess.successful)
-					_config.delimiter = delimGuess.bestDelimiter;
-				else
-				{
-					_delimiterError = true;	// add error after parsing (otherwise it would be overwritten)
-					_config.delimiter = Papa.DefaultDelimiter;
-				}
-				_results.meta.delimiter = _config.delimiter;
-			}
-			else if(isFunction(_config.delimiter))
-			{
-				_config.delimiter = _config.delimiter(input);
-				_results.meta.delimiter = _config.delimiter;
-			}
-
-			var parserConfig = copy(_config);
-			if (_config.preview && _config.header)
-				parserConfig.preview++;	// to compensate for header row
-
-			_input = input;
-			_parser = new Parser(parserConfig);
-			_results = _parser.parse(_input, baseIndex, ignoreLastRow);
-			processResults();
-			return _paused ? { meta: { paused: true } } : (_results || { meta: { paused: false } });
-		};
-
-		this.paused = function()
-		{
-			return _paused;
-		};
-
-		this.pause = function()
-		{
-			_paused = true;
-			_parser.abort();
-			_input = _input.substr(_parser.getCharIndex());
-		};
-
-		this.resume = function()
-		{
-			_paused = false;
-			self.streamer.parseChunk(_input);
-		};
-
-		this.aborted = function ()
-		{
-			return _aborted;
-		};
-
-		this.abort = function()
-		{
-			_aborted = true;
-			_parser.abort();
-			_results.meta.aborted = true;
-			if (isFunction(_config.complete))
-				_config.complete(_results);
-			_input = '';
-		};
-
-		function processResults()
-		{
-			if (_results && _delimiterError)
-			{
-				addError('Delimiter', 'UndetectableDelimiter', 'Unable to auto-detect delimiting character; defaulted to \''+Papa.DefaultDelimiter+'\'');
-				_delimiterError = false;
-			}
-
-			if (_config.skipEmptyLines)
-			{
-				for (var i = 0; i < _results.data.length; i++)
-					if (_results.data[i].length === 1 && _results.data[i][0] === '')
-						_results.data.splice(i--, 1);
-			}
-
-			if (needsHeaderRow())
-				fillHeaderFields();
-
-			return applyHeaderAndDynamicTyping();
-		}
-
-		function needsHeaderRow()
-		{
-			return _config.header && _fields.length === 0;
-		}
-
-		function fillHeaderFields()
-		{
-			if (!_results)
-				return;
-			for (var i = 0; needsHeaderRow() && i < _results.data.length; i++)
-				for (var j = 0; j < _results.data[i].length; j++)
-					_fields.push(_results.data[i][j]);
-			_results.data.splice(0, 1);
-		}
-
-		function shouldApplyDynamicTyping(field) {
-			// Cache function values to avoid calling it for each row
-			if (_config.dynamicTypingFunction && _config.dynamicTyping[field] === undefined) {
-				_config.dynamicTyping[field] = _config.dynamicTypingFunction(field);
-			}
-			return (_config.dynamicTyping[field] || _config.dynamicTyping) === true
-		}
-
-		function parseDynamic(field, value)
-		{
-			if (shouldApplyDynamicTyping(field))
-			{
-				if (value === 'true' || value === 'TRUE')
-					return true;
-				else if (value === 'false' || value === 'FALSE')
-					return false;
-				else
-					return tryParseFloat(value);
-			}
-			return value;
-		}
-
-		function applyHeaderAndDynamicTyping()
-		{
-			if (!_results || (!_config.header && !_config.dynamicTyping))
-				return _results;
-
-			for (var i = 0; i < _results.data.length; i++)
-			{
-				var row = _config.header ? {} : [];
-
-				for (var j = 0; j < _results.data[i].length; j++)
-				{
-					var field = j;
-					var value = _results.data[i][j];
-
-					if (_config.header)
-						field = j >= _fields.length ? '__parsed_extra' : _fields[j];
-
-					value = parseDynamic(field, value);
-
-					if (field === '__parsed_extra')
-					{
-						row[field] = row[field] || [];
-						row[field].push(value);
-					}
-					else
-						row[field] = value;
-				}
-
-				_results.data[i] = row;
-
-				if (_config.header)
-				{
-					if (j > _fields.length)
-						addError('FieldMismatch', 'TooManyFields', 'Too many fields: expected ' + _fields.length + ' fields but parsed ' + j, i);
-					else if (j < _fields.length)
-						addError('FieldMismatch', 'TooFewFields', 'Too few fields: expected ' + _fields.length + ' fields but parsed ' + j, i);
-				}
-			}
-
-			if (_config.header && _results.meta)
-				_results.meta.fields = _fields;
-			return _results;
-		}
-
-		function guessDelimiter(input, newline, skipEmptyLines)
-		{
-			var delimChoices = [',', '\t', '|', ';', Papa.RECORD_SEP, Papa.UNIT_SEP];
-			var bestDelim, bestDelta, fieldCountPrevRow;
-
-			for (var i = 0; i < delimChoices.length; i++)
-			{
-				var delim = delimChoices[i];
-				var delta = 0, avgFieldCount = 0, emptyLinesCount = 0;
-				fieldCountPrevRow = undefined;
-
-				var preview = new Parser({
-					delimiter: delim,
-					newline: newline,
-					preview: 10
-				}).parse(input);
-
-				for (var j = 0; j < preview.data.length; j++)
-				{
-					if (skipEmptyLines && preview.data[j].length === 1 && preview.data[j][0].length === 0) {
-						emptyLinesCount++;
-						continue
-					}
-					var fieldCount = preview.data[j].length;
-					avgFieldCount += fieldCount;
-
-					if (typeof fieldCountPrevRow === 'undefined')
-					{
-						fieldCountPrevRow = fieldCount;
-						continue;
-					}
-					else if (fieldCount > 1)
-					{
-						delta += Math.abs(fieldCount - fieldCountPrevRow);
-						fieldCountPrevRow = fieldCount;
-					}
-				}
-
-				if (preview.data.length > 0)
-					avgFieldCount /= (preview.data.length - emptyLinesCount);
-
-				if ((typeof bestDelta === 'undefined' || delta < bestDelta)
-					&& avgFieldCount > 1.99)
-				{
-					bestDelta = delta;
-					bestDelim = delim;
-				}
-			}
-
-			_config.delimiter = bestDelim;
-
-			return {
-				successful: !!bestDelim,
-				bestDelimiter: bestDelim
-			}
-		}
-
-		function guessLineEndings(input)
-		{
-			input = input.substr(0, 1024*1024);	// max length 1 MB
-
-			var r = input.split('\r');
-
-			var n = input.split('\n');
-
-			var nAppearsFirst = (n.length > 1 && n[0].length < r[0].length);
-
-			if (r.length === 1 || nAppearsFirst)
-				return '\n';
-
-			var numWithN = 0;
-			for (var i = 0; i < r.length; i++)
-			{
-				if (r[i][0] === '\n')
-					numWithN++;
-			}
-
-			return numWithN >= r.length / 2 ? '\r\n' : '\r';
-		}
-
-		function tryParseFloat(val)
-		{
-			var isNumber = FLOAT.test(val);
-			return isNumber ? parseFloat(val) : val;
-		}
-
-		function addError(type, code, msg, row)
-		{
-			_results.errors.push({
-				type: type,
-				code: code,
-				message: msg,
-				row: row
-			});
-		}
-	}
-
-
-
-
-
-	/** The core parser implements speedy and correct CSV parsing */
-	function Parser(config)
-	{
-		// Unpack the config object
-		config = config || {};
-		var delim = config.delimiter;
-		var newline = config.newline;
-		var comments = config.comments;
-		var step = config.step;
-		var preview = config.preview;
-		var fastMode = config.fastMode;
-		var quoteChar = config.quoteChar || '"';
-
-		// Delimiter must be valid
-		if (typeof delim !== 'string'
-			|| Papa.BAD_DELIMITERS.indexOf(delim) > -1)
-			delim = ',';
-
-		// Comment character must be valid
-		if (comments === delim)
-			throw 'Comment character same as delimiter';
-		else if (comments === true)
-			comments = '#';
-		else if (typeof comments !== 'string'
-			|| Papa.BAD_DELIMITERS.indexOf(comments) > -1)
-			comments = false;
-
-		// Newline must be valid: \r, \n, or \r\n
-		if (newline != '\n' && newline != '\r' && newline != '\r\n')
-			newline = '\n';
-
-		// We're gonna need these at the Parser scope
-		var cursor = 0;
-		var aborted = false;
-
-		this.parse = function(input, baseIndex, ignoreLastRow)
-		{
-			// For some reason, in Chrome, this speeds things up (!?)
-			if (typeof input !== 'string')
-				throw 'Input must be a string';
-
-			// We don't need to compute some of these every time parse() is called,
-			// but having them in a more local scope seems to perform better
-			var inputLen = input.length,
-				delimLen = delim.length,
-				newlineLen = newline.length,
-				commentsLen = comments.length;
-			var stepIsFunction = isFunction(step);
-
-			// Establish starting state
-			cursor = 0;
-			var data = [], errors = [], row = [], lastCursor = 0;
-
-			if (!input)
-				return returnable();
-
-			if (fastMode || (fastMode !== false && input.indexOf(quoteChar) === -1))
-			{
-				var rows = input.split(newline);
-				for (var i = 0; i < rows.length; i++)
-				{
-					var row = rows[i];
-					cursor += row.length;
-					if (i !== rows.length - 1)
-						cursor += newline.length;
-					else if (ignoreLastRow)
-						return returnable();
-					if (comments && row.substr(0, commentsLen) === comments)
-						continue;
-					if (stepIsFunction)
-					{
-						data = [];
-						pushRow(row.split(delim));
-						doStep();
-						if (aborted)
-							return returnable();
-					}
-					else
-						pushRow(row.split(delim));
-					if (preview && i >= preview)
-					{
-						data = data.slice(0, preview);
-						return returnable(true);
-					}
-				}
-				return returnable();
-			}
-
-			var nextDelim = input.indexOf(delim, cursor);
-			var nextNewline = input.indexOf(newline, cursor);
-			var quoteCharRegex = new RegExp(quoteChar+quoteChar, 'g');
-
-			// Parser loop
-			for (;;)
-			{
-				// Field has opening quote
-				if (input[cursor] === quoteChar)
-				{
-					// Start our search for the closing quote where the cursor is
-					var quoteSearch = cursor;
-
-					// Skip the opening quote
-					cursor++;
-
-					for (;;)
-					{
-						// Find closing quote
-						var quoteSearch = input.indexOf(quoteChar, quoteSearch+1);
-
-						//No other quotes are found - no other delimiters
-						if (quoteSearch === -1)
-						{
-							if (!ignoreLastRow) {
-								// No closing quote... what a pity
-								errors.push({
-									type: 'Quotes',
-									code: 'MissingQuotes',
-									message: 'Quoted field unterminated',
-									row: data.length,	// row has yet to be inserted
-									index: cursor
-								});
-							}
-							return finish();
-						}
-
-						// Closing quote at EOF
-						if (quoteSearch === inputLen-1)
-						{
-							var value = input.substring(cursor, quoteSearch).replace(quoteCharRegex, quoteChar);
-							return finish(value);
-						}
-
-						// If this quote is escaped, it's part of the data; skip it
-						if (input[quoteSearch+1] === quoteChar)
-						{
-							quoteSearch++;
-							continue;
-						}
-
-						// Closing quote followed by delimiter
-						if (input[quoteSearch+1] === delim)
-						{
-							row.push(input.substring(cursor, quoteSearch).replace(quoteCharRegex, quoteChar));
-							cursor = quoteSearch + 1 + delimLen;
-							nextDelim = input.indexOf(delim, cursor);
-							nextNewline = input.indexOf(newline, cursor);
-							break;
-						}
-
-						// Closing quote followed by newline
-						if (input.substr(quoteSearch+1, newlineLen) === newline)
-						{
-							row.push(input.substring(cursor, quoteSearch).replace(quoteCharRegex, quoteChar));
-							saveRow(quoteSearch + 1 + newlineLen);
-							nextDelim = input.indexOf(delim, cursor);	// because we may have skipped the nextDelim in the quoted field
-
-							if (stepIsFunction)
-							{
-								doStep();
-								if (aborted)
-									return returnable();
-							}
-
-							if (preview && data.length >= preview)
-								return returnable(true);
-
-							break;
-						}
-
-
-						// Checks for valid closing quotes are complete (escaped quotes or quote followed by EOF/delimiter/newline) -- assume these quotes are part of an invalid text string
-						errors.push({
-							type: 'Quotes',
-							code: 'InvalidQuotes',
-							message: 'Trailing quote on quoted field is malformed',
-							row: data.length,	// row has yet to be inserted
-							index: cursor
-						});
-
-						quoteSearch++;
-						continue;
-
-					}
-
-					continue;
-				}
-
-				// Comment found at start of new line
-				if (comments && row.length === 0 && input.substr(cursor, commentsLen) === comments)
-				{
-					if (nextNewline === -1)	// Comment ends at EOF
-						return returnable();
-					cursor = nextNewline + newlineLen;
-					nextNewline = input.indexOf(newline, cursor);
-					nextDelim = input.indexOf(delim, cursor);
-					continue;
-				}
-
-				// Next delimiter comes before next newline, so we've reached end of field
-				if (nextDelim !== -1 && (nextDelim < nextNewline || nextNewline === -1))
-				{
-					row.push(input.substring(cursor, nextDelim));
-					cursor = nextDelim + delimLen;
-					nextDelim = input.indexOf(delim, cursor);
-					continue;
-				}
-
-				// End of row
-				if (nextNewline !== -1)
-				{
-					row.push(input.substring(cursor, nextNewline));
-					saveRow(nextNewline + newlineLen);
-
-					if (stepIsFunction)
-					{
-						doStep();
-						if (aborted)
-							return returnable();
-					}
-
-					if (preview && data.length >= preview)
-						return returnable(true);
-
-					continue;
-				}
-
-				break;
-			}
-
-
-			return finish();
-
-
-			function pushRow(row)
-			{
-				data.push(row);
-				lastCursor = cursor;
-			}
-
-			/**
-			 * Appends the remaining input from cursor to the end into
-			 * row, saves the row, calls step, and returns the results.
-			 */
-			function finish(value)
-			{
-				if (ignoreLastRow)
-					return returnable();
-				if (typeof value === 'undefined')
-					value = input.substr(cursor);
-				row.push(value);
-				cursor = inputLen;	// important in case parsing is paused
-				pushRow(row);
-				if (stepIsFunction)
-					doStep();
-				return returnable();
-			}
-
-			/**
-			 * Appends the current row to the results. It sets the cursor
-			 * to newCursor and finds the nextNewline. The caller should
-			 * take care to execute user's step function and check for
-			 * preview and end parsing if necessary.
-			 */
-			function saveRow(newCursor)
-			{
-				cursor = newCursor;
-				pushRow(row);
-				row = [];
-				nextNewline = input.indexOf(newline, cursor);
-			}
-
-			/** Returns an object with the results, errors, and meta. */
-			function returnable(stopped)
-			{
-				return {
-					data: data,
-					errors: errors,
-					meta: {
-						delimiter: delim,
-						linebreak: newline,
-						aborted: aborted,
-						truncated: !!stopped,
-						cursor: lastCursor + (baseIndex || 0)
-					}
-				};
-			}
-
-			/** Executes the user's step function and resets data & errors. */
-			function doStep()
-			{
-				step(returnable());
-				data = [], errors = [];
-			}
-		};
-
-		/** Sets the abort flag */
-		this.abort = function()
-		{
-			aborted = true;
-		};
-
-		/** Gets the cursor position */
-		this.getCharIndex = function()
-		{
-			return cursor;
-		};
-	}
-
-
-	// If you need to load Papa Parse asynchronously and you also need worker threads, hard-code
-	// the script path here. See: https://github.com/mholt/PapaParse/issues/87#issuecomment-57885358
-	function getScriptPath()
-	{
-		var scripts = document.getElementsByTagName('script');
-		return scripts.length ? scripts[scripts.length - 1].src : '';
-	}
-
-	function newWorker()
-	{
-		if (!Papa.WORKERS_SUPPORTED)
-			return false;
-		if (!LOADED_SYNC && Papa.SCRIPT_PATH === null)
-			throw new Error(
-				'Script path cannot be determined automatically when Papa Parse is loaded asynchronously. ' +
-				'You need to set Papa.SCRIPT_PATH manually.'
-			);
-		var workerUrl = Papa.SCRIPT_PATH || AUTO_SCRIPT_PATH;
-		// Append 'papaworker' to the search string to tell papaparse that this is our worker.
-		workerUrl += (workerUrl.indexOf('?') !== -1 ? '&' : '?') + 'papaworker';
-		var w = new global.Worker(workerUrl);
-		w.onmessage = mainThreadReceivedMessage;
-		w.id = workerIdCounter++;
-		workers[w.id] = w;
-		return w;
-	}
-
-	/** Callback when main thread receives a message */
-	function mainThreadReceivedMessage(e)
-	{
-		var msg = e.data;
-		var worker = workers[msg.workerId];
-		var aborted = false;
-
-		if (msg.error)
-			worker.userError(msg.error, msg.file);
-		else if (msg.results && msg.results.data)
-		{
-			var abort = function() {
-				aborted = true;
-				completeWorker(msg.workerId, { data: [], errors: [], meta: { aborted: true } });
-			};
-
-			var handle = {
-				abort: abort,
-				pause: notImplemented,
-				resume: notImplemented
-			};
-
-			if (isFunction(worker.userStep))
-			{
-				for (var i = 0; i < msg.results.data.length; i++)
-				{
-					worker.userStep({
-						data: [msg.results.data[i]],
-						errors: msg.results.errors,
-						meta: msg.results.meta
-					}, handle);
-					if (aborted)
-						break;
-				}
-				delete msg.results;	// free memory ASAP
-			}
-			else if (isFunction(worker.userChunk))
-			{
-				worker.userChunk(msg.results, handle, msg.file);
-				delete msg.results;
-			}
-		}
-
-		if (msg.finished && !aborted)
-			completeWorker(msg.workerId, msg.results);
-	}
-
-	function completeWorker(workerId, results) {
-		var worker = workers[workerId];
-		if (isFunction(worker.userComplete))
-			worker.userComplete(results);
-		worker.terminate();
-		delete workers[workerId];
-	}
-
-	function notImplemented() {
-		throw 'Not implemented.';
-	}
-
-	/** Callback when worker thread receives a message */
-	function workerThreadReceivedMessage(e)
-	{
-		var msg = e.data;
-
-		if (typeof Papa.WORKER_ID === 'undefined' && msg)
-			Papa.WORKER_ID = msg.workerId;
-
-		if (typeof msg.input === 'string')
-		{
-			global.postMessage({
-				workerId: Papa.WORKER_ID,
-				results: Papa.parse(msg.input, msg.config),
-				finished: true
-			});
-		}
-		else if ((global.File && msg.input instanceof File) || msg.input instanceof Object)	// thank you, Safari (see issue #106)
-		{
-			var results = Papa.parse(msg.input, msg.config);
-			if (results)
-				global.postMessage({
-					workerId: Papa.WORKER_ID,
-					results: results,
-					finished: true
-				});
-		}
-	}
-
-	/** Makes a deep copy of an array or object (mostly) */
-	function copy(obj)
-	{
-		if (typeof obj !== 'object')
-			return obj;
-		var cpy = obj instanceof Array ? [] : {};
-		for (var key in obj)
-			cpy[key] = copy(obj[key]);
-		return cpy;
-	}
-
-	function bindFunction(f, self)
-	{
-		return function() { f.apply(self, arguments); };
-	}
-
-	function isFunction(func)
-	{
-		return typeof func === 'function';
-	}
-
-	return Papa;
-}));
-});
-
-var DefaultConfig = "{\n  \"https://github.com/alpheios-project/lsj\": {\n    \"urls\": {\n      \"short\": \"https://repos1.alpheios.net/lexdata/lsj/dat/grc-lsj-defs.dat\",\n      \"index\": \"https://repos1.alpheios.net/lexdata/lsj/dat/grc-lsj-ids.dat\",\n      \"full\": \"https://repos1.alpheios.net/exist/rest/db/xq/lexi-get.xq?lx=lsj&lg=grc&out=html\"\n    },\n    \"langs\": {\n      \"source\": \"grc\",\n      \"target\": \"en\"\n    },\n    \"description\": \"\\\"A Greek-English Lexicon\\\" (Henry George Liddell, Robert Scott)\",\n    \"rights\": \"\\\"A Greek-English Lexicon\\\" (Henry George Liddell, Robert Scott). Provided by the Perseus Digital Library at Tufts University.\"\n  },\n  \"https://github.com/alpheios-project/aut\": {\n    \"urls\": {\n      \"short\": \"https://repos1.alpheios.net/lexdata/aut/dat/grc-aut-defs.dat\",\n      \"index\": \"https://repos1.alpheios.net/lexdata/aut//dat/grc-aut-ids.dat\",\n      \"full\": \"https://repos1.alpheios.net/exist/rest/db/xq/lexi-get.xq?lx=aut&lg=grc&out=html\"\n    },\n    \"langs\": {\n      \"source\": \"grc\",\n      \"target\": \"en\"\n    },\n    \"description\": \"\\\"Autenrieth Homeric Dictionary\\\" (Geoerge Autenrieth)\",\n    \"rights\": \"\\\"Autenrieth Homeric Dictionary\\\" (Geoerge Autenrieth). Provided by the Perseus Digital Library at Tufts University\"\n  },\n  \"https://github.com/alpheios-project/ml\": {\n    \"urls\": {\n      \"short\": \"https://repos1.alpheios.net/lexdata/ml/dat/grc-ml-defs.dat\",\n      \"index\": \"https://repos1.alpheios.net/lexdata/ml/dat/grc-ml-ids.dat\",\n      \"full\": \"https://repos1.alpheios.net/exist/rest/db/xq/lexi-get.xq?lx=ml&lg=grc&out=html\"\n    },\n    \"langs\": {\n      \"source\": \"grc\",\n      \"target\": \"en\"\n    },\n    \"description\": \"\\\"Middle Liddell\\\"\",\n    \"rights\": \"\\\"An Intermediate Greek-English Lexicon\\\" (Henry George Liddell, Robert Scott). Provided by the Perseus Digital Library at Tufts University\"\n  },\n  \"https://github.com/alpheios-project/as\": {\n    \"urls\": {\n      \"short\": \"https://repos1.alpheios.net/lexdata/as/dat/grc-as-defs.dat\",\n      \"index\": \"https://repos1.alpheios.net/lexdata/as/dat/grc-as-ids.dat\",\n      \"full\": \"https://repos1.alpheios.net/exist/rest/db/xq/lexi-get.xq?lx=as&lg=grc&out=html\"\n    },\n    \"langs\": {\n      \"source\": \"grc\",\n      \"target\": \"en\"\n    },\n    \"description\": \"\\\"A Manual Greek Lexicon of the New Testament\\\"\",\n    \"rights\": \"\\\"A Manual Greek Lexicon of the New Testament\\\" (G. Abbott-Smith). Provided by biblicalhumanities.org.\"\n  },\n  \"https://github.com/alpheios-project/dod\": {\n    \"urls\": {\n      \"short\": \"https://repos1.alpheios.net/lexdata/dod/dat/grc-dod-defs.dat\",\n      \"index\": \"https://repos1.alpheios.net/lexdata/dod/dat/grc-dod-ids.dat\",\n      \"full\": null\n    },\n    \"langs\": {\n      \"source\": \"grc\",\n      \"target\": \"en\"\n    },\n    \"description\": \"\\\"Dodson\\\"\",\n    \"rights\": \"\\\"A Public Domain lexicon by John Jeffrey Dodson (2010)\\\". Provided by biblicalhumanities.org.\"\n  },\n  \"https://github.com/alpheios-project/ls\": {\n    \"urls\": {\n      \"short\": null,\n      \"index\": \"https://repos1.alpheios.net/lexdata/ls/dat/lat-ls-ids.dat\",\n      \"full\": \"https://repos1.alpheios.net/exist/rest/db/xq/lexi-get.xq?lx=ls&lg=lat&out=html\"\n    },\n    \"langs\": {\n      \"source\": \"lat\",\n      \"target\": \"en\"\n    },\n    \"description\": \"\\\"A Latin Dictionary\\\" (Charlton T. Lewis, Charles Short)\",\n    \"rights\": \"\\\"A Latin Dictionary\\\" (Charlton T. Lewis, Charles Short). Provided by the Perseus Digital Library at Tufts University.\"\n  },\n  \"https://github.com/alpheios-project/lan\": {\n    \"urls\": {\n      \"short\": null,\n      \"index\": \"https://repos1.alpheios.net/lexdata/lan/dat/ara-lan-ids.dat\",\n      \"full\": \"https://repos1.alpheios.net/exist/rest/db/xq/lexi-get.xq?lx=lan&lg=ara&out=html\"\n    },\n    \"langs\": {\n      \"source\": \"ara\",\n      \"target\": \"en\"\n    },\n    \"description\": \"\\\"The Arabic-English Lexicon\\\" (Edward Lane)\",\n    \"rights\": \"\\\"The Arabic-English Lexicon\\\" (Edward Lane). Provided by the Perseus Digital Library at Tufts University.\"\n  },\n  \"https://github.com/alpheios-project/sal\": {\n    \"urls\": {\n      \"short\": null,\n      \"index\": \"https://repos1.alpheios.net/lexdata/sal/dat/ara-sal-ids.dat\",\n      \"full\": \"https://repos1.alpheios.net/exist/rest/db/xq/lexi-get.xq?lx=sal&lg=ara&out=html\"\n    },\n    \"langs\": {\n      \"source\": \"ara\",\n      \"target\": \"en\"\n    },\n    \"description\": \"\\\"An Advanced Learner's Arabic Dictionary\\\" (H. Anthony Salmone)\",\n    \"rights\": \"\\\"An Advanced Learner's Arabic Dictionary\\\" (H. Anthony Salmone). Provided by the Perseus Digital Library at Tufts University.\"\n  },\n  \"https://github.com/alpheios-project/stg\": {\n    \"urls\": {\n      \"short\": \"https://repos1.alpheios.net/lexdata/stg/dat/per-stg-defs.dat\",\n      \"index\": \"https://repos1.alpheios.net/lexdata/stg/dat/per-stg-ids.dat\",\n      \"full\": null\n    },\n    \"langs\": {\n      \"source\": \"per\",\n      \"target\": \"en\"\n    },\n    \"description\": \"\\\"A Comprehensive Persian-English Dictionary\\\" (Francis Joseph Steingass)\",\n    \"rights\": \"\\\"A Comprehensive Persian-English Dictionary\\\" (Francis Joseph Steingass). Provided by the Center for Advanced Study of Language (CASL) at the University of Maryland, College Park.\"\n  }\n}\n";
-
-class AlpheiosLexAdapter extends BaseLexiconAdapter {
-  /**
-   * A Client Adapter for the Alpheios V1 Lexicon service
-   * @constructor
-   * @param {string} lexid - the idenitifer code for the lexicon this instance
-   *                         provides access to
-   * @param {Object} config - JSON configuration object override
-   */
-  constructor (lexid = null, config = null) {
-    super();
-    this.lexid = lexid;
-    this.data = null;
-    this.index = null;
-    // this is a bit of a hack to enable inclusion of a JSON config file
-    // in a way that works both pre and post-rollup. Our rollup config
-    // will stringify the file and then we can parse it but if we want to
-    // run unit tests on pre-rolled up code, then we need to have a fallback
-    // which works with the raw ES6 import
-    if (config == null) {
-      try {
-        let fullconfig = JSON.parse(DefaultConfig);
-        this.config = fullconfig[lexid];
-      } catch (e) {
-        this.config = DefaultConfig[lexid];
-      }
-    } else {
-      this.config = config;
-    }
-    this.provider = new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["ResourceProvider"](this.lexid, this.config.rights);
-  }
-
-  /**
-   * @override BaseLexiconAdapter#lookupFullDef
-   */
-  async lookupFullDef (lemma = null) {
-    // TODO figure out the best way to handle initial reading of the data file
-    if (this.index === null && this.getConfig('urls').index) {
-      let url = this.getConfig('urls').index;
-      let unparsed = await this._loadData(url);
-      let parsed = papaparse.parse(unparsed, {});
-      this.index = this._fillMap(parsed.data);
-    }
-    let ids;
-    if (this.index) {
-      let model = __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["LanguageModelFactory"].getLanguageForCode(lemma.language);
-      ids = this._lookupInDataIndex(this.index, lemma, model);
-    }
-    let url = this.getConfig('urls').full;
-    if (!url) { throw new Error(`URL data is not available`) }
-    let requests = [];
-    if (ids) {
-      for (let id of ids) {
-        requests.push(`${url}&n=${id}`);
-      }
-    } else {
-      requests.push(`${url}&l=${lemma.word}`);
-    }
-    let targetLanguage = this.getConfig('langs').target;
-    let promises = [];
-    for (let r of requests) {
-      let p = new Promise((resolve, reject) => {
-        window.fetch(r).then(
-            function (response) {
-              let text = response.text();
-              resolve(text);
-            }
-          ).catch((error) => {
-            reject(error);
-          });
-      }).then((result) => {
-        if (result.match(/No entries found/)) {
-          throw new Error('Not Found')
-        } else {
-          let def = new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Definition"](result, targetLanguage, 'text/html', lemma.word);
-          return __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["ResourceProvider"].getProxy(this.provider, def)
-        }
-      });
-      promises.push(p);
-    }
-    return Promise.all(promises).then(
-      values => {
-        return values.filter(value => { return value })
-      },
-      error => {
-        console.log(error);
-        throw (error)
-        // quietly fail?
-      }
-    )
-  }
-
-  /**
-   * @override BaseLexiconAdapter#lookupShortDef
-   */
-  async lookupShortDef (lemma = null) {
-    if (this.data === null) {
-      let url = this.getConfig('urls').short;
-      if (!url) { throw new Error(`URL data is not available`) }
-      let unparsed = await this._loadData(url);
-      // the PapaParse algorigthm doesn't deal well with fields with start with data
-      // in quotes but doesn't use quotes to enclose the entire field contents.
-      // eg. a row like
-      //   lemma|"some def" and more def.
-      // throws it off. Since these data files don't contain quoted
-      // fields just use a non-printable unicode char as the quoteChar
-      // (i.e. one which is unlikely to appear in the data) as the
-      // in the papaparse config to prevent it from doing this
-      let parsed = papaparse.parse(unparsed, {quoteChar: '\u{0000}', delimiter: '|'});
-      this.data = this._fillMap(parsed.data);
-    }
-    let model = __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["LanguageModelFactory"].getLanguageForCode(lemma.language);
-    let deftexts = this._lookupInDataIndex(this.data, lemma, model);
-    let promises = [];
-    if (deftexts) {
-      for (let d of deftexts) {
-        promises.push(new Promise((resolve, reject) => {
-          let def = new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Definition"](d, this.getConfig('langs').target, 'text/plain', lemma.word);
-          resolve(__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["ResourceProvider"].getProxy(this.provider, def));
-        }));
-      }
-    } else {
-      promises.push(new Promise((resolve, reject) => {
-        reject(new Error('Not Found'));
-      }
-      ));
-    }
-    return Promise.all(promises).then(
-      values => {
-        return values.filter(value => { return value })
-      },
-      error => {
-        throw (error)
-      }
-    )
-  }
-
-  /**
-   * Lookup a Lemma object in an Alpheios v1 data index
-   * @param {Map} data the data inddex
-   * @param {Lemma} lemma the lemma to lookupInDataIndex
-   * @param {LanguageModel} model a language model for language specific methods
-   * @return {string} the index entry as a text string
-   */
-  _lookupInDataIndex (data, lemma, model) {
-    // legacy behavior from Alpheios lemma data file indices
-    // first look to see if we explicitly have an instance of this lemma
-    // with capitalization retained
-    let found;
-
-    let alternatives = [];
-    let altEncodings = [];
-    for (let l of [lemma.word, ...lemma.principalParts]) {
-      alternatives.push(l);
-      for (let a of model.alternateWordEncodings(l)) {
-        // we gather altEncodings separately because they should
-        // be tried last after the lemma and principalParts in their
-        // original form
-        altEncodings.push(a);
-      }
-      let nosense = l.replace(/_?\d+$/, '');
-      if (l !== nosense) {
-        alternatives.push(nosense);
-      }
-    }
-    alternatives = [...alternatives, ...altEncodings];
-
-    for (let lookup of alternatives) {
-      found = data.get(lookup.toLocaleLowerCase());
-      if (found && found.length === 1 && found[0] === '@') {
-        found = data.get(`@${lookup}`);
-      }
-      if (found) {
-        break
-      }
-    }
-    return found
-  }
-
-  /**
-   * Loads a data file from a URL
-   * @param {string} url - the url of the file
-   * @returns {Promise} a Promise that resolves to the text contents of the loaded file
-   */
-  _loadData (url) {
-    // TODO figure out best way to load this data
-    return new Promise((resolve, reject) => {
-      window.fetch(url).then(
-          function (response) {
-            let text = response.text();
-            resolve(text);
-          }
-        ).catch((error) => {
-          reject(error);
-        });
-    })
-  }
-
-  /**
-   * fills the data map with the rows from the parsed file
-   * we need a method to do this because there may be homonyms in
-   * the files
-   * @param {string[]} rows
-   * @return {Map} the filled map
-   */
-  _fillMap (rows) {
-    let data = new Map();
-    for (let row of rows) {
-      if (data.has(row[0])) {
-        data.get(row[0]).push(row[1]);
-      } else {
-        data.set(row[0], [ row[1] ]);
-      }
-    }
-    return data
-  }
-
-  /**
-   * Get a configuration setting for this lexicon client instance
-   * @param {string} property
-   * @returns {string} the value of the property
-   */
-  getConfig (property) {
-    return this.config[property]
-  }
-
-  /**
-   * @override BaseAdapter#getLexicons
-   */
-  static getLexicons (language) {
-    let fullconfig;
-    let lexicons = new Map();
-    try {
-      fullconfig = JSON.parse(DefaultConfig);
-    } catch (e) {
-      fullconfig = DefaultConfig;
-    }
-    for (let l of Object.keys(fullconfig)) {
-      if (fullconfig[l].langs.source === language) {
-        lexicons.set(l, fullconfig[l].description);
-      }
-    }
-    return lexicons
-  }
-}
-
-let lexicons = new Map(); // Maps a language ID into an array of lexicons
-
-class Lexicons {
-  /**
-   * Default request parameters
-   * @return {{timeout: number}}
-   */
-  static get defaults () {
-    return {
-      timeout: 0 // If zero, no timeout will be used
-    }
-  }
-
-  /**
-   * A short definition request wrapper. See fetchFullDefs for more details.
-   * @param lemma
-   * @param options
-   * @return {Promise[]}
-   */
-  static fetchShortDefs (lemma, options = {}) {
-    return Lexicons.fetchDefinitions(lemma, options, 'lookupShortDef')
-  }
-
-  /**
-   * A full definition request wrapper. See fetchFullDefs for more details.
-   * @param lemma
-   * @param options
-   * @return {Promise[]}
-   */
-  static fetchFullDefs (lemma, options = {}) {
-    return Lexicons.fetchDefinitions(lemma, options, 'lookupFullDef')
-  }
-
-  /**
-   * Send requests to either short of full definitions depending on the `lookupFunction` value.
-   * @param {Lemma} lemma - A lemma we need definitions for.
-   * @param {Object} requestOptions - With what options run a request.
-   * @param {String} lookupFunction - A name of an adapter lookup function to use for a request.
-   * @return {Promise[]} Array of Promises, one for each request. They will be either fulfilled with
-   * a Definition object or resolved with an error if request cannot be made/failed/timeout expired.
-   */
-  static fetchDefinitions (lemma, requestOptions, lookupFunction) {
-    let options = Object.assign(Lexicons.defaults, requestOptions);
-    let requests = [];
-    try {
-      let adapters = Lexicons._filterAdapters(lemma, requestOptions);
-      requests = adapters.map(adapter => {
-        console.log(`Preparing a request to "${adapter.config.description}"`);
-        return new Promise((resolve, reject) => {
-          let timeout = 0;
-          if (options.timeout > 0) {
-            timeout = window.setTimeout(() => {
-              reject(new Error(`Timeout of ${options.timeout} ms has been expired for a request to "${adapter.config.description}"`));
-            }, options.timeout);
-          }
-
-          try {
-            adapter[lookupFunction](lemma)
-              .then(value => {
-                console.log(`A definition object has been returned from "${adapter.config.description}"`, value);
-                if (timeout) { window.clearTimeout(timeout); }
-                // value is a Definition object wrapped in a Proxy
-                resolve(value);
-              }).catch(error => {
-                if (timeout) { window.clearTimeout(timeout); }
-                reject(error);
-              });
-          } catch (error) {
-            reject(error);
-          }
-        })
-      });
-
-      return requests
-    } catch (error) {
-      console.log(`Unable to fetch full definitions due to: ${error}`);
-      return []
-    }
-  }
-
-  /**
-   * Filter the adapters for a request according to the options
-   * @param {Lemma} lemma - the requested lemma
-   * @param {Object} objects - the request options
-   * @return the list of applicable Adapters
-   */
-  static _filterAdapters (lemma, options) {
-    console.log('Request Options', options);
-    let adapters = Lexicons.getLexiconAdapters(lemma.languageID);
-    if (adapters && options.allow) {
-      adapters = adapters.filter((a) => options.allow.includes(a.lexid));
-    }
-    if (!adapters || adapters.length === 0) { return [] } // No adapters found for this language
-    return adapters
-  }
-
-  /**
-   * Returns a list of suitable lexicon adapters for a given language ID.
-   * @param {Symbol} languageID - A language ID of adapters returned.
-   * @return {BaseLexiconAdapter[]} An array of lexicon adapters for a given language.
-   */
-  static getLexiconAdapters (languageID) {
-    if (!lexicons.has(languageID)) {
-      // As getLexicons need a language code, let's convert a language ID to a code
-      let languageCode = __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["LanguageModelFactory"].getLanguageCodeFromId(languageID);
-
-      let lexiconsList = AlpheiosLexAdapter.getLexicons(languageCode);
-      lexicons.set(languageID, Array.from(lexiconsList.keys()).map(id => new AlpheiosLexAdapter(id)));
-    }
-    return lexicons.get(languageID)
-  }
-}
-
-
-
-
-/***/ }),
 /* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -42647,17 +42649,12 @@ class Grammars {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_alpheios_components__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_alpheios_components___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_alpheios_components__);
-
-
 /**
  * Contains Alpheios state
  * @property {panelStatus} panelStatus
  */
-class State extends __WEBPACK_IMPORTED_MODULE_0_alpheios_components__["UIStateAPI"] {
+class State {
   constructor (tabID) {
-    super()
     this.panelStatus = undefined
     this.tab = undefined
     this.watchers = new Map()
@@ -42738,7 +42735,7 @@ class State extends __WEBPACK_IMPORTED_MODULE_0_alpheios_components__["UIStateAP
   }
 
   activateUI () {
-    this.setItem('uiActive',true)
+    this.setItem('uiActive', true)
     return this
   }
 }

@@ -1,12 +1,9 @@
-import {UIStateAPI} from 'alpheios-components'
-
 /**
  * Contains Alpheios state
  * @property {panelStatus} panelStatus
  */
-export default class State extends UIStateAPI {
+export default class State {
   constructor (tabID) {
-    super()
     this.panelStatus = undefined
     this.tab = undefined
     this.watchers = new Map()
@@ -87,7 +84,7 @@ export default class State extends UIStateAPI {
   }
 
   activateUI () {
-    this.setItem('uiActive',true)
+    this.setItem('uiActive', true)
     return this
   }
 }

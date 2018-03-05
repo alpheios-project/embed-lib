@@ -1,3 +1,5 @@
+/* eslint-env jest */
+/* global Event */
 import {LanguageDataList} from 'alpheios-inflection-tables'
 import {Constants} from 'alpheios-data-models'
 import AlpheiosTuftsAdapter from 'alpheios-tufts-adapter'
@@ -30,13 +32,13 @@ class Embedded {
     this.langData = new LanguageDataList().loadData()
     let manifest = { version: '1.0', name: 'Alpheios Embedded Library' }
     let template = { html: Template, panelId: 'alpheios-panel-embedded', popupId: 'alpheios-popup-embedded' }
-    this.ui = new UIController(this.state, this.options, this.resourceOptions, manifest,template)
-    this.doc.body.addEventListener('Alpheios_Embedded_Check', event => { this.notifyExtension(event)})
+    this.ui = new UIController(this.state, this.options, this.resourceOptions, manifest, template)
+    this.doc.body.addEventListener('Alpheios_Embedded_Check', event => { this.notifyExtension(event) })
     Object.assign(this.ui.panel.panelData, panelData)
     Object.assign(this.ui.popup.popupData, popupData)
   }
 
-  notifyExtension(event) {
+  notifyExtension (event) {
     this.doc.body.dispatchEvent(new Event('Alpheios_Embedded_Response'))
   }
 
