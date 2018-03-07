@@ -10280,7 +10280,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Embedded", function() { return Embedded; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_alpheios_inflection_tables__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_alpheios_data_models__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_alpheios_tufts_adapter__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_alpheios_morph_client__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_alpheios_lexicon_client__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_alpheios_components__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_alpheios_components___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_alpheios_components__);
@@ -10317,7 +10317,7 @@ class Embedded {
     this.state = new __WEBPACK_IMPORTED_MODULE_5__state__["a" /* default */]()
     this.options = new __WEBPACK_IMPORTED_MODULE_4_alpheios_components__["ContentOptions"](this.optionSaver, this.optionLoader)
     this.resourceOptions = new __WEBPACK_IMPORTED_MODULE_4_alpheios_components__["ResourceOptions"](this.optionSaver, this.optionLoader)
-    this.maAdapter = new __WEBPACK_IMPORTED_MODULE_2_alpheios_tufts_adapter__["a" /* default */]() // Morphological analyzer adapter, with default arguments
+    this.maAdapter = new __WEBPACK_IMPORTED_MODULE_2_alpheios_morph_client__["a" /* AlpheiosTuftsAdapter */]() // Morphological analyzer adapter, with default arguments
     this.langData = new __WEBPACK_IMPORTED_MODULE_0_alpheios_inflection_tables__["LanguageDataList"]().loadData()
     let manifest = { version: '1.0', name: 'Alpheios Embedded Library' }
     let template = { html: __WEBPACK_IMPORTED_MODULE_6__template_htmlf___default.a, panelId: 'alpheios-panel-embedded', popupId: 'alpheios-popup-embedded' }
@@ -10393,6 +10393,8 @@ class Embedded {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* unused harmony export BaseAdapter */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AlpheiosTuftsAdapter; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__ = __webpack_require__(0);
 
 
@@ -10738,7 +10740,7 @@ class WordTestData {
 
 var DefaultConfig = "{\n  \"engine\": {\n    \"lat\": [\"whitakerLat\"],\n    \"grc\": [\"morpheusgrc\"],\n    \"ara\": [\"aramorph\"],\n    \"per\": [\"hazm\"]\n  },\n  \"url\": \"https://morph.alpheios.net/api/v1/analysis/word?word=r_WORD&engine=r_ENGINE&lang=r_LANG\",\n  \"allowUnknownValues\": true\n}\n";
 
-class TuftsAdapter extends BaseAdapter {
+class AlpheiosTuftsAdapter extends BaseAdapter {
   /**
    * A Morph Client Adapter for the Tufts Morphology Service
    * @constructor
@@ -10790,7 +10792,7 @@ class TuftsAdapter extends BaseAdapter {
    * A function that maps a morphological service's specific data types and values into an inflection library standard.
    * @param {object} jsonObj - A JSON data from a Morphological Analyzer.
    * @param {object} targetWord - the target of the analysis
-   * @returns {Homonym} A library standard Homonym object.
+   * @returns {Models.Homonym} A library standard Homonym object.
    */
   transform (jsonObj, targetWord) {
     'use strict';
@@ -10996,7 +10998,7 @@ class TuftsAdapter extends BaseAdapter {
   }
 }
 
-/* harmony default export */ __webpack_exports__["a"] = (TuftsAdapter);
+
 
 
 /***/ }),

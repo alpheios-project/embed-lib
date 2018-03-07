@@ -31,7 +31,7 @@
     "alpheios-inflection-tables": "git://github.com/alpheios-project/inflection-tables.git",
     "alpheios-lexicon-client": "git://github.com/alpheios-project/lexicon-client.git",
     "alpheios-res-client": "git://github.com/alpheios-project/res-client.git",
-    "alpheios-tufts-adapter": "git://github.com/alpheios-project/tufts-adapter.git",
+    "alpheios-morph-client": "git://github.com/alpheios-project/morph-client",
     "babel-jest": "^21.2.0",
     "babel-preset-es2015": "^6.24.1",
     "copyfiles": "^1.2.0",

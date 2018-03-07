@@ -2,7 +2,7 @@
 /* global Event */
 import {LanguageDataList} from 'alpheios-inflection-tables'
 import {Constants} from 'alpheios-data-models'
-import AlpheiosTuftsAdapter from 'alpheios-tufts-adapter'
+import {AlpheiosTuftsAdapter} from 'alpheios-morph-client'
 import {Lexicons} from 'alpheios-lexicon-client'
 import { UIController, HTMLSelector, LexicalQuery, ContentOptions, ResourceOptions } from 'alpheios-components'
 import State from './state'
