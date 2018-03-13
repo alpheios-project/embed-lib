@@ -20,8 +20,6 @@ class SourceSelection {
       targetLang = defaultLanguage
     }
     this.language = Models.LanguageModelFactory.getLanguageForCode(targetLang)
-    this.languageID = Models.LanguageModelFactory.getLanguageIdFromCode(targetLang)
-    this.model = Models.LanguageModelFactory.getLanguageModel(this.languageID)
     this.initialize({word: null, normalized_word: null, start: 0, end: 0, context: null, position: 0})
   }
 
@@ -156,7 +154,7 @@ class SourceSelection {
     }
 
     let wordObj = { word: word,
-      normalized_word: this.model.normalizeWord(word).trim(),
+      normalized_word: this.language.normalizeWord(word).trim(),
       start: wordStart,
       end: wordEnd,
       context: contextStr,

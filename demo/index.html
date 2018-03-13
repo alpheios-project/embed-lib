@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Wordsvc Test Page</title>
+    <link rel="stylesheet" href="../dist/styles/style.min.css"/>
+</head>
+
+<body>
+    <script src="../dist/alpheios-embedded.js"></script>
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function(event) {
+          new Alpheios.Embedded().activate();
+        });
+    </script>
+    <div id="alpheios-main"
+      data-trigger="dblclick,touchstart"
+      data-selector=".alpheios-enabled"></div>
+    <div class="alpheios-enabled" id="block1" xml:lang="grc">
+      ἄνδρα μοι ἔννεπε, μοῦσα, πολύτροπον
+    </div>
+
+    <div class="alpheios-enabled" id="block2" lang="lat">
+      mare cupidinibus cepit<br/>
+      <span>venit</span><span>cupidinibus</span><span>cepit</span>
+    </div>
+
+    <div class="alpheios-enabled" id="block3" lang="ara" dir="rtl">
+       1 اَلدٌّنيَا دَارُ مَمَرٍ لاَ دَارُ مَقَرٍ * سُلطَان بِلاَ عَدلٍ كَنَهرٍ
+    </div>
+
+    <div class="alpheios-enabled" id="block4" lang="per" dir="rtl">
+                آبادائیدن
+                به نام خداوند جان و خرد
+                کزین برتر اندیشه برنگذرد
+                خداوند نام و خداوند جای
+                خداوند روزی ده رهنمای
+                خداوند کیوان و گردان سپهر
+                فروزنده ماه و ناهید و مهر
+                ز نام و نشان و گمان برترست
+                نگارندهٔ بر شده پیکرست
+                به بینندگان آفریننده را
+                نبینی مرنجان دو بیننده را
+                نیابد بدو نیز اندیشه راه
+                که او برتر از نام و از جایگاه
+                سخن هر چه زین گوهران بگذرد
+                نیابد بدو راه جان و خرد
+    </div>
+
+    <div class="alpheios-enabled" lang="lat">
+               <span class="alpheios-aligned-word" id="s1_w1">Cynthia</span>
+               <span class="alpheios-aligned-word" id="s1_w2">prima</span>
+               <span class="alpheios-aligned-word" id="s1_w3">suis</span>
+               <span class="alpheios-aligned-word" id="s1_w4">miserum</span>
+               <span class="alpheios-aligned-word" id="s1_w5">me</span>
+               <span class="alpheios-aligned-word" id="s1_w6">cepit</span>
+               <span class="alpheios-aligned-word" id="s1_w7">ocellis</span>,
+    </div>
+
+</body>
+</html>
