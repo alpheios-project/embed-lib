@@ -92,10 +92,12 @@ const LANG_UNIT_WORD = Symbol('word');
 const LANG_UNIT_CHAR = Symbol('char');
 const LANG_DIR_LTR = Symbol('ltr');
 const LANG_DIR_RTL = Symbol('rtl');
+const LANG_UNDEFINED = Symbol('undefined');
 const LANG_LATIN = Symbol('latin');
 const LANG_GREEK = Symbol('greek');
 const LANG_ARABIC = Symbol('arabic');
 const LANG_PERSIAN = Symbol('persian');
+const STR_LANG_CODE_UNDEFINED = 'undefined';
 const STR_LANG_CODE_LAT = 'lat';
 const STR_LANG_CODE_LA = 'la';
 const STR_LANG_CODE_GRC = 'grc';
@@ -290,13 +292,17 @@ const VOICE_CIRCUMSTANTIAL = 'circumstantial';
 const VOICE_DEPONENT = 'deponent';
 const TYPE_IRREGULAR = 'irregular';
 const TYPE_REGULAR = 'regular';
-// Classes (of pronouns in Latin)
+// Classes
 const CLASS_PERSONAL = 'personal';
 const CLASS_REFLEXIVE = 'reflexive';
 const CLASS_POSSESSIVE = 'possessive';
 const CLASS_DEMONSTRATIVE = 'demonstrative';
 const CLASS_RELATIVE = 'relative';
 const CLASS_INTERROGATIVE = 'interrogative';
+const CLASS_GENERAL_RELATIVE = 'general relative';
+const CLASS_INDEFINITE = 'indefinite';
+const CLASS_INTENSIVE = 'intensive';
+const CLASS_RECIPROCAL = 'reciprocal';
 /* eslit-enable no-unused-vars */
 
 
@@ -305,10 +311,12 @@ var constants = Object.freeze({
 	LANG_UNIT_CHAR: LANG_UNIT_CHAR,
 	LANG_DIR_LTR: LANG_DIR_LTR,
 	LANG_DIR_RTL: LANG_DIR_RTL,
+	LANG_UNDEFINED: LANG_UNDEFINED,
 	LANG_LATIN: LANG_LATIN,
 	LANG_GREEK: LANG_GREEK,
 	LANG_ARABIC: LANG_ARABIC,
 	LANG_PERSIAN: LANG_PERSIAN,
+	STR_LANG_CODE_UNDEFINED: STR_LANG_CODE_UNDEFINED,
 	STR_LANG_CODE_LAT: STR_LANG_CODE_LAT,
 	STR_LANG_CODE_LA: STR_LANG_CODE_LA,
 	STR_LANG_CODE_GRC: STR_LANG_CODE_GRC,
@@ -503,7 +511,11 @@ var constants = Object.freeze({
 	CLASS_POSSESSIVE: CLASS_POSSESSIVE,
 	CLASS_DEMONSTRATIVE: CLASS_DEMONSTRATIVE,
 	CLASS_RELATIVE: CLASS_RELATIVE,
-	CLASS_INTERROGATIVE: CLASS_INTERROGATIVE
+	CLASS_INTERROGATIVE: CLASS_INTERROGATIVE,
+	CLASS_GENERAL_RELATIVE: CLASS_GENERAL_RELATIVE,
+	CLASS_INDEFINITE: CLASS_INDEFINITE,
+	CLASS_INTENSIVE: CLASS_INTENSIVE,
+	CLASS_RECIPROCAL: CLASS_RECIPROCAL
 });
 
 class Definition {
@@ -932,77 +944,285 @@ class InflectionGroup {
  * @class  LanguageModel is the base class for language-specific behavior
  */
 class LanguageModel {
-   /**
-   */
   constructor () {
-    this.sourceLanguage = null;
-    this.contextForward = 0;
-    this.context_backward = 0;
-    this.direction = LANG_DIR_LTR;
-    this.baseUnit = LANG_UNIT_WORD;
-    this.codes = [];
+    // This is just to avoid JavaScript Standard error on `context_backward` getter name. Don't need a constructor otherwise
+    // TODO: `contextBackward` shall be used instead of `context_backward` wherever it is used
+    this.context_backward = LanguageModel.contextBackward;
+  }
+
+  static get contextForward () { return 0 }
+  static get contextBackward () { return 0 }
+  static get direction () { return LANG_DIR_LTR }
+  static get baseUnit () { return LANG_UNIT_WORD }
+
+  /**
+   * @deprecated
+   */
+  get contextForward () {
+    console.warn(`Please use static "contextForward" instead`);
+    return this.constructor.contextForward
+  }
+
+  /**
+   * @deprecated
+   */
+  get contextBackward () {
+    console.warn(`Please use static "contextBackward" instead`);
+    return this.constructor.contextBackward
+  }
+
+  /**
+   * @deprecated
+   */
+  get direction () {
+    console.warn(`Please use static "direction" instead`);
+    return this.constructor.direction
+  }
+
+  /**
+   * @deprecated
+   */
+  get baseUnit () {
+    console.warn(`Please use static "baseUnit" instead`);
+    return this.constructor.baseUnit
+  }
+
+  /**
+   * @deprecated
+   */
+  get features () {
+    console.warn(`Please use individual "getFeatureType" or static "features" instead`);
+    return this.constructor.features
+  }
+
+  static get featureNames () {
+    return this.featureValues.keys()
+  }
+
+  static get features () {
+    let features = {};
+    for (const featureName of this.featureNames) {
+      features[featureName] = this.getFeatureType(featureName);
+    }
+    return features
+  }
+
+  static get languageID () {
+    return LANG_UNDEFINED
+  }
+
+  static get languageCode () {
+    return STR_LANG_CODE_UNDEFINED
+  }
+
+  /**
+   * Returns an array of language codes that represents the language.
+   * @return {String[]} An array of language codes that matches the language.
+   */
+  static get languageCodes () {
+    return []
+  }
+
+  static get codes () {
+    console.warn(`Use static "languageCodes" instead`);
+    return this.languageCodes
+  }
+
+  /**
+   * @deprecated
+   * @return {String[]}
+   */
+  get codes () {
+    console.warn(`Please use a static version of "codes" instead`);
+    return this.constructor.languageCodes
+  }
+
+  /**
+   * @deprecated
+   * @return {string}
+   */
+  toCode () {
+    console.warn(`Please use a static "languageCode" instead`);
+    return this.constructor.languageCode
+  }
+
+  /**
+   * @deprecated
+   * @return {string}
+   */
+  static toCode () {
+    console.warn(`Please use a static "languageCode" instead`);
+    return this.languageCode
+  }
+
+  static get featureValues () {
+    /*
+    This could be a static variable, but then it will create a circular reference:
+    Feature -> LanguageModelFactory -> LanguageModel -> Feature
+     */
+    return new Map([
+      [
+        Feature.types.part,
+        [
+          POFS_ADVERB,
+          POFS_ADVERBIAL,
+          POFS_ADJECTIVE,
+          POFS_ARTICLE,
+          POFS_CONJUNCTION,
+          POFS_EXCLAMATION,
+          POFS_INTERJECTION,
+          POFS_NOUN,
+          POFS_NUMERAL,
+          POFS_PARTICLE,
+          POFS_PREFIX,
+          POFS_PREPOSITION,
+          POFS_PRONOUN,
+          POFS_SUFFIX,
+          POFS_SUPINE,
+          POFS_VERB,
+          POFS_VERB_PARTICIPLE
+        ]
+      ],
+      [
+        Feature.types.gender,
+        [
+          GEND_MASCULINE,
+          GEND_FEMININE,
+          GEND_NEUTER
+        ]
+      ],
+      [
+        Feature.types.type,
+        [
+          TYPE_REGULAR,
+          TYPE_IRREGULAR
+        ]
+      ],
+      [
+        Feature.types.person,
+        [
+          ORD_1ST,
+          ORD_2ND,
+          ORD_3RD
+        ]
+      ],
+      [
+        Feature.types.age,
+        [
+          FeatureType.UNRESTRICTED_VALUE
+        ]
+      ],
+      [
+        Feature.types.area,
+        [
+          FeatureType.UNRESTRICTED_VALUE
+        ]
+      ],
+      [
+        Feature.types.source,
+        [
+          FeatureType.UNRESTRICTED_VALUE
+        ]
+      ],
+      [
+        Feature.types.frequency,
+        [
+          FeatureType.UNRESTRICTED_VALUE
+        ]
+      ],
+      [
+        Feature.types.geo,
+        [
+          FeatureType.UNRESTRICTED_VALUE
+        ]
+      ],
+      [
+        Feature.types.pronunciation,
+        [
+          FeatureType.UNRESTRICTED_VALUE
+        ]
+      ],
+      [
+        Feature.types.kind,
+        [
+          FeatureType.UNRESTRICTED_VALUE
+        ]
+      ],
+      [
+        Feature.types.comparison,
+        [
+          FeatureType.UNRESTRICTED_VALUE
+        ]
+      ],
+      [
+        Feature.types.morph,
+        [
+          FeatureType.UNRESTRICTED_VALUE
+        ]
+      ],
+      [
+        Feature.types.stemtype,
+        [
+          FeatureType.UNRESTRICTED_VALUE
+        ]
+      ],
+      [
+        Feature.types.derivtype,
+        [
+          FeatureType.UNRESTRICTED_VALUE
+        ]
+      ]
+    ])
+  }
+
+  /**
+   * @deprecated
+   * @return {symbol} Returns a language ID
+   */
+  static get sourceLanguage () {
+    console.warn(`Please use languageID directly`);
+    return this.languageID
+  }
+
+  /**
+   * @deprecated
+   * @return {symbol} Returns a language ID
+   */
+  get sourceLanguage () {
+    console.warn(`Please use languageID directly`);
+    return this.constructor.languageID
+  }
+
+  static getFeatureType (name) {
+    let featureValues = this.featureValues;
+    if (featureValues.has(name)) {
+      return new FeatureType(name, featureValues.get(name), this.languageID)
+    } else {
+      throw new Error(`Feature "${name}" is not defined`)
+    }
   }
 
   _initializeFeatures () {
     let features = {};
-    let code = this.toCode();
-    features[Feature.types.part] = new FeatureType(Feature.types.part,
-      [ POFS_ADVERB,
-        POFS_ADVERBIAL,
-        POFS_ADJECTIVE,
-        POFS_ARTICLE,
-        POFS_CONJUNCTION,
-        POFS_EXCLAMATION,
-        POFS_INTERJECTION,
-        POFS_NOUN,
-        POFS_NUMERAL,
-        POFS_PARTICLE,
-        POFS_PREFIX,
-        POFS_PREPOSITION,
-        POFS_PRONOUN,
-        POFS_SUFFIX,
-        POFS_SUPINE,
-        POFS_VERB,
-        POFS_VERB_PARTICIPLE ], code);
-    features[Feature.types.gender] = new FeatureType(Feature.types.gender,
-      [ GEND_MASCULINE, GEND_FEMININE, GEND_NEUTER ], code);
-    features[Feature.types.type] = new FeatureType(Feature.types.type,
-      [TYPE_REGULAR, TYPE_IRREGULAR], code);
-    features[Feature.types.person] = new FeatureType(Feature.types.person,
-      [ORD_1ST, ORD_2ND, ORD_3RD], code);
-    // some general, non-language specific grammatical features
-    features[Feature.types.age] = new FeatureType(Feature.types.age,
-      [FeatureType.UNRESTRICTED_VALUE], code);
-    features[Feature.types.area] = new FeatureType(Feature.types.area,
-      [FeatureType.UNRESTRICTED_VALUE], code);
-    features[Feature.types.source] = new FeatureType(Feature.types.source,
-      [FeatureType.UNRESTRICTED_VALUE], code);
-    features[Feature.types.frequency] = new FeatureType(Feature.types.frequency,
-      [FeatureType.UNRESTRICTED_VALUE], code);
-    features[Feature.types.geo] = new FeatureType(Feature.types.geo,
-      [FeatureType.UNRESTRICTED_VALUE], code);
-    features[Feature.types.source] = new FeatureType(Feature.types.source,
-      [FeatureType.UNRESTRICTED_VALUE], code);
-    features[Feature.types.pronunciation] = new FeatureType(Feature.types.pronunciation,
-      [FeatureType.UNRESTRICTED_VALUE], code);
-    features[Feature.types.kind] = new FeatureType(Feature.types.kind,
-      [FeatureType.UNRESTRICTED_VALUE], code);
-    features[Feature.types.comparison] = new FeatureType(Feature.types.comparison,
-      [COMP_POSITIVE, COMP_SUPERLATIVE, COMP_COMPARITIVE], code);
-    features[Feature.types.morph] = new FeatureType(Feature.types.morph,
-      [FeatureType.UNRESTRICTED_VALUE], code);
-    features[Feature.types.stemtype] = new FeatureType(Feature.types.stemtype,
-      [FeatureType.UNRESTRICTED_VALUE], code);
-    features[Feature.types.derivtype] = new FeatureType(Feature.types.derivtype,
-      [FeatureType.UNRESTRICTED_VALUE], code);
+    for (const featureName of this.constructor.featureValues.keys()) {
+      features[featureName] = this.constructor.getFeatureType(featureName);
+    }
     return features
+  }
+
+  /**
+   * @deprecated
+   */
+  grammarFeatures () {
+    console.warn(`Please use a static version of "grammarFeatures" instead`);
+    return this.constructor.grammarFeatures()
   }
 
   /**
    * Identify the morphological features which should be linked to a grammar.
    * @returns {String[]} Array of Feature types
    */
-  grammarFeatures () {
+  static grammarFeatures () {
     return []
   }
 
@@ -1010,7 +1230,7 @@ class LanguageModel {
    * Check to see if this language tool can produce an inflection table display
    * for the current node
    */
-  canInflect (node) {
+  static canInflect (node) {
     return false
   }
 
@@ -1021,7 +1241,7 @@ class LanguageModel {
    * @type Boolean
    */
   static supportsLanguage (code) {
-    return this.codes.includes[code]
+    return this.languageCodes.includes[code]
   }
 
   /**
@@ -1031,7 +1251,7 @@ class LanguageModel {
    *          override in language-specific subclass)
    * @type String
    */
-  normalizeWord (word) {
+  static normalizeWord (word) {
     return word
   }
 
@@ -1041,30 +1261,40 @@ class LanguageModel {
    * @param {string} preceding optional preceding word
    * @param {string} following optional following word
    * @param {string} encoding optional encoding name to filter the response to
-   * @returns an array of alternate encodinges
+   * @returns {Array} an array of alternate encodings
    */
-  alternateWordEncodings (word, preceding = null, folloiwng = null, encoding = null) {
+  static alternateWordEncodings (word, preceding = null, following = null, encoding = null) {
     return []
+  }
+
+  alternateWordEncodings (word, preceding, following, encoding) {
+    console.warn(`Please use static "alternateWordEncodings" instead`);
+    return this.constructor.alternateWordEncodings(word, preceding, following, encoding)
   }
 
   /**
    * Get a list of valid puncutation for this language
    * @returns {String} a string containing valid puncutation symbols
    */
+  static getPunctuation () {
+    return '.,;:!?\'"(){}\\[\\]<>/\\\u00A0\u2010\u2011\u2012\u2013\u2014\u2015\u2018\u2019\u201C\u201D\u0387\u00B7\n\r'
+  }
+
+  /**
+   * @deprecated
+   * @return {String}
+   */
   getPunctuation () {
-    return ".,;:!?'\"(){}\\[\\]<>/\\\u00A0\u2010\u2011\u2012\u2013\u2014\u2015\u2018\u2019\u201C\u201D\u0387\u00B7\n\r"
+    console.warn(`Please use a static version of "getPunctuation"`);
+    return this.constructor.getPunctuation()
   }
 
   toString () {
-    return String(this.sourceLanguage)
+    return String(this.constructor.languageCode)
   }
 
   isEqual (model) {
-    return this.sourceLanguage === model.sourceLanguage
-  }
-
-  toCode () {
-    return null
+    return LanguageModelFactory.compareLanguages(this.languageID, model.languageID)
   }
 
   /*
@@ -1075,22 +1305,13 @@ class LanguageModel {
    */
 
   /**
-   * Returns an array of language codes that represents the language.
-   * @return {String[]} An array of language codes that matches the language.
-   */
-  static get codes () {
-    return []
-  }
-
-  /**
-   * Checks wither a language has a particular language code in its list of codes
+   * Checks whether a language has a particular language code in its list of codes
    * @param {String} languageCode - A language code to check
-   * @param {String[]} codes - Array of language codes a specific language has
-   * @return {boolean} Wither this language code exists in a language code list
+   * @return {boolean} Whether this language code exists in a language code list
    */
-  static hasCodeInList (languageCode, codes) {
-    if (LanguageModel.isLanguageCode(languageCode)) {
-      return codes.includes(languageCode)
+  static hasCode (languageCode) {
+    if (this.isLanguageCode(languageCode)) {
+      return this.languageCodes.includes(languageCode)
     } else {
       throw new Error(`Format of a "${languageCode}" is incorrect`)
     }
@@ -1115,6 +1336,15 @@ class LanguageModel {
   }
 
   /**
+   * @deprecated
+   * @param node
+   */
+  canInflect (node) {
+    console.warn(`Please use a static version of "canInflect" instead`);
+    return this.constructor.canInflect(node)
+  }
+
+  /**
    * Groups a set of inflections according to a language-specific display paradigm
    * The default groups according to the following logic:
    *   1. groups of groups with unique stem, prefix, suffix, part of speech dialect and comparison
@@ -1127,18 +1357,19 @@ class LanguageModel {
    *       3. groups of those groups with unique voice and tense
    *         4. groups of inflections with unique gender, person, mood, and sort
    */
-  groupInflectionsForDisplay (inflections) {
+  static groupInflectionsForDisplay (inflections) {
     let grouped = new Map();
 
     // group inflections by part of speech
     for (let infl of inflections) {
       let groupingKey = new InflectionGroupingKey(infl,
         [Feature.types.part, Feature.types.dialect, Feature.types.comparison],
-        { prefix: infl.prefix,
+        {
+          prefix: infl.prefix,
           suffix: infl.suffix,
           stem: infl.stem
         }
-        );
+      );
       let groupingKeyStr = groupingKey.toString();
       if (grouped.has(groupingKeyStr)) {
         grouped.get(groupingKeyStr).append(infl);
@@ -1238,98 +1469,124 @@ class LanguageModel {
     }
     return Array.from(grouped.values())
   }
+
+  /**
+   * @deprecated
+   * @param inflections
+   * @return {*}
+   */
+  groupInflectionsForDisplay (inflections) {
+    console.warn(`Please use a static version of "groupInflectionsForDisplay" instead`);
+    return this.constructor.groupInflectionsForDisplay(inflections)
+  }
 }
 
 /**
  * @class  LatinLanguageModel is the lass for Latin specific behavior
  */
 class LatinLanguageModel extends LanguageModel {
-   /**
-   */
-  constructor () {
-    super();
-    this.sourceLanguage = LatinLanguageModel.sourceLanguage; // For compatibility, should use a static method instead
-    this.contextForward = 0;
-    this.contextBackward = 0;
-    this.direction = LANG_DIR_LTR;
-    this.baseUnit = LANG_UNIT_WORD;
-    this.codes = LatinLanguageModel.codes; // To keep compatibility with existing code
-    this.features = this._initializeFeatures();
-  }
+  static get languageID () { return LANG_LATIN }
+  static get languageCode () { return STR_LANG_CODE_LAT }
+  static get languageCodes () { return [STR_LANG_CODE_LA, STR_LANG_CODE_LAT] }
+  static get contextForward () { return 0 }
+  static get contextBackward () { return 0 }
+  static get direction () { return LANG_DIR_LTR }
+  static get baseUnit () { return LANG_UNIT_WORD }
 
-  static get sourceLanguage () {
-    return LANG_LATIN
-  }
-
-  static get codes () {
-    return [STR_LANG_CODE_LA, STR_LANG_CODE_LAT]
-  }
-
-  /**
-   * Checks wither a language has a particular language code in its list of codes
-   * @param {String} languageCode - A language code to check
-   * @return {boolean} Wither this language code exists in a language code list
-   */
-  static hasCode (languageCode) {
-    return LanguageModel.hasCodeInList(languageCode, LatinLanguageModel.codes)
-  }
-
-  _initializeFeatures () {
-    let features = super._initializeFeatures();
-    let code = this.toCode();
-    features[Feature.types.grmClass] = new FeatureType(Feature.types.grmClass,
-      [ CLASS_PERSONAL,
-        CLASS_REFLEXIVE,
-        CLASS_POSSESSIVE,
-        CLASS_DEMONSTRATIVE,
-        CLASS_RELATIVE,
-        CLASS_INTERROGATIVE
+  static get featureValues () {
+    /*
+    This could be a static variable, but then it will create a circular reference:
+    Feature -> LanguageModelFactory -> LanguageModel -> Feature
+     */
+    return new Map([
+      ...LanguageModel.featureValues,
+      [
+        Feature.types.grmClass,
+        [
+          CLASS_PERSONAL,
+          CLASS_REFLEXIVE,
+          CLASS_POSSESSIVE,
+          CLASS_DEMONSTRATIVE,
+          CLASS_RELATIVE,
+          CLASS_INTERROGATIVE
+        ]
       ],
-      code);
-    features[Feature.types.number] = new FeatureType(Feature.types.number, [NUM_SINGULAR, NUM_PLURAL], code);
-    features[Feature.types.grmCase] = new FeatureType(Feature.types.grmCase,
-      [ CASE_NOMINATIVE,
-        CASE_GENITIVE,
-        CASE_DATIVE,
-        CASE_ACCUSATIVE,
-        CASE_ABLATIVE,
-        CASE_LOCATIVE,
-        CASE_VOCATIVE
-      ], code);
-    features[Feature.types.declension] = new FeatureType(Feature.types.declension,
-      [ ORD_1ST, ORD_2ND, ORD_3RD, ORD_4TH, ORD_5TH ], code);
-    features[Feature.types.tense] = new FeatureType(Feature.types.tense,
-      [ TENSE_PRESENT,
-        TENSE_IMPERFECT,
-        TENSE_FUTURE,
-        TENSE_PERFECT,
-        TENSE_PLUPERFECT,
-        TENSE_FUTURE_PERFECT
-      ], code);
-    features[Feature.types.voice] = new FeatureType(Feature.types.voice, [VOICE_ACTIVE, VOICE_PASSIVE], code);
-    features[Feature.types.mood] = new FeatureType(Feature.types.mood,
-      [ MOOD_INDICATIVE,
-        MOOD_SUBJUNCTIVE,
-        MOOD_IMPERATIVE,
-        MOOD_PARTICIPLE,
-        MOOD_SUPINE,
-        MOOD_GERUNDIVE,
-        MOOD_PARTICIPLE,
-        MOOD_INFINITIVE
-      ], code);
-    features[Feature.types.conjugation] = new FeatureType(Feature.types.conjugation,
-      [ ORD_1ST,
-        ORD_2ND,
-        ORD_3RD,
-        ORD_4TH
-      ], code);
-    return features
+      [
+        Feature.types.number,
+        [
+          NUM_SINGULAR,
+          NUM_PLURAL
+        ]
+      ],
+      [
+        Feature.types.grmCase,
+        [
+          CASE_NOMINATIVE,
+          CASE_GENITIVE,
+          CASE_DATIVE,
+          CASE_ACCUSATIVE,
+          CASE_ABLATIVE,
+          CASE_LOCATIVE,
+          CASE_VOCATIVE
+        ]
+      ],
+      [
+        Feature.types.declension,
+        [
+          ORD_1ST,
+          ORD_2ND,
+          ORD_3RD,
+          ORD_4TH,
+          ORD_5TH
+        ]
+      ],
+      [
+        Feature.types.tense,
+        [
+          TENSE_PRESENT,
+          TENSE_IMPERFECT,
+          TENSE_FUTURE,
+          TENSE_PERFECT,
+          TENSE_PLUPERFECT,
+          TENSE_FUTURE_PERFECT
+        ]
+      ],
+      [
+        Feature.types.voice,
+        [
+          VOICE_ACTIVE,
+          VOICE_PASSIVE
+        ]
+      ],
+      [
+        Feature.types.mood,
+        [
+          MOOD_INDICATIVE,
+          MOOD_SUBJUNCTIVE,
+          MOOD_IMPERATIVE,
+          MOOD_PARTICIPLE,
+          MOOD_SUPINE,
+          MOOD_GERUNDIVE,
+          MOOD_PARTICIPLE,
+          MOOD_INFINITIVE
+        ]
+      ],
+      [
+        Feature.types.conjugation,
+        [
+          ORD_1ST,
+          ORD_2ND,
+          ORD_3RD,
+          ORD_4TH
+        ]
+      ]
+    ])
   }
 
   /**
    * @override LanguageModel#grammarFeatures
    */
-  grammarFeatures () {
+  static grammarFeatures () {
     // TODO this ideally might be grammar specific
     return [Feature.types.part, Feature.types.grmCase, Feature.types.mood, Feature.types.declension, Feature.types.tense]
   }
@@ -1338,7 +1595,7 @@ class LatinLanguageModel extends LanguageModel {
    * Check to see if this language tool can produce an inflection table display
    * for the current node
    */
-  canInflect (node) {
+  static canInflect (node) {
     return true
   }
 
@@ -1348,7 +1605,7 @@ class LatinLanguageModel extends LanguageModel {
    * @returns the normalized form of the word (Latin replaces accents and special chars)
    * @type String
    */
-  normalizeWord (word) {
+  static normalizeWord (word) {
     if (word) {
       word = word.replace(/[\u00c0\u00c1\u00c2\u00c3\u00c4\u0100\u0102]/g, 'A');
       word = word.replace(/[\u00c8\u00c9\u00ca\u00cb\u0112\u0114]/g, 'E');
@@ -1372,17 +1629,35 @@ class LatinLanguageModel extends LanguageModel {
    * Get a list of valid puncutation for this language
    * @returns {String} a string containing valid puncutation symbols
    */
-  getPunctuation () {
+  static getPunctuation () {
     return ".,;:!?'\"(){}\\[\\]<>/\\\u00A0\u2010\u2011\u2012\u2013\u2014\u2015\u2018\u2019\u201C\u201D\u0387\u00B7\n\r"
   }
 
-  // For compatibility with existing code, can be replaced with a static version
-  toCode () {
-    return LatinLanguageModel.toCode()
-  }
+  /**
+   * Sets inflection grammar properties based on its characteristics
+   * @param {Inflection} inflection - An inflection object
+   * @return {Object} Inflection properties
+   */
+  static getInflectionConstraints (inflection) {
+    let grammar = {
+      fullFormBased: false,
+      suffixBased: false,
+      pronounClassRequired: false
+    };
+    if (inflection.hasOwnProperty(Feature.types.part) &&
+      Array.isArray(inflection[Feature.types.part]) &&
+      inflection[Feature.types.part].length === 1) {
+      let partOfSpeech = inflection[Feature.types.part][0];
+      if (partOfSpeech.value === POFS_PRONOUN) {
+        grammar.fullFormBased = true;
+      } else {
+        grammar.suffixBased = true;
+      }
+    } else {
+      console.warn(`Unable to set grammar: part of speech data is missing or is incorrect`, inflection[Feature.types.part]);
+    }
 
-  static toCode () {
-    return STR_LANG_CODE_LAT
+    return grammar
   }
 }
 
@@ -1390,108 +1665,128 @@ class LatinLanguageModel extends LanguageModel {
  * @class  LatinLanguageModel is the lass for Latin specific behavior
  */
 class GreekLanguageModel extends LanguageModel {
-   /**
-   * @constructor
-   */
-  constructor () {
-    super();
-    this.sourceLanguage = GreekLanguageModel.sourceLanguage;
-    this.contextForward = 0;
-    this.contextBackward = 0;
-    this.direction = LANG_DIR_LTR;
-    this.baseUnit = LANG_UNIT_WORD;
-    this.languageCodes = GreekLanguageModel.codes;
-    this.features = this._initializeFeatures();
-  }
+  static get languageID () { return LANG_GREEK }
+  static get languageCode () { return STR_LANG_CODE_GRC }
+  static get languageCodes () { return [STR_LANG_CODE_GRC] }
+  static get contextForward () { return 0 }
+  static get contextBackward () { return 0 }
+  static get direction () { return LANG_DIR_LTR }
+  static get baseUnit () { return LANG_UNIT_WORD }
 
-  _initializeFeatures () {
-    let features = super._initializeFeatures();
-    let code = this.toCode();
-    features[Feature.types.number] = new FeatureType(Feature.types.number, [NUM_SINGULAR, NUM_PLURAL, NUM_DUAL], code);
-    features[Feature.types.grmCase] = new FeatureType(Feature.types.grmCase,
-      [ CASE_NOMINATIVE,
-        CASE_GENITIVE,
-        CASE_DATIVE,
-        CASE_ACCUSATIVE,
-        CASE_VOCATIVE
-      ], code);
-    features[Feature.types.declension] = new FeatureType(Feature.types.declension,
-      [ ORD_1ST, ORD_2ND, ORD_3RD ], code);
-    features[Feature.types.tense] = new FeatureType(Feature.types.tense,
-      [ TENSE_PRESENT,
-        TENSE_IMPERFECT,
-        TENSE_FUTURE,
-        TENSE_PERFECT,
-        TENSE_PLUPERFECT,
-        TENSE_FUTURE_PERFECT,
-        TENSE_AORIST
-      ], code);
-    features[Feature.types.voice] = new FeatureType(Feature.types.voice,
-      [ VOICE_PASSIVE,
-        VOICE_ACTIVE,
-        VOICE_MEDIOPASSIVE,
-        VOICE_MIDDLE
-      ], code);
-    features[Feature.types.mood] = new FeatureType(Feature.types.mood,
-      [ MOOD_INDICATIVE,
-        MOOD_SUBJUNCTIVE,
-        MOOD_OPTATIVE,
-        MOOD_IMPERATIVE
-      ], code);
-    // TODO full list of greek dialects
-    features[Feature.types.dialect] = new FeatureType(Feature.types.dialect, ['attic', 'epic', 'doric'], code);
-    return features
-  }
-
-  static get sourceLanguage () {
-    return LANG_GREEK
-  }
-
-  static get codes () {
-    return [STR_LANG_CODE_GRC]
-  }
-
-  /**
-   * Checks wither a language has a particular language code in its list of codes
-   * @param {String} languageCode - A language code to check
-   * @return {boolean} Wither this language code exists in a language code list
-   */
-  static hasCode (languageCode) {
-    return LanguageModel.hasCodeInList(languageCode, GreekLanguageModel.codes)
-  }
-
-  // For compatibility with existing code, can be replaced with a static version
-  toCode () {
-    return GreekLanguageModel.toCode()
-  }
-
-  static toCode () {
-    return STR_LANG_CODE_GRC
+  static get featureValues () {
+    /*
+    This could be a static variable, but then it will create a circular reference:
+    Feature -> LanguageModelFactory -> LanguageModel -> Feature
+     */
+    return new Map([
+      ...LanguageModel.featureValues,
+      [
+        Feature.types.grmClass,
+        [
+          CLASS_DEMONSTRATIVE,
+          CLASS_GENERAL_RELATIVE,
+          CLASS_INDEFINITE,
+          CLASS_INTENSIVE,
+          CLASS_INTERROGATIVE,
+          CLASS_PERSONAL,
+          CLASS_POSSESSIVE,
+          CLASS_RECIPROCAL,
+          CLASS_REFLEXIVE,
+          CLASS_RELATIVE
+        ]
+      ],
+      [
+        Feature.types.number,
+        [
+          NUM_SINGULAR,
+          NUM_PLURAL,
+          NUM_DUAL
+        ]
+      ],
+      [
+        Feature.types.grmCase,
+        [
+          CASE_NOMINATIVE,
+          CASE_GENITIVE,
+          CASE_DATIVE,
+          CASE_ACCUSATIVE,
+          CASE_VOCATIVE
+        ]
+      ],
+      [
+        Feature.types.declension,
+        [
+          ORD_1ST,
+          ORD_2ND,
+          ORD_3RD
+        ]
+      ],
+      [
+        Feature.types.tense,
+        [
+          TENSE_PRESENT,
+          TENSE_IMPERFECT,
+          TENSE_FUTURE,
+          TENSE_PERFECT,
+          TENSE_PLUPERFECT,
+          TENSE_FUTURE_PERFECT,
+          TENSE_AORIST
+        ]
+      ],
+      [
+        Feature.types.voice,
+        [
+          VOICE_PASSIVE,
+          VOICE_ACTIVE,
+          VOICE_MEDIOPASSIVE,
+          VOICE_MIDDLE
+        ]
+      ],
+      [
+        Feature.types.mood,
+        [
+          MOOD_INDICATIVE,
+          MOOD_SUBJUNCTIVE,
+          MOOD_OPTATIVE,
+          MOOD_IMPERATIVE
+        ]
+      ],
+      [
+        // TODO full list of greek dialects
+        Feature.types.dialect,
+        [
+          'attic',
+          'epic',
+          'doric'
+        ]
+      ]
+    ])
   }
 
   /**
    * Check to see if this language tool can produce an inflection table display
    * for the current node
    */
-  canInflect (node) {
+  static canInflect (node) {
     return false
   }
+
   /**
    * @override LanguageModel#grammarFeatures
    */
-  grammarFeatures () {
+  static grammarFeatures () {
     // TODO this ideally might be grammar specific
     return [Feature.types.part, Feature.types.grmCase, Feature.types.mood, Feature.types.declension, Feature.types.tense, Feature.types.voice]
   }
 
   /**
    * Return a normalized version of a word which can be used to compare the word for equality
-   * @param {String} word the source word
-   * @returns the normalized form of the word (default version just returns the same word,
+   * @param {string} word the source word
+   * @returns {string} the normalized form of the word (default version just returns the same word,
    *          override in language-specific subclass)
-   * @type String
+   * @type string
    */
-  normalizeWord (word) {
+  static normalizeWord (word) {
     // we normalize greek to NFC - Normalization Form Canonical Composition
     if (word) {
       return word.normalize('NFC')
@@ -1503,7 +1798,7 @@ class GreekLanguageModel extends LanguageModel {
   /**
    * @override LanguageModel#alternateWordEncodings
    */
-  alternateWordEncodings (word, preceding = null, following = null, encoding = null) {
+  static alternateWordEncodings (word, preceding = null, following = null, encoding = null) {
     // the original alpheios code used the following normalizations
     // 1. When looking up a lemma
     //    stripped vowel length
@@ -1514,7 +1809,7 @@ class GreekLanguageModel extends LanguageModel {
     // 2. When looking up a verb in the verb paradigm tables
     //    it set e_normalize to false, otherwise it was true...
     // make sure it's normalized to NFC and in lower case
-    let normalized = this.normalizeWord(word).toLocaleLowerCase();
+    let normalized = GreekLanguageModel.normalizeWord(word).toLocaleLowerCase();
     let strippedVowelLength = normalized.replace(
       /[\u{1FB0}\u{1FB1}]/ug, '\u{03B1}').replace(
       /[\u{1FB8}\u{1FB9}]/ug, '\u{0391}').replace(
@@ -1551,8 +1846,80 @@ class GreekLanguageModel extends LanguageModel {
    * Get a list of valid puncutation for this language
    * @returns {String} a string containing valid puncutation symbols
    */
-  getPunctuation () {
-    return ".,;:!?'\"(){}\\[\\]<>/\\\u00A0\u2010\u2011\u2012\u2013\u2014\u2015\u2018\u2019\u201C\u201D\u0387\u00B7\n\r"
+  static getPunctuation () {
+    return '.,;:!?\'"(){}\\[\\]<>/\\\u00A0\u2010\u2011\u2012\u2013\u2014\u2015\u2018\u2019\u201C\u201D\u0387\u00B7\n\r'
+  }
+
+  /**
+   * Sets inflection grammar properties based on its characteristics
+   * @param {Inflection} inflection - An inflection object
+   * @return {Object} Inflection properties
+   */
+  static getInflectionConstraints (inflection) {
+    let constraints = {
+      fullFormBased: false,
+      suffixBased: false,
+      pronounClassRequired: false
+    };
+    if (inflection.hasOwnProperty(Feature.types.part) &&
+      Array.isArray(inflection[Feature.types.part]) &&
+      inflection[Feature.types.part].length === 1) {
+      let partOfSpeech = inflection[Feature.types.part][0];
+      if (partOfSpeech.value === POFS_PRONOUN) {
+        constraints.fullFormBased = true;
+      } else {
+        constraints.suffixBased = true;
+      }
+    } else {
+      console.warn(`Unable to set grammar: part of speech data is missing or is incorrect`, inflection[Feature.types.part]);
+    }
+
+    constraints.pronounClassRequired =
+      LanguageModelFactory.compareLanguages(GreekLanguageModel.languageID, inflection.languageID) &&
+      inflection.hasOwnProperty(Feature.types.part) &&
+      Array.isArray(inflection[Feature.types.part]) &&
+      inflection[Feature.types.part].length >= 1 &&
+      inflection[Feature.types.part][0].value === POFS_PRONOUN;
+
+    return constraints
+  }
+
+  /**
+   * Determines a class of a given word (pronoun) by finding a matching word entry(ies)
+   * in a pronoun source info (`forms`) and getting a single or multiple classes of those entries.
+   * Some morphological analyzers provide class information that is unreliable or do not
+   * provide class information at all. However, class information is essential in
+   * deciding in what table should pronouns be grouped. For this, we have to
+   * determine pronoun classes using this method.
+   * @param {Form[]} forms - An array of known forms of pronouns.
+   * @param {string} word - A word we need to find a matching class for.
+   * @param {boolean} normalize - Whether normalized forms of words shall be used for comparison.
+   * @return {Feature[]} Matching classes found in an array of Feature objects. If no matching classes found,
+   * returns an empty array.
+   */
+  static getPronounClasses (forms, word, normalize = true) {
+    let classes = [];
+    let matchingValues = new Set(); // Will eliminate duplicated values
+    let matchingForms = forms.filter(
+      form => {
+        let match = false;
+        if (form.value) {
+          match = normalize
+            ? GreekLanguageModel.normalizeWord(form.value) === GreekLanguageModel.normalizeWord(word)
+            : form.value === word;
+        }
+        return match
+      }
+    );
+    for (const matchingForm of matchingForms) {
+      if (matchingForm.features.hasOwnProperty(Feature.types.grmClass)) {
+        matchingValues.add(matchingForm.features[Feature.types.grmClass]);
+      }
+    }
+    for (const matchingValue of matchingValues) {
+      classes.push(new Feature(matchingValue, Feature.types.grmClass, GreekLanguageModel.languageID));
+    }
+    return classes
   }
 }
 
@@ -1560,62 +1927,26 @@ class GreekLanguageModel extends LanguageModel {
  * @class  LatinLanguageModel is the lass for Latin specific behavior
  */
 class ArabicLanguageModel extends LanguageModel {
-   /**
-   * @constructor
-   */
-  constructor () {
-    super();
-    this.sourceLanguage = ArabicLanguageModel.sourceLanguage;
-    this.contextForward = 0;
-    this.contextBackward = 0;
-    this.direction = LANG_DIR_RTL;
-    this.baseUnit = LANG_UNIT_WORD;
-    this.languageCodes = ArabicLanguageModel.codes;
-    this._initializeFeatures();
-  }
-
-  _initializeFeatures () {
-    this.features = super._initializeFeatures();
-  }
-
-  static get sourceLanguage () {
-    return LANG_ARABIC
-  }
-
-  static get codes () {
-    return [STR_LANG_CODE_ARA, STR_LANG_CODE_AR]
-  }
-
-  // For compatibility with existing code, can be replaced with a static version
-  toCode () {
-    return ArabicLanguageModel.toCode()
-  }
-
-  static toCode () {
-    return STR_LANG_CODE_ARA
-  }
-
-  /**
-   * Checks wither a language has a particular language code in its list of codes
-   * @param {String} languageCode - A language code to check
-   * @return {boolean} Wither this language code exists in a language code list
-   */
-  static hasCode (languageCode) {
-    return LanguageModel.hasCodeInList(languageCode, ArabicLanguageModel.codes)
-  }
+  static get languageID () { return LANG_ARABIC }
+  static get languageCode () { return STR_LANG_CODE_ARA }
+  static get languageCodes () { return [STR_LANG_CODE_ARA, STR_LANG_CODE_AR] }
+  static get contextForward () { return 0 }
+  static get contextBackward () { return 0 }
+  static get direction () { return LANG_DIR_RTL }
+  static get baseUnit () { return LANG_UNIT_WORD }
 
   /**
    * Check to see if this language tool can produce an inflection table display
    * for the current node
    */
-  canInflect (node) {
+  static canInflect (node) {
     return false
   }
 
   /**
    * @override LanguageModel#alternateWordEncodings
    */
-  alternateWordEncodings (word, preceding = null, following = null, encoding = null) {
+  static alternateWordEncodings (word, preceding = null, following = null, encoding = null) {
     // tanwin (& tatweel) - drop FATHATAN, DAMMATAN, KASRATAN, TATWEEL
     let tanwin = word.replace(/[\u{064B}\u{064C}\u{064D}\u{0640}]/ug, '');
     // hamzas - replace ALEF WITH MADDA ABOVE, ALEF WITH HAMZA ABOVE/BELOW with ALEF
@@ -1647,7 +1978,7 @@ class ArabicLanguageModel extends LanguageModel {
    * Get a list of valid puncutation for this language
    * @returns {String} a string containing valid puncutation symbols
    */
-  getPunctuation () {
+  static getPunctuation () {
     return ".,;:!?'\"(){}\\[\\]<>/\\\u00A0\u2010\u2011\u2012\u2013\u2014\u2015\u2018\u2019\u201C\u201D\u0387\u00B7\n\r"
   }
 }
@@ -1656,55 +1987,25 @@ class ArabicLanguageModel extends LanguageModel {
  * @class  PersianLanguageModel is the lass for Persian specific behavior
  */
 class PersianLanguageModel extends LanguageModel {
-   /**
-   * @constructor
-   */
-  constructor () {
-    super();
-    this.sourceLanguage = PersianLanguageModel.sourceLanguage;
-    this.contextForward = 0;
-    this.contextBackward = 0;
-    this.direction = LANG_DIR_RTL;
-    this.baseUnit = LANG_UNIT_WORD;
-    this.languageCodes = PersianLanguageModel.codes;
-    this._initializeFeatures();
-  }
+  static get languageID () { return LANG_PERSIAN }
 
-  _initializeFeatures () {
-    this.features = super._initializeFeatures();
-  }
+  static get languageCode () { return STR_LANG_CODE_PER }
 
-  static get sourceLanguage () {
-    return LANG_PERSIAN
-  }
+  static get languageCodes () { return [STR_LANG_CODE_PER, STR_LANG_CODE_FAS, STR_LANG_CODE_FA, STR_LANG_CODE_FA_IR] }
 
-  static get codes () {
-    return [STR_LANG_CODE_PER, STR_LANG_CODE_FAS, STR_LANG_CODE_FA, STR_LANG_CODE_FA_IR]
-  }
+  static get contextForward () { return 0 }
 
-  // For compatibility with existing code, can be replaced with a static version
-  toCode () {
-    return PersianLanguageModel.toCode()
-  }
+  static get contextBackward () { return 0 }
 
-  static toCode () {
-    return STR_LANG_CODE_PER
-  }
+  static get direction () { return LANG_DIR_RTL }
 
-  /**
-   * Checks wither a language has a particular language code in its list of codes
-   * @param {String} languageCode - A language code to check
-   * @return {boolean} Wither this language code exists in a language code list
-   */
-  static hasCode (languageCode) {
-    return LanguageModel.hasCodeInList(languageCode, PersianLanguageModel.codes)
-  }
+  static get baseUnit () { return LANG_UNIT_WORD }
 
   /**
    * Check to see if this language tool can produce an inflection table display
    * for the current node
    */
-  canInflect (node) {
+  static canInflect (node) {
     return false
   }
 
@@ -1712,7 +2013,7 @@ class PersianLanguageModel extends LanguageModel {
    * Get a list of valid puncutation for this language
    * @returns {String} a string containing valid puncutation symbols
    */
-  getPunctuation () {
+  static getPunctuation () {
     return ".,;:!?'\"(){}\\[\\]<>/\\\u00A0\u2010\u2011\u2012\u2013\u2014\u2015\u2018\u2019\u201C\u201D\u0387\u00B7\n\r"
   }
 }
@@ -1729,12 +2030,27 @@ const MODELS = new Map([
 class LanguageModelFactory {
   /**
    * Checks whether a language is supported
-   * @param {String | Symbol} language - Language as a language ID (Symbol) or a language code (String)
+   * @param {string | symbol} language - Language as a language ID (symbol) or a language code (string)
    * @return {boolean} True if language is supported, false otherwise
    */
   static supportsLanguage (language) {
     language = (typeof language === 'symbol') ? LanguageModelFactory.getLanguageCodeFromId(language) : language;
     return MODELS.has(language)
+  }
+
+  /**
+   * Returns a constructor of language model for a specific language ID.
+   * @param {symbol} languageID - A language ID of a desired language model.
+   * @return {LanguageModel} A language model for a given language ID.
+   */
+  static getLanguageModel (languageID) {
+    let languageCode = LanguageModelFactory.getLanguageCodeFromId(languageID);
+    if (MODELS.has(languageCode)) {
+      return MODELS.get(languageCode)
+    } else {
+      // A default value
+      return LanguageModel
+    }
   }
 
   static getLanguageForCode (code = null) {
@@ -1749,36 +2065,40 @@ class LanguageModelFactory {
 
   /**
    * Converts an ISO 639-3 language code to a language ID
-   * @param {String} languageCode - An ISO 639-3 language code
-   * @return {Symbol | undefined} A language ID or undefined if language ID is not found
+   * @param {string} languageCode - An ISO 639-3 language code
+   * @return {symbol | undefined} A language ID or undefined if language ID is not found
    */
   static getLanguageIdFromCode (languageCode) {
     for (const languageModel of MODELS.values()) {
       if (languageModel.hasCode(languageCode)) {
-        return languageModel.sourceLanguage
+        return languageModel.languageID
       }
     }
+    // Noting found, return a Symbol with an undefined value (to keep return value type the same)
+    return LANG_UNDEFINED
   }
 
   /**
    * Converts a language ID to an default ISO 639-3 language code for that language
-   * @param {Symbol} languageID - A language ID
-   * @return {String | undefined} An ISO 639-3 language code or undefined if language code is not found
+   * @param {symbol} languageID - A language ID
+   * @return {string | undefined} An ISO 639-3 language code or undefined if language code is not found
    */
   static getLanguageCodeFromId (languageID) {
     for (const languageModel of MODELS.values()) {
-      if (languageModel.sourceLanguage === languageID) {
-        return languageModel.toCode()
+      if (languageModel.languageID === languageID) {
+        return languageModel.languageCode
       }
     }
+    // Noting found, return a string with an undefined value (to keep return value type the same)
+    return STR_LANG_CODE_UNDEFINED
   }
 
   /**
    * Takes either a language ID or a language code and returns an object with both an ID and a code.
-   * @param {String | Symbol} language - Either a language ID (a Symbol) or a language code (a String).
-   * @return {Object} An object with the following properties:
-   *    {Symbol} languageID
-   *    {String} languageCode
+   * @param {string | symbol} language - Either a language ID (a Symbol) or a language code (a String).
+   * @return {object} An object with the following properties:
+   *    {symbol} languageID
+   *    {string} languageCode
    */
   static getLanguageAttrs (language) {
     if (typeof language === 'symbol') {
@@ -1800,8 +2120,8 @@ class LanguageModelFactory {
    * Compares two languages in either a language ID or a language code format. For this, does conversion of
    * language IDs to language code. Because fo this, it will work even for language IDs defined in
    * different modules
-   * @param {String | Symbol} languageA - Either a language ID (a Symbol) or a language code (a String).
-   * @param {String | Symbol} languageB - Either a language ID (a Symbol) or a language code (a String).
+   * @param {string | symbol} languageA - Either a language ID (a symbol) or a language code (a string).
+   * @param {string | symbol} languageB - Either a language ID (a symbol) or a language code (a string).
    * @return {boolean} True if languages are the same, false otherwise.
    */
   static compareLanguages (languageA, languageB) {
@@ -1839,8 +2159,13 @@ class Feature {
      * Initializes a Feature object
      * @param {string | string[]} value - A single feature value or, if this feature could have multiple
      * values, an array of values.
+     * Multiple values do not allow to use a sort order. Because of this, it's better to use
+     * array of multiple Feature objects with single value each instead of a single Feature object
+     * with multiple values.
+     * Multiple values are left for backward compatibility only. Please do not use them as they
+     * will be removed in the future.
      * @param {string} type - A type of the feature, allowed values are specified in 'types' object.
-     * @param {String | Symbol} language - A language of a feature, allowed values are specified in 'languages' object.
+     * @param {string | symbol} language - A language of a feature, allowed values are specified in 'languages' object.
      * @param {int} sortOrder - an integer used for sorting
      */
   constructor (value, type, language, sortOrder = 1) {
@@ -1875,6 +2200,8 @@ class Feature {
 
   isEqual (feature) {
     if (Array.isArray(feature.value)) {
+      // `feature` is a single object with multiple `value` properties. This feature will be sunset
+      // as it does not allow to use sort order on Feature objects.
       if (!Array.isArray(this.value) || this.value.length !== feature.value.length) {
         return false
       }
@@ -1884,7 +2211,7 @@ class Feature {
       });
       return equal
     } else {
-      return this.value === feature.value && this.type === feature.type && LanguageModelFactory.compareLanguages(this.languageID, feature.languageID)
+      return LanguageModelFactory.compareLanguages(this.languageID, feature.languageID) && this.type === feature.type && this.value === feature.value
     }
   }
 
@@ -1947,13 +2274,13 @@ Feature.types = {
   meaning: 'meaning', // Meaning of a word
   source: 'source', // Source of word definition
   footnote: 'footnote', // A footnote for a word's ending
-  dialect: 'dialect', // a dialect iderntifier
+  dialect: 'dialect', // a dialect identifier
   note: 'note', // a general note
   pronunciation: 'pronunciation',
   age: 'age',
   area: 'area',
   geo: 'geo', // geographical data
-  kind: 'kind', // verb kind informatin
+  kind: 'kind', // verb kind information
   derivtype: 'derivtype',
   stemtype: 'stemtype',
   morph: 'morph', // general morphological information
@@ -2030,29 +2357,31 @@ class Lemma {
   /**
    * Initializes a Lemma object.
    * @param {string} word - A word.
-   * @param {string} language - A language code of a word. TODO: Switch to using Language ID instead
-   * @param {Array[string]} principalParts - the principalParts of a lemma
-   * @param {Object} features - the grammatical features of a lemma
+   * @param {symbol | string} languageID - A language ID (symbol, please use this) or a language code of a word.
+   * @param {string[]} principalParts - the principalParts of a lemma.
+   * @param {Object} features - the grammatical features of a lemma.
    */
-  constructor (word, language, principalParts = [], features = {}) {
+  constructor (word, languageID, principalParts = [], features = {}) {
     if (!word) {
       throw new Error('Word should not be empty.')
     }
 
-    if (!language) {
+    if (!languageID) {
       throw new Error('Language should not be empty.')
     }
 
-    // if (!languages.isAllowed(language)) {
-    //    throw new Error('Language "' + language + '" is not supported.');
-    // }
+    this.languageID = undefined;
+    this.languageCode = undefined
+    ;({languageID: this.languageID, languageCode: this.languageCode} = LanguageModelFactory.getLanguageAttrs(languageID));
 
     this.word = word;
-    this.language = language; // For compatibility, should probably use language ID instead
-    this.languageCode = language;
-    this.languageID = LanguageModelFactory.getLanguageIdFromCode(this.languageCode);
     this.principalParts = principalParts;
     this.features = {};
+  }
+
+  get language () {
+    console.warn(`Please use "languageID" instead of "language"`);
+    return this.languageCode
   }
 
   static readObject (jsonObject) {
@@ -2080,8 +2409,8 @@ class Lemma {
         throw new Error('feature data must be a Feature object.')
       }
 
-      if (element.languageID !== this.languageID) {
-        throw new Error('Language "' + element.languageID + '" of a feature does not match a language "' +
+      if (!LanguageModelFactory.compareLanguages(element.languageID, this.languageID)) {
+        throw new Error('Language "' + element.languageID.toString() + '" of a feature does not match a language "' +
                 this.languageID.toString() + '" of a Lemma object.')
       }
 
@@ -2125,7 +2454,7 @@ class Inflection {
     /**
      * Initializes an Inflection object.
      * @param {string} stem - A stem of a word.
-     * @param {String | Symbol} language - A word's language.
+     * @param {string | symbol} language - A word's language.
      * @param {string} suffix - a suffix of a word
      * @param {prefix} prefix - a prefix of a word
      * @param {example} example - example
@@ -2136,7 +2465,7 @@ class Inflection {
     }
 
     if (!language) {
-      throw new Error('Langauge should not be empty.')
+      throw new Error('Language should not be empty.')
     }
 
     if (!LanguageModelFactory.supportsLanguage(language)) {
@@ -2147,15 +2476,31 @@ class Inflection {
     this.languageID = undefined;
     this.languageCode = undefined
     ;({languageID: this.languageID, languageCode: this.languageCode} = LanguageModelFactory.getLanguageAttrs(language));
+    this.model = LanguageModelFactory.getLanguageModel(this.languageID);
 
-    // Suffix may not be present in every word. If missing, it will set to null.
+    // A grammar constraints object
+    this.constraints = {
+      fullFormBased: false,  // True this inflection stores and requires to use a full form of a word
+      suffixBased: false,    // True if only suffix is enough to identify this inflection
+      obligatoryMatches: [], // Names of features that should be matched in order to include a form or suffix to an inflection table
+      optionalMatches: []    // Names of features that will be recorded but are not important for inclusion of a form or suffix to an inflection table
+    };
+
+    // Suffix may not be present in every word. If missing, it will be set to null.
     this.suffix = suffix;
 
-    // Prefix may not be present in every word. If missing, it will set to null.
+    // Prefix may not be present in every word. If missing, it will be set to null.
     this.prefix = prefix;
 
     // Example may not be provided
     this.example = example;
+  }
+
+  get form () {
+    let form = this.prefix ? this.prefix : '';
+    form = form + this.stem;
+    form = this.suffix ? form + this.suffix : form;
+    return form
   }
 
   /**
@@ -2165,6 +2510,24 @@ class Inflection {
   get language () {
     console.warn(`Please use a "languageID" instead of a "language"`);
     return this.languageCode
+  }
+
+  /**
+   * Sets grammar properties based on inflection info
+   */
+  setConstraints () {
+    if (this.model.hasOwnProperty('getInflectionConstraints')) {
+      let constraintData = this.model.getInflectionConstraints(this);
+      this.constraints = Object.assign(this.constraints, constraintData);
+    }
+  }
+
+  compareWithWord (word, normalize = true) {
+    const model = LanguageModelFactory.getLanguageModel(this.languageID);
+    const value = this.constraints.suffixBased ? this.suffix : this.form;
+    return normalize
+      ? model.normalizeWord(value) === model.normalizeWord(word)
+      : value === word
   }
 
   static readObject (jsonObject) {
@@ -2203,6 +2566,23 @@ class Inflection {
 
       this[type].push(element);
     }
+  }
+
+  /**
+   * Checks whether an inflection has a feature with `featureName` name and `featureValue` value
+   * @param {string} featureName - A name of a feature
+   * @param {string} featureValue - A value of a feature
+   * @return {boolean} True if an inflection contains a feature, false otherwise
+   */
+  hasFeatureValue (featureName, featureValue) {
+    if (this.hasOwnProperty(featureName) && Array.isArray(this[featureName]) && this[featureName].length > 0) {
+      for (let feature of this[featureName]) {
+        if (feature.hasValue(featureValue)) {
+          return true
+        }
+      }
+    }
+    return false
   }
 }
 
@@ -2261,7 +2641,7 @@ class Lexeme {
   }
 
   getGroupedInflections () {
-    let lm = LanguageModelFactory.getLanguageForCode(this.lemma.language);
+    let lm = LanguageModelFactory.getLanguageModel(this.lemma.languageID);
     return lm.groupInflectionsForDisplay(this.inflections)
   }
 
@@ -2379,6 +2759,18 @@ class Homonym {
     } else {
       throw new Error('Homonym has not been initialized properly. Unable to obtain language ID information.')
     }
+  }
+
+  /**
+   * Returns a list of all inflections within all lexemes of a homonym
+   * @return {Inflection[]} An array of inflections
+   */
+  get inflections () {
+    let inflections = [];
+    for (const lexeme of this.lexemes) {
+      inflections = inflections.concat(lexeme.inflections);
+    }
+    return inflections
   }
 }
 
@@ -10415,6 +10807,18 @@ class BaseAdapter {
   }
 
   /**
+   * Lookup the supplied word using the preconfigured engines and
+   * and return a Homonym
+   * @param {string} lang - ISO 639-2 language code for the word
+   * @param {string} word - the word to lookup
+   * @return {Homonym} homonym object
+   */
+  async getHomonym (lang, word) {
+    // implement in the derived adapater class
+    return undefined
+  }
+
+  /**
    * Fetch response from a remote URL
    * @param {string} lang - the language code
    * @param {string} word - the word to lookup
@@ -10422,28 +10826,28 @@ class BaseAdapter {
    *                    with the results of the analysis
    */
   fetch (lang, word) {
-    let url = this.prepareRequestUrl(lang, word);
+    let url = this.prepareRequestUrl(lang, word)
     return new Promise((resolve, reject) => {
       if (url) {
         window.fetch(url).then(
             function (response) {
               try {
                 if (response.ok) {
-                  let json = response.json();
-                  resolve(json);
+                  let json = response.json()
+                  resolve(json)
                 } else {
-                  reject(response.statusText);
+                  reject(response.statusText)
                 }
               } catch (error) {
-                reject(error);
+                reject(error)
               }
             }
           ).catch((error) => {
-            reject(error);
+            reject(error)
           }
-        );
+        )
       } else {
-        reject(new Error(`Unable to prepare parser request url for ${lang}`));
+        reject(new Error(`Unable to prepare parser request url for ${lang}`))
       }
     })
   }
@@ -10458,10 +10862,10 @@ class BaseAdapter {
   fetchTestData (lang, word) {
     return new Promise((resolve, reject) => {
       try {
-        let data = {};
-        resolve(data);
+        let data = {}
+        resolve(data)
       } catch (error) {
-        reject(error);
+        reject(error)
       }
     })
   }
@@ -10491,33 +10895,33 @@ class ImportData {
      * @param {string} engine - engine code
      */
   constructor (language, engine) {
-    'use strict';
-    this.language = language;
-    this.engine = engine;
+    'use strict'
+    this.language = language
+    this.engine = engine
     // add all the features that the language supports so that we
     // can return the default values if we don't need to import a mapping
     for (let featureName of Object.keys(language.features)) {
-      this.addFeature(featureName);
+      this.addFeature(featureName)
     }
     // may be overridden by specific engine use via setLemmaParser
-    this.parseLemma = function (lemma) { return new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Lemma"](lemma, this.language.toCode()) };
+    this.parseLemma = function (lemma) { return new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Lemma"](lemma, this.language.toCode()) }
     // may be overridden by specific engine use via setPropertyParser - default just returns the property value
     // as a list
     this.parseProperty = function (propertyName, propertyValue) {
-      let propertyValues = [];
+      let propertyValues = []
       if (propertyName === 'decl') {
-        propertyValues = propertyValue.split('&').map((p) => p.trim());
+        propertyValues = propertyValue.split('&').map((p) => p.trim())
       } else if (propertyName === 'comp' && propertyValue === 'positive') {
-        propertyValues = [];
+        propertyValues = []
       } else {
-        propertyValues = [propertyValue];
+        propertyValues = [propertyValue]
       }
       return propertyValues
-    };
+    }
     // may be overridden by specifc engine use via setLexemeFilter - default assumes we will have a part of speech
     this.reportLexeme = function (lexeme) {
       return lexeme.lemma.features[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.part]
-    };
+    }
   }
 
     /**
@@ -10526,46 +10930,46 @@ class ImportData {
      * @return {Object} An object that represent a newly created grammatical feature.
      */
   addFeature (featureName) {
-    this[featureName] = {};
-    let language = this.language;
+    this[featureName] = {}
+    let language = this.language
 
     this[featureName].add = function add (providerValue, alpheiosValue) {
-      this[providerValue] = alpheiosValue;
+      this[providerValue] = alpheiosValue
       return this
-    };
+    }
 
     this[featureName].get = function get (providerValue, sortOrder = 1, allowUnknownValues = false) {
-      let mappedValue = [];
+      let mappedValue = []
       if (!this.importer.has(providerValue)) {
         // if the providerValue matches the model value or the model value
         // is unrestricted, return a feature with the providerValue and order
         if (language.features[featureName][providerValue] ||
             language.features[featureName].hasUnrestrictedValue()) {
-          mappedValue = language.features[featureName].get(providerValue, sortOrder);
+          mappedValue = language.features[featureName].get(providerValue, sortOrder)
         } else {
-          let message = `Unknown value "${providerValue}" of feature "${featureName}" for ${language} (allowed = ${allowUnknownValues})`;
+          let message = `Unknown value "${providerValue}" of feature "${featureName}" for ${language} (allowed = ${allowUnknownValues})`
           if (allowUnknownValues) {
-            console.log(message);
-            mappedValue = language.features[featureName].get(providerValue, sortOrder);
+            console.log(message)
+            mappedValue = language.features[featureName].get(providerValue, sortOrder)
           } else {
             throw new Error(message)
           }
         }
       } else {
-        let tempValue = this.importer.get(providerValue);
+        let tempValue = this.importer.get(providerValue)
         if (Array.isArray(tempValue)) {
-          mappedValue = [];
+          mappedValue = []
           for (let feature of tempValue) {
-            mappedValue.push(language.features[featureName].get(feature.value, sortOrder));
+            mappedValue.push(language.features[featureName].get(feature.value, sortOrder))
           }
         } else {
-          mappedValue = language.features[featureName].get(tempValue.value, sortOrder);
+          mappedValue = language.features[featureName].get(tempValue.value, sortOrder)
         }
       }
       return mappedValue
-    };
+    }
 
-    this[featureName].importer = new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["FeatureImporter"]();
+    this[featureName].importer = new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["FeatureImporter"]()
 
     return this[featureName]
   }
@@ -10574,21 +10978,21 @@ class ImportData {
    * Add an engine-specific lemma parser
    */
   setLemmaParser (callback) {
-    this.parseLemma = callback;
+    this.parseLemma = callback
   }
 
   /**
    * Add an engine-specific property parser
    */
   setPropertyParser (callback) {
-    this.parseProperty = callback;
+    this.parseProperty = callback
   }
 
   /**
    * Add an engine-specific lexeme filter
    */
   setLexemeFilter (callback) {
-    this.reportLexeme = callback;
+    this.reportLexeme = callback
   }
 
   /**
@@ -10600,34 +11004,34 @@ class ImportData {
    * @param {boolean} allowUnknownValues flag to indicate if unknown values are allowed
    */
   mapFeature (model, inputElem, inputName, featureName, allowUnknownValues) {
-    let mapped = [];
-    let values = [];
+    let mapped = []
+    let values = []
     if (inputElem[inputName]) {
       if (Array.isArray(inputElem[inputName])) {
         for (let e of inputElem[inputName]) {
-          values.push(...this.parseProperty(inputName, e.$));
+          values.push(...this.parseProperty(inputName, e.$))
         }
       } else {
-        values = this.parseProperty(inputName, inputElem[inputName].$);
+        values = this.parseProperty(inputName, inputElem[inputName].$)
       }
     }
     for (let value of values) {
       let features = this[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types[featureName]].get(
-        value, inputElem[inputName].order, allowUnknownValues);
+        value, inputElem[inputName].order, allowUnknownValues)
       if (Array.isArray(features)) {
-        mapped.push(...features);
+        mapped.push(...features)
       } else {
-        mapped.push(features);
+        mapped.push(features)
       }
     }
     if (mapped.length > 0) {
-      model.feature = mapped;
+      model.feature = mapped
     }
   }
 }
 
-let data = new ImportData(new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["LatinLanguageModel"](), 'whitakerLat');
-let types = __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types;
+let data = new ImportData(new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["LatinLanguageModel"](), 'whitakerLat')
+let types = __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types
 
 /*
 Below are value conversion maps for each grammatical feature to be parsed.
@@ -10649,33 +11053,33 @@ data.addFeature(__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].ty
   [ data.language.features[types.gender][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].GEND_MASCULINE],
     data.language.features[types.gender][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].GEND_FEMININE],
     data.language.features[types.gender][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].GEND_NEUTER]
-  ]);
+  ])
 
 data.addFeature(__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.tense).importer
-    .map('future_perfect', data.language.features[types.tense][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].TENSE_FUTURE_PERFECT]);
+    .map('future_perfect', data.language.features[types.tense][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].TENSE_FUTURE_PERFECT])
 
 data.setLemmaParser(function (lemma) {
   // Whitaker's Words returns principal parts for some words
   // and sometimes has a space separted stem and suffix
-  let parsed, primary;
-  let parts = [];
-  let lemmas = lemma.split(', ');
+  let parsed, primary
+  let parts = []
+  let lemmas = lemma.split(', ')
   for (let [index, l] of lemmas.entries()) {
-    let normalized = l.split(' ')[0];
+    let normalized = l.split(' ')[0]
     if (index === 0) {
-      primary = normalized;
+      primary = normalized
     }
-    parts.push(normalized);
+    parts.push(normalized)
   }
   if (primary) {
-    parsed = new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Lemma"](primary, this.language.toCode(), parts);
+    parsed = new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Lemma"](primary, this.language.toCode(), parts)
   }
 
   return parsed
-});
+})
 
-let data$1 = new ImportData(new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["GreekLanguageModel"](), 'morpheusgrc');
-let types$1 = __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types;
+let data$1 = new ImportData(new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["GreekLanguageModel"](), 'morpheusgrc')
+let types$1 = __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types
 
 /*
 Below are value conversion maps for each grammatical feature to be parsed.
@@ -10689,36 +11093,36 @@ data$1.addFeature(__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].
     .map('masculine feminine',
   [ data$1.language.features[types$1.gender][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].GEND_MASCULINE],
     data$1.language.features[types$1.gender][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].GEND_FEMININE]
-  ]);
+  ])
 
 data$1.addFeature(__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.declension).importer
     .map('1st & 2nd',
   [ data$1.language.features[types$1.declension][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].ORD_1ST],
     data$1.language.features[types$1.declension][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].ORD_2ND]
-  ]);
+  ])
 
-let data$2 = new ImportData(new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["ArabicLanguageModel"](), 'aramorph');
-let types$2 = __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types;
+let data$2 = new ImportData(new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["ArabicLanguageModel"](), 'aramorph')
+let types$2 = __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types
 
 data$2.addFeature(__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.part).importer
-    .map('proper noun', [data$2.language.features[types$2.part][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].POFS_NOUN]]);
+    .map('proper noun', [data$2.language.features[types$2.part][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].POFS_NOUN]])
 
-let data$3 = new ImportData(new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["PersianLanguageModel"](), 'hazm');
-let types$3 = __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types;
+let data$3 = new ImportData(new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["PersianLanguageModel"](), 'hazm')
+let types$3 = __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types
 
 data$3.addFeature(__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.part).importer
-    .map('proper noun', [data$3.language.features[types$3.part][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].POFS_NOUN]]);
+    .map('proper noun', [data$3.language.features[types$3.part][__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].POFS_NOUN]])
 
 // hazm allow all lemmas in without respect features as all we use it for is lemmatizing
-data$3.setLexemeFilter(function (lexeme) { return Boolean(lexeme.lemma.word) });
+data$3.setLexemeFilter(function (lexeme) { return Boolean(lexeme.lemma.word) })
 
-var Cupidinibus = "{\n  \"RDF\": {\n    \"Annotation\": {\n      \"about\": \"urn:TuftsMorphologyService:cupidinibus:whitakerLat\",\n      \"creator\": {\n        \"Agent\": {\n          \"about\": \"net.alpheios:tools:wordsxml.v1\"\n        }\n      },\n      \"created\": {\n        \"$\": \"2017-08-10T23:15:29.185581\"\n      },\n      \"hasTarget\": {\n        \"Description\": {\n          \"about\": \"urn:word:cupidinibus\"\n        }\n      },\n      \"title\": {},\n      \"hasBody\": [\n        {\n          \"resource\": \"urn:uuid:idm140578094883136\"\n        },\n        {\n          \"resource\": \"urn:uuid:idm140578158026160\"\n        }\n      ],\n      \"Body\": [\n        {\n          \"about\": \"urn:uuid:idm140578094883136\",\n          \"type\": {\n            \"resource\": \"cnt:ContentAsXML\"\n          },\n          \"rest\": {\n            \"entry\": {\n              \"infl\": [\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"cupidin\"\n                    },\n                    \"suff\": {\n                      \"$\": \"ibus\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 5,\n                    \"$\": \"noun\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"var\": {\n                    \"$\": \"1st\"\n                  },\n                  \"case\": {\n                    \"order\": 2,\n                    \"$\": \"locative\"\n                  },\n                  \"num\": {\n                    \"$\": \"plural\"\n                  },\n                  \"gend\": {\n                    \"$\": \"masculine\"\n                  }\n                },\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"cupidin\"\n                    },\n                    \"suff\": {\n                      \"$\": \"ibus\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 5,\n                    \"$\": \"noun\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"var\": {\n                    \"$\": \"1st\"\n                  },\n                  \"case\": {\n                    \"order\": 5,\n                    \"$\": \"dative\"\n                  },\n                  \"num\": {\n                    \"$\": \"plural\"\n                  },\n                  \"gend\": {\n                    \"$\": \"masculine\"\n                  }\n                },\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"cupidin\"\n                    },\n                    \"suff\": {\n                      \"$\": \"ibus\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 5,\n                    \"$\": \"noun\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"var\": {\n                    \"$\": \"1st\"\n                  },\n                  \"case\": {\n                    \"order\": 3,\n                    \"$\": \"ablative\"\n                  },\n                  \"num\": {\n                    \"$\": \"plural\"\n                  },\n                  \"gend\": {\n                    \"$\": \"masculine\"\n                  }\n                }\n              ],\n              \"dict\": {\n                \"hdwd\": {\n                  \"lang\": \"lat\",\n                  \"$\": \"Cupido, Cupidinis\"\n                },\n                \"pofs\": {\n                  \"order\": 5,\n                  \"$\": \"noun\"\n                },\n                \"decl\": {\n                  \"$\": \"3rd\"\n                },\n                \"gend\": {\n                  \"$\": \"masculine\"\n                },\n                \"area\": {\n                  \"$\": \"religion\"\n                },\n                \"freq\": {\n                  \"order\": 4,\n                  \"$\": \"common\"\n                },\n                \"src\": {\n                  \"$\": \"Ox.Lat.Dict.\"\n                }\n              },\n              \"mean\": {\n                \"$\": \"Cupid, son of Venus; personification of carnal desire;\"\n              }\n            }\n          }\n        },\n        {\n          \"about\": \"urn:uuid:idm140578158026160\",\n          \"type\": {\n            \"resource\": \"cnt:ContentAsXML\"\n          },\n          \"rest\": {\n            \"entry\": {\n              \"infl\": [\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"cupidin\"\n                    },\n                    \"suff\": {\n                      \"$\": \"ibus\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 5,\n                    \"$\": \"noun\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"var\": {\n                    \"$\": \"1st\"\n                  },\n                  \"case\": {\n                    \"order\": 2,\n                    \"$\": \"locative\"\n                  },\n                  \"num\": {\n                    \"$\": \"plural\"\n                  },\n                  \"gend\": {\n                    \"$\": \"common\"\n                  }\n                },\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"cupidin\"\n                    },\n                    \"suff\": {\n                      \"$\": \"ibus\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 5,\n                    \"$\": \"noun\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"var\": {\n                    \"$\": \"1st\"\n                  },\n                  \"case\": {\n                    \"order\": 5,\n                    \"$\": \"dative\"\n                  },\n                  \"num\": {\n                    \"$\": \"plural\"\n                  },\n                  \"gend\": {\n                    \"$\": \"common\"\n                  }\n                },\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"cupidin\"\n                    },\n                    \"suff\": {\n                      \"$\": \"ibus\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 5,\n                    \"$\": \"noun\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"var\": {\n                    \"$\": \"1st\"\n                  },\n                  \"case\": {\n                    \"order\": 3,\n                    \"$\": \"ablative\"\n                  },\n                  \"num\": {\n                    \"$\": \"plural\"\n                  },\n                  \"gend\": {\n                    \"$\": \"common\"\n                  }\n                }\n              ],\n              \"dict\": {\n                \"hdwd\": {\n                  \"lang\": \"lat\",\n                  \"$\": \"cupido, cupidinis\"\n                },\n                \"pofs\": {\n                  \"order\": 5,\n                  \"$\": \"noun\"\n                },\n                \"decl\": {\n                  \"$\": \"3rd\"\n                },\n                \"gend\": {\n                  \"$\": \"common\"\n                },\n                \"freq\": {\n                  \"order\": 5,\n                  \"$\": \"frequent\"\n                },\n                \"src\": {\n                  \"$\": \"Ox.Lat.Dict.\"\n                }\n              },\n              \"mean\": {\n                \"$\": \"desire/love/wish/longing (passionate); lust; greed, appetite; desire for gain;\"\n              }\n            }\n          }\n        }\n      ]\n    }\n  }\n}\n";
+var Cupidinibus = '{\n  "RDF": {\n    "Annotation": {\n      "about": "urn:TuftsMorphologyService:cupidinibus:whitakerLat",\n      "creator": {\n        "Agent": {\n          "about": "net.alpheios:tools:wordsxml.v1"\n        }\n      },\n      "created": {\n        "$": "2017-08-10T23:15:29.185581"\n      },\n      "hasTarget": {\n        "Description": {\n          "about": "urn:word:cupidinibus"\n        }\n      },\n      "title": {},\n      "hasBody": [\n        {\n          "resource": "urn:uuid:idm140578094883136"\n        },\n        {\n          "resource": "urn:uuid:idm140578158026160"\n        }\n      ],\n      "Body": [\n        {\n          "about": "urn:uuid:idm140578094883136",\n          "type": {\n            "resource": "cnt:ContentAsXML"\n          },\n          "rest": {\n            "entry": {\n              "infl": [\n                {\n                  "term": {\n                    "lang": "lat",\n                    "stem": {\n                      "$": "cupidin"\n                    },\n                    "suff": {\n                      "$": "ibus"\n                    }\n                  },\n                  "pofs": {\n                    "order": 5,\n                    "$": "noun"\n                  },\n                  "decl": {\n                    "$": "3rd"\n                  },\n                  "var": {\n                    "$": "1st"\n                  },\n                  "case": {\n                    "order": 2,\n                    "$": "locative"\n                  },\n                  "num": {\n                    "$": "plural"\n                  },\n                  "gend": {\n                    "$": "masculine"\n                  }\n                },\n                {\n                  "term": {\n                    "lang": "lat",\n                    "stem": {\n                      "$": "cupidin"\n                    },\n                    "suff": {\n                      "$": "ibus"\n                    }\n                  },\n                  "pofs": {\n                    "order": 5,\n                    "$": "noun"\n                  },\n                  "decl": {\n                    "$": "3rd"\n                  },\n                  "var": {\n                    "$": "1st"\n                  },\n                  "case": {\n                    "order": 5,\n                    "$": "dative"\n                  },\n                  "num": {\n                    "$": "plural"\n                  },\n                  "gend": {\n                    "$": "masculine"\n                  }\n                },\n                {\n                  "term": {\n                    "lang": "lat",\n                    "stem": {\n                      "$": "cupidin"\n                    },\n                    "suff": {\n                      "$": "ibus"\n                    }\n                  },\n                  "pofs": {\n                    "order": 5,\n                    "$": "noun"\n                  },\n                  "decl": {\n                    "$": "3rd"\n                  },\n                  "var": {\n                    "$": "1st"\n                  },\n                  "case": {\n                    "order": 3,\n                    "$": "ablative"\n                  },\n                  "num": {\n                    "$": "plural"\n                  },\n                  "gend": {\n                    "$": "masculine"\n                  }\n                }\n              ],\n              "dict": {\n                "hdwd": {\n                  "lang": "lat",\n                  "$": "Cupido, Cupidinis"\n                },\n                "pofs": {\n                  "order": 5,\n                  "$": "noun"\n                },\n                "decl": {\n                  "$": "3rd"\n                },\n                "gend": {\n                  "$": "masculine"\n                },\n                "area": {\n                  "$": "religion"\n                },\n                "freq": {\n                  "order": 4,\n                  "$": "common"\n                },\n                "src": {\n                  "$": "Ox.Lat.Dict."\n                }\n              },\n              "mean": {\n                "$": "Cupid, son of Venus; personification of carnal desire;"\n              }\n            }\n          }\n        },\n        {\n          "about": "urn:uuid:idm140578158026160",\n          "type": {\n            "resource": "cnt:ContentAsXML"\n          },\n          "rest": {\n            "entry": {\n              "infl": [\n                {\n                  "term": {\n                    "lang": "lat",\n                    "stem": {\n                      "$": "cupidin"\n                    },\n                    "suff": {\n                      "$": "ibus"\n                    }\n                  },\n                  "pofs": {\n                    "order": 5,\n                    "$": "noun"\n                  },\n                  "decl": {\n                    "$": "3rd"\n                  },\n                  "var": {\n                    "$": "1st"\n                  },\n                  "case": {\n                    "order": 2,\n                    "$": "locative"\n                  },\n                  "num": {\n                    "$": "plural"\n                  },\n                  "gend": {\n                    "$": "common"\n                  }\n                },\n                {\n                  "term": {\n                    "lang": "lat",\n                    "stem": {\n                      "$": "cupidin"\n                    },\n                    "suff": {\n                      "$": "ibus"\n                    }\n                  },\n                  "pofs": {\n                    "order": 5,\n                    "$": "noun"\n                  },\n                  "decl": {\n                    "$": "3rd"\n                  },\n                  "var": {\n                    "$": "1st"\n                  },\n                  "case": {\n                    "order": 5,\n                    "$": "dative"\n                  },\n                  "num": {\n                    "$": "plural"\n                  },\n                  "gend": {\n                    "$": "common"\n                  }\n                },\n                {\n                  "term": {\n                    "lang": "lat",\n                    "stem": {\n                      "$": "cupidin"\n                    },\n                    "suff": {\n                      "$": "ibus"\n                    }\n                  },\n                  "pofs": {\n                    "order": 5,\n                    "$": "noun"\n                  },\n                  "decl": {\n                    "$": "3rd"\n                  },\n                  "var": {\n                    "$": "1st"\n                  },\n                  "case": {\n                    "order": 3,\n                    "$": "ablative"\n                  },\n                  "num": {\n                    "$": "plural"\n                  },\n                  "gend": {\n                    "$": "common"\n                  }\n                }\n              ],\n              "dict": {\n                "hdwd": {\n                  "lang": "lat",\n                  "$": "cupido, cupidinis"\n                },\n                "pofs": {\n                  "order": 5,\n                  "$": "noun"\n                },\n                "decl": {\n                  "$": "3rd"\n                },\n                "gend": {\n                  "$": "common"\n                },\n                "freq": {\n                  "order": 5,\n                  "$": "frequent"\n                },\n                "src": {\n                  "$": "Ox.Lat.Dict."\n                }\n              },\n              "mean": {\n                "$": "desire/love/wish/longing (passionate); lust; greed, appetite; desire for gain;"\n              }\n            }\n          }\n        }\n      ]\n    }\n  }\n}\n'
 
-var Mare = "{\n  \"RDF\": {\n    \"Annotation\": {\n      \"about\": \"urn:TuftsMorphologyService:mare:morpheuslat\",\n      \"creator\": {\n        \"Agent\": {\n          \"about\": \"org.perseus:tools:morpheus.v1\"\n        }\n      },\n      \"created\": {\n        \"$\": \"2017-09-08T06:59:48.639180\"\n      },\n      \"rights\": {\n        \"$\": \"Morphology provided by Morpheus from the Perseus Digital Library at Tufts University.\"\n      },\n      \"hasTarget\": {\n        \"Description\": {\n          \"about\": \"urn:word:mare\"\n        }\n      },\n      \"title\": {},\n      \"hasBody\": [\n        {\n          \"resource\": \"urn:uuid:idm140446402389888\"\n        },\n        {\n          \"resource\": \"urn:uuid:idm140446402332400\"\n        },\n        {\n          \"resource\": \"urn:uuid:idm140446402303648\"\n        }\n      ],\n      \"Body\": [\n        {\n          \"about\": \"urn:uuid:idm140446402389888\",\n          \"type\": {\n            \"resource\": \"cnt:ContentAsXML\"\n          },\n          \"rest\": {\n            \"entry\": {\n              \"uri\": \"http://data.perseus.org/collections/urn:cite:perseus:latlexent.lex34070.1\",\n              \"dict\": {\n                \"hdwd\": {\n                  \"lang\": \"lat\",\n                  \"$\": \"mare\"\n                },\n                \"pofs\": {\n                  \"order\": 3,\n                  \"$\": \"noun\"\n                },\n                \"decl\": {\n                  \"$\": \"3rd\"\n                },\n                \"gend\": {\n                  \"$\": \"neuter\"\n                }\n              },\n              \"infl\": [\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"mar\"\n                    },\n                    \"suff\": {\n                      \"$\": \"e\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 3,\n                    \"$\": \"noun\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"case\": {\n                    \"order\": 3,\n                    \"$\": \"ablative\"\n                  },\n                  \"gend\": {\n                    \"$\": \"neuter\"\n                  },\n                  \"num\": {\n                    \"$\": \"singular\"\n                  },\n                  \"stemtype\": {\n                    \"$\": \"is_is\"\n                  }\n                },\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"mar\"\n                    },\n                    \"suff\": {\n                      \"$\": \"e\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 3,\n                    \"$\": \"noun\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"case\": {\n                    \"order\": 7,\n                    \"$\": \"nominative\"\n                  },\n                  \"gend\": {\n                    \"$\": \"neuter\"\n                  },\n                  \"num\": {\n                    \"$\": \"singular\"\n                  },\n                  \"stemtype\": {\n                    \"$\": \"is_is\"\n                  }\n                },\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"mar\"\n                    },\n                    \"suff\": {\n                      \"$\": \"e\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 3,\n                    \"$\": \"noun\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"case\": {\n                    \"order\": 1,\n                    \"$\": \"vocative\"\n                  },\n                  \"gend\": {\n                    \"$\": \"neuter\"\n                  },\n                  \"num\": {\n                    \"$\": \"singular\"\n                  },\n                  \"stemtype\": {\n                    \"$\": \"is_is\"\n                  }\n                },\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"mar\"\n                    },\n                    \"suff\": {\n                      \"$\": \"e\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 3,\n                    \"$\": \"noun\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"case\": {\n                    \"order\": 4,\n                    \"$\": \"accusative\"\n                  },\n                  \"gend\": {\n                    \"$\": \"neuter\"\n                  },\n                  \"num\": {\n                    \"$\": \"singular\"\n                  },\n                  \"stemtype\": {\n                    \"$\": \"is_is\"\n                  }\n                }\n              ],\n              \"mean\": {\n                \"$\": \"the sea\"\n              }\n            }\n          }\n        },\n        {\n          \"about\": \"urn:uuid:idm140446402332400\",\n          \"type\": {\n            \"resource\": \"cnt:ContentAsXML\"\n          },\n          \"rest\": {\n            \"entry\": {\n              \"uri\": \"http://data.perseus.org/collections/urn:cite:perseus:latlexent.lex34118.1\",\n              \"dict\": {\n                \"hdwd\": {\n                  \"lang\": \"lat\",\n                  \"$\": \"marum\"\n                },\n                \"pofs\": {\n                  \"order\": 3,\n                  \"$\": \"noun\"\n                },\n                \"decl\": {\n                  \"$\": \"2nd\"\n                },\n                \"gend\": {\n                  \"$\": \"neuter\"\n                }\n              },\n              \"infl\": {\n                \"term\": {\n                  \"lang\": \"lat\",\n                  \"stem\": {\n                    \"$\": \"mar\"\n                  },\n                  \"suff\": {\n                    \"$\": \"e\"\n                  }\n                },\n                \"pofs\": {\n                  \"order\": 3,\n                  \"$\": \"noun\"\n                },\n                \"decl\": {\n                  \"$\": \"2nd\"\n                },\n                \"case\": {\n                  \"order\": 1,\n                  \"$\": \"vocative\"\n                },\n                \"gend\": {\n                  \"$\": \"neuter\"\n                },\n                \"num\": {\n                  \"$\": \"singular\"\n                },\n                \"stemtype\": {\n                  \"$\": \"us_i\"\n                }\n              }\n            }\n          }\n        },\n        {\n          \"about\": \"urn:uuid:idm140446402303648\",\n          \"type\": {\n            \"resource\": \"cnt:ContentAsXML\"\n          },\n          \"rest\": {\n            \"entry\": {\n              \"uri\": \"http://data.perseus.org/collections/urn:cite:perseus:latlexent.lex34119.1\",\n              \"dict\": {\n                \"hdwd\": {\n                  \"lang\": \"lat\",\n                  \"$\": \"mas\"\n                },\n                \"pofs\": {\n                  \"order\": 2,\n                  \"$\": \"adjective\"\n                },\n                \"decl\": {\n                  \"$\": \"3rd\"\n                }\n              },\n              \"infl\": [\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"mare\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 2,\n                    \"$\": \"adjective\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"case\": {\n                    \"order\": 3,\n                    \"$\": \"ablative\"\n                  },\n                  \"gend\": {\n                    \"$\": \"masculine\"\n                  },\n                  \"num\": {\n                    \"$\": \"singular\"\n                  },\n                  \"stemtype\": {\n                    \"$\": \"irreg_adj3\"\n                  },\n                  \"morph\": {\n                    \"$\": \"indeclform\"\n                  }\n                },\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"mare\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 2,\n                    \"$\": \"adjective\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"case\": {\n                    \"order\": 3,\n                    \"$\": \"ablative\"\n                  },\n                  \"gend\": {\n                    \"$\": \"feminine\"\n                  },\n                  \"num\": {\n                    \"$\": \"singular\"\n                  },\n                  \"stemtype\": {\n                    \"$\": \"irreg_adj3\"\n                  },\n                  \"morph\": {\n                    \"$\": \"indeclform\"\n                  }\n                },\n                {\n                  \"term\": {\n                    \"lang\": \"lat\",\n                    \"stem\": {\n                      \"$\": \"mare\"\n                    }\n                  },\n                  \"pofs\": {\n                    \"order\": 2,\n                    \"$\": \"adjective\"\n                  },\n                  \"decl\": {\n                    \"$\": \"3rd\"\n                  },\n                  \"case\": {\n                    \"order\": 3,\n                    \"$\": \"ablative\"\n                  },\n                  \"gend\": {\n                    \"$\": \"neuter\"\n                  },\n                  \"num\": {\n                    \"$\": \"singular\"\n                  },\n                  \"stemtype\": {\n                    \"$\": \"irreg_adj3\"\n                  },\n                  \"morph\": {\n                    \"$\": \"indeclform\"\n                  }\n                }\n              ]\n            }\n          }\n        }\n      ]\n    }\n  }\n}\n";
+var Mare = '{\n  "RDF": {\n    "Annotation": {\n      "about": "urn:TuftsMorphologyService:mare:morpheuslat",\n      "creator": {\n        "Agent": {\n          "about": "org.perseus:tools:morpheus.v1"\n        }\n      },\n      "created": {\n        "$": "2017-09-08T06:59:48.639180"\n      },\n      "rights": {\n        "$": "Morphology provided by Morpheus from the Perseus Digital Library at Tufts University."\n      },\n      "hasTarget": {\n        "Description": {\n          "about": "urn:word:mare"\n        }\n      },\n      "title": {},\n      "hasBody": [\n        {\n          "resource": "urn:uuid:idm140446402389888"\n        },\n        {\n          "resource": "urn:uuid:idm140446402332400"\n        },\n        {\n          "resource": "urn:uuid:idm140446402303648"\n        }\n      ],\n      "Body": [\n        {\n          "about": "urn:uuid:idm140446402389888",\n          "type": {\n            "resource": "cnt:ContentAsXML"\n          },\n          "rest": {\n            "entry": {\n              "uri": "http://data.perseus.org/collections/urn:cite:perseus:latlexent.lex34070.1",\n              "dict": {\n                "hdwd": {\n                  "lang": "lat",\n                  "$": "mare"\n                },\n                "pofs": {\n                  "order": 3,\n                  "$": "noun"\n                },\n                "decl": {\n                  "$": "3rd"\n                },\n                "gend": {\n                  "$": "neuter"\n                }\n              },\n              "infl": [\n                {\n                  "term": {\n                    "lang": "lat",\n                    "stem": {\n                      "$": "mar"\n                    },\n                    "suff": {\n                      "$": "e"\n                    }\n                  },\n                  "pofs": {\n                    "order": 3,\n                    "$": "noun"\n                  },\n                  "decl": {\n                    "$": "3rd"\n                  },\n                  "case": {\n                    "order": 3,\n                    "$": "ablative"\n                  },\n                  "gend": {\n                    "$": "neuter"\n                  },\n                  "num": {\n                    "$": "singular"\n                  },\n                  "stemtype": {\n                    "$": "is_is"\n                  }\n                },\n                {\n                  "term": {\n                    "lang": "lat",\n                    "stem": {\n                      "$": "mar"\n                    },\n                    "suff": {\n                      "$": "e"\n                    }\n                  },\n                  "pofs": {\n                    "order": 3,\n                    "$": "noun"\n                  },\n                  "decl": {\n                    "$": "3rd"\n                  },\n                  "case": {\n                    "order": 7,\n                    "$": "nominative"\n                  },\n                  "gend": {\n                    "$": "neuter"\n                  },\n                  "num": {\n                    "$": "singular"\n                  },\n                  "stemtype": {\n                    "$": "is_is"\n                  }\n                },\n                {\n                  "term": {\n                    "lang": "lat",\n                    "stem": {\n                      "$": "mar"\n                    },\n                    "suff": {\n                      "$": "e"\n                    }\n                  },\n                  "pofs": {\n                    "order": 3,\n                    "$": "noun"\n                  },\n                  "decl": {\n                    "$": "3rd"\n                  },\n                  "case": {\n                    "order": 1,\n                    "$": "vocative"\n                  },\n                  "gend": {\n                    "$": "neuter"\n                  },\n                  "num": {\n                    "$": "singular"\n                  },\n                  "stemtype": {\n                    "$": "is_is"\n                  }\n                },\n                {\n                  "term": {\n                    "lang": "lat",\n                    "stem": {\n                      "$": "mar"\n                    },\n                    "suff": {\n                      "$": "e"\n                    }\n                  },\n                  "pofs": {\n                    "order": 3,\n                    "$": "noun"\n                  },\n                  "decl": {\n                    "$": "3rd"\n                  },\n                  "case": {\n                    "order": 4,\n                    "$": "accusative"\n                  },\n                  "gend": {\n                    "$": "neuter"\n                  },\n                  "num": {\n                    "$": "singular"\n                  },\n                  "stemtype": {\n                    "$": "is_is"\n                  }\n                }\n              ],\n              "mean": {\n                "$": "the sea"\n              }\n            }\n          }\n        },\n        {\n          "about": "urn:uuid:idm140446402332400",\n          "type": {\n            "resource": "cnt:ContentAsXML"\n          },\n          "rest": {\n            "entry": {\n              "uri": "http://data.perseus.org/collections/urn:cite:perseus:latlexent.lex34118.1",\n              "dict": {\n                "hdwd": {\n                  "lang": "lat",\n                  "$": "marum"\n                },\n                "pofs": {\n                  "order": 3,\n                  "$": "noun"\n                },\n                "decl": {\n                  "$": "2nd"\n                },\n                "gend": {\n                  "$": "neuter"\n                }\n              },\n              "infl": {\n                "term": {\n                  "lang": "lat",\n                  "stem": {\n                    "$": "mar"\n                  },\n                  "suff": {\n                    "$": "e"\n                  }\n                },\n                "pofs": {\n                  "order": 3,\n                  "$": "noun"\n                },\n                "decl": {\n                  "$": "2nd"\n                },\n                "case": {\n                  "order": 1,\n                  "$": "vocative"\n                },\n                "gend": {\n                  "$": "neuter"\n                },\n                "num": {\n                  "$": "singular"\n                },\n                "stemtype": {\n                  "$": "us_i"\n                }\n              }\n            }\n          }\n        },\n        {\n          "about": "urn:uuid:idm140446402303648",\n          "type": {\n            "resource": "cnt:ContentAsXML"\n          },\n          "rest": {\n            "entry": {\n              "uri": "http://data.perseus.org/collections/urn:cite:perseus:latlexent.lex34119.1",\n              "dict": {\n                "hdwd": {\n                  "lang": "lat",\n                  "$": "mas"\n                },\n                "pofs": {\n                  "order": 2,\n                  "$": "adjective"\n                },\n                "decl": {\n                  "$": "3rd"\n                }\n              },\n              "infl": [\n                {\n                  "term": {\n                    "lang": "lat",\n                    "stem": {\n                      "$": "mare"\n                    }\n                  },\n                  "pofs": {\n                    "order": 2,\n                    "$": "adjective"\n                  },\n                  "decl": {\n                    "$": "3rd"\n                  },\n                  "case": {\n                    "order": 3,\n                    "$": "ablative"\n                  },\n                  "gend": {\n                    "$": "masculine"\n                  },\n                  "num": {\n                    "$": "singular"\n                  },\n                  "stemtype": {\n                    "$": "irreg_adj3"\n                  },\n                  "morph": {\n                    "$": "indeclform"\n                  }\n                },\n                {\n                  "term": {\n                    "lang": "lat",\n                    "stem": {\n                      "$": "mare"\n                    }\n                  },\n                  "pofs": {\n                    "order": 2,\n                    "$": "adjective"\n                  },\n                  "decl": {\n                    "$": "3rd"\n                  },\n                  "case": {\n                    "order": 3,\n                    "$": "ablative"\n                  },\n                  "gend": {\n                    "$": "feminine"\n                  },\n                  "num": {\n                    "$": "singular"\n                  },\n                  "stemtype": {\n                    "$": "irreg_adj3"\n                  },\n                  "morph": {\n                    "$": "indeclform"\n                  }\n                },\n                {\n                  "term": {\n                    "lang": "lat",\n                    "stem": {\n                      "$": "mare"\n                    }\n                  },\n                  "pofs": {\n                    "order": 2,\n                    "$": "adjective"\n                  },\n                  "decl": {\n                    "$": "3rd"\n                  },\n                  "case": {\n                    "order": 3,\n                    "$": "ablative"\n                  },\n                  "gend": {\n                    "$": "neuter"\n                  },\n                  "num": {\n                    "$": "singular"\n                  },\n                  "stemtype": {\n                    "$": "irreg_adj3"\n                  },\n                  "morph": {\n                    "$": "indeclform"\n                  }\n                }\n              ]\n            }\n          }\n        }\n      ]\n    }\n  }\n}\n'
 
-var Cepit = "{\n  \"RDF\": {\n    \"Annotation\": {\n      \"about\": \"urn:TuftsMorphologyService:cepit:whitakerLat\",\n      \"creator\": {\n        \"Agent\": {\n          \"about\": \"net.alpheios:tools:wordsxml.v1\"\n        }\n      },\n      \"created\": {\n        \"$\": \"2017-08-10T23:16:53.672068\"\n      },\n      \"hasTarget\": {\n        \"Description\": {\n          \"about\": \"urn:word:cepit\"\n        }\n      },\n      \"title\": {},\n      \"hasBody\": {\n        \"resource\": \"urn:uuid:idm140578133848416\"\n      },\n      \"Body\": {\n        \"about\": \"urn:uuid:idm140578133848416\",\n        \"type\": {\n          \"resource\": \"cnt:ContentAsXML\"\n        },\n        \"rest\": {\n          \"entry\": {\n            \"infl\": {\n              \"term\": {\n                \"lang\": \"lat\",\n                \"stem\": {\n                  \"$\": \"cep\"\n                },\n                \"suff\": {\n                  \"$\": \"it\"\n                }\n              },\n              \"pofs\": {\n                \"order\": 3,\n                \"$\": \"verb\"\n              },\n              \"conj\": {\n                \"$\": \"3rd\"\n              },\n              \"var\": {\n                \"$\": \"1st\"\n              },\n              \"tense\": {\n                \"$\": \"perfect\"\n              },\n              \"voice\": {\n                \"$\": \"active\"\n              },\n              \"mood\": {\n                \"$\": \"indicative\"\n              },\n              \"pers\": {\n                \"$\": \"3rd\"\n              },\n              \"num\": {\n                \"$\": \"singular\"\n              }\n            },\n            \"dict\": {\n              \"hdwd\": {\n                \"lang\": \"lat\",\n                \"$\": \"capio, capere, cepi, captus\"\n              },\n              \"pofs\": {\n                \"order\": 3,\n                \"$\": \"verb\"\n              },\n              \"conj\": {\n                \"$\": \"3rd\"\n              },\n              \"kind\": {\n                \"$\": \"transitive\"\n              },\n              \"freq\": {\n                \"order\": 6,\n                \"$\": \"very frequent\"\n              },\n              \"src\": {\n                \"$\": \"Ox.Lat.Dict.\"\n              }\n            },\n            \"mean\": {\n              \"$\": \"take hold, seize; grasp; take bribe; arrest/capture; put on; occupy; captivate;\"\n            }\n          }\n        }\n      }\n    }\n  }\n}\n";
+var Cepit = '{\n  "RDF": {\n    "Annotation": {\n      "about": "urn:TuftsMorphologyService:cepit:whitakerLat",\n      "creator": {\n        "Agent": {\n          "about": "net.alpheios:tools:wordsxml.v1"\n        }\n      },\n      "created": {\n        "$": "2017-08-10T23:16:53.672068"\n      },\n      "hasTarget": {\n        "Description": {\n          "about": "urn:word:cepit"\n        }\n      },\n      "title": {},\n      "hasBody": {\n        "resource": "urn:uuid:idm140578133848416"\n      },\n      "Body": {\n        "about": "urn:uuid:idm140578133848416",\n        "type": {\n          "resource": "cnt:ContentAsXML"\n        },\n        "rest": {\n          "entry": {\n            "infl": {\n              "term": {\n                "lang": "lat",\n                "stem": {\n                  "$": "cep"\n                },\n                "suff": {\n                  "$": "it"\n                }\n              },\n              "pofs": {\n                "order": 3,\n                "$": "verb"\n              },\n              "conj": {\n                "$": "3rd"\n              },\n              "var": {\n                "$": "1st"\n              },\n              "tense": {\n                "$": "perfect"\n              },\n              "voice": {\n                "$": "active"\n              },\n              "mood": {\n                "$": "indicative"\n              },\n              "pers": {\n                "$": "3rd"\n              },\n              "num": {\n                "$": "singular"\n              }\n            },\n            "dict": {\n              "hdwd": {\n                "lang": "lat",\n                "$": "capio, capere, cepi, captus"\n              },\n              "pofs": {\n                "order": 3,\n                "$": "verb"\n              },\n              "conj": {\n                "$": "3rd"\n              },\n              "kind": {\n                "$": "transitive"\n              },\n              "freq": {\n                "order": 6,\n                "$": "very frequent"\n              },\n              "src": {\n                "$": "Ox.Lat.Dict."\n              }\n            },\n            "mean": {\n              "$": "take hold, seize; grasp; take bribe; arrest/capture; put on; occupy; captivate;"\n            }\n          }\n        }\n      }\n    }\n  }\n}\n'
 
-var Pilsopo = "{\n  \"RDF\": {\n    \"Annotation\": {\n      \"about\": \"urn:TuftsMorphologyService:φιλόσοφος:morpheuslat\",\n      \"creator\": {\n        \"Agent\": {\n          \"about\": \"org.perseus:tools:morpheus.v1\"\n        }\n      },\n      \"created\": {\n        \"$\": \"2017-10-15T14:06:40.522369\"\n      },\n      \"hasTarget\": {\n        \"Description\": {\n          \"about\": \"urn:word:φιλόσοφος\"\n        }\n      },\n      \"title\": {},\n      \"hasBody\": {\n        \"resource\": \"urn:uuid:idm140446394225264\"\n      },\n      \"Body\": {\n        \"about\": \"urn:uuid:idm140446394225264\",\n        \"type\": {\n          \"resource\": \"cnt:ContentAsXML\"\n        },\n        \"rest\": {\n          \"entry\": {\n            \"uri\": \"http://data.perseus.org/collections/urn:cite:perseus:grclexent.lex78378.1\",\n            \"dict\": {\n              \"hdwd\": {\n                \"lang\": \"grc\",\n                \"$\": \"φιλόσοφος\"\n              },\n              \"pofs\": {\n                \"order\": 3,\n                \"$\": \"noun\"\n              },\n              \"decl\": {\n                \"$\": \"2nd\"\n              },\n              \"gend\": {\n                \"$\": \"masculine\"\n              }\n            },\n            \"infl\": {\n              \"term\": {\n                \"lang\": \"grc\",\n                \"stem\": {\n                  \"$\": \"φιλοσοφ\"\n                },\n                \"suff\": {\n                  \"$\": \"ος\"\n                }\n              },\n              \"pofs\": {\n                \"order\": 3,\n                \"$\": \"noun\"\n              },\n              \"decl\": {\n                \"$\": \"2nd\"\n              },\n              \"case\": {\n                \"order\": 7,\n                \"$\": \"nominative\"\n              },\n              \"gend\": {\n                \"$\": \"masculine\"\n              },\n              \"num\": {\n                \"$\": \"singular\"\n              },\n              \"stemtype\": {\n                \"$\": \"os_ou\"\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}";
+var Pilsopo = '{\n  "RDF": {\n    "Annotation": {\n      "about": "urn:TuftsMorphologyService:φιλόσοφος:morpheuslat",\n      "creator": {\n        "Agent": {\n          "about": "org.perseus:tools:morpheus.v1"\n        }\n      },\n      "created": {\n        "$": "2017-10-15T14:06:40.522369"\n      },\n      "hasTarget": {\n        "Description": {\n          "about": "urn:word:φιλόσοφος"\n        }\n      },\n      "title": {},\n      "hasBody": {\n        "resource": "urn:uuid:idm140446394225264"\n      },\n      "Body": {\n        "about": "urn:uuid:idm140446394225264",\n        "type": {\n          "resource": "cnt:ContentAsXML"\n        },\n        "rest": {\n          "entry": {\n            "uri": "http://data.perseus.org/collections/urn:cite:perseus:grclexent.lex78378.1",\n            "dict": {\n              "hdwd": {\n                "lang": "grc",\n                "$": "φιλόσοφος"\n              },\n              "pofs": {\n                "order": 3,\n                "$": "noun"\n              },\n              "decl": {\n                "$": "2nd"\n              },\n              "gend": {\n                "$": "masculine"\n              }\n            },\n            "infl": {\n              "term": {\n                "lang": "grc",\n                "stem": {\n                  "$": "φιλοσοφ"\n                },\n                "suff": {\n                  "$": "ος"\n                }\n              },\n              "pofs": {\n                "order": 3,\n                "$": "noun"\n              },\n              "decl": {\n                "$": "2nd"\n              },\n              "case": {\n                "order": 7,\n                "$": "nominative"\n              },\n              "gend": {\n                "$": "masculine"\n              },\n              "num": {\n                "$": "singular"\n              },\n              "stemtype": {\n                "$": "os_ou"\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}'
 
 class WordTestData {
   constructor () {
@@ -10727,7 +11131,7 @@ class WordTestData {
       'mare': Mare,
       'cepit': Cepit,
       'φιλόσοφος': Pilsopo
-    };
+    }
   }
 
   get (word) {
@@ -10738,7 +11142,7 @@ class WordTestData {
   }
 }
 
-var DefaultConfig = "{\n  \"engine\": {\n    \"lat\": [\"whitakerLat\"],\n    \"grc\": [\"morpheusgrc\"],\n    \"ara\": [\"aramorph\"],\n    \"per\": [\"hazm\"]\n  },\n  \"url\": \"https://morph.alpheios.net/api/v1/analysis/word?word=r_WORD&engine=r_ENGINE&lang=r_LANG\",\n  \"allowUnknownValues\": true\n}\n";
+var DefaultConfig = '{\n  "engine": {\n    "lat": ["whitakerLat"],\n    "grc": ["morpheusgrc"],\n    "ara": ["aramorph"],\n    "per": ["hazm"]\n  },\n  "url": "https://morph.alpheios.net/api/v1/analysis/word?word=r_WORD&engine=r_ENGINE&lang=r_LANG",\n  "allowUnknownValues": true\n}\n'
 
 class AlpheiosTuftsAdapter extends BaseAdapter {
   /**
@@ -10747,14 +11151,14 @@ class AlpheiosTuftsAdapter extends BaseAdapter {
    * @param {object} config configuraiton object
    */
   constructor (config = {}) {
-    super();
+    super()
     try {
-      this.config = JSON.parse(DefaultConfig);
+      this.config = JSON.parse(DefaultConfig)
     } catch (e) {
-      this.config = Object.assign({}, DefaultConfig);
+      this.config = Object.assign({}, DefaultConfig)
     }
-    Object.assign(this.config, config);
-    this.engineMap = new Map(([ data, data$1, data$2, data$3 ]).map((e) => { return [ e.engine, e ] }));
+    Object.assign(this.config, config)
+    this.engineMap = new Map(([ data, data$1, data$2, data$3 ]).map((e) => { return [ e.engine, e ] }))
   }
 
   getEngineLanguageMap (lang) {
@@ -10766,9 +11170,9 @@ class AlpheiosTuftsAdapter extends BaseAdapter {
   }
 
   prepareRequestUrl (lang, word) {
-    let engine = this.getEngineLanguageMap(lang);
+    let engine = this.getEngineLanguageMap(lang)
     if (engine) {
-      let code = engine.engine;
+      let code = engine.engine
       return this.config.url.replace('r_WORD', word).replace('r_ENGINE', code).replace('r_LANG', lang)
     } else {
       return null
@@ -10778,12 +11182,12 @@ class AlpheiosTuftsAdapter extends BaseAdapter {
   fetchTestData (lang, word) {
     return new Promise((resolve, reject) => {
       try {
-        let wordData = new WordTestData().get(word);
-        let json = JSON.parse(wordData);
-        resolve(json);
+        let wordData = new WordTestData().get(word)
+        let json = JSON.parse(wordData)
+        resolve(json)
       } catch (error) {
                 // Word is not found in test data
-        reject(error);
+        reject(error)
       }
     })
   }
@@ -10795,50 +11199,50 @@ class AlpheiosTuftsAdapter extends BaseAdapter {
    * @returns {Models.Homonym} A library standard Homonym object.
    */
   transform (jsonObj, targetWord) {
-    'use strict';
-    let lexemes = [];
-    let annotationBody = jsonObj.RDF.Annotation.Body;
+    'use strict'
+    let lexemes = []
+    let annotationBody = jsonObj.RDF.Annotation.Body
     if (!Array.isArray(annotationBody)) {
             /*
             If only one lexeme is returned, Annotation Body will not be an array but rather a single object.
             Let's convert it to an array so we can work with it in the same way no matter what format it is.
              */
       if (annotationBody) {
-        annotationBody = [annotationBody];
+        annotationBody = [annotationBody]
       } else {
-        annotationBody = [];
+        annotationBody = []
       }
     }
-    let providerUri = jsonObj.RDF.Annotation.creator.Agent.about;
-    let providerRights = '';
+    let providerUri = jsonObj.RDF.Annotation.creator.Agent.about
+    let providerRights = ''
     if (jsonObj.RDF.Annotation.rights) {
-      providerRights = jsonObj.RDF.Annotation.rights.$;
+      providerRights = jsonObj.RDF.Annotation.rights.$
     }
-    let provider = new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["ResourceProvider"](providerUri, providerRights);
+    let provider = new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["ResourceProvider"](providerUri, providerRights)
     for (let lexeme of annotationBody) {
-      let inflectionsJSON = lexeme.rest.entry.infl;
+      let inflectionsJSON = lexeme.rest.entry.infl
       if (!inflectionsJSON) {
-        inflectionsJSON = [];
+        inflectionsJSON = []
       } else if (!Array.isArray(inflectionsJSON)) {
         // If only one inflection returned, it is a single object, not an array of objects.
         // Convert it to an array for uniformity.
-        inflectionsJSON = [inflectionsJSON];
+        inflectionsJSON = [inflectionsJSON]
       }
-      let lemmaElements;
+      let lemmaElements
       if ((lexeme.rest.entry.dict && lexeme.rest.entry.dict.hdwd) || (Array.isArray(lexeme.rest.entry.dict) && lexeme.rest.entry.dict[0].hdwd)) {
         if (Array.isArray(lexeme.rest.entry.dict)) {
-          lemmaElements = lexeme.rest.entry.dict;
+          lemmaElements = lexeme.rest.entry.dict
         } else {
-          lemmaElements = [lexeme.rest.entry.dict];
+          lemmaElements = [lexeme.rest.entry.dict]
         }
       } else if (inflectionsJSON.length > 0 && inflectionsJSON[0].term) {
-        lemmaElements = [inflectionsJSON[0].term];
+        lemmaElements = [inflectionsJSON[0].term]
       }
       // in rare cases (e.g. conditum in Whitakers) multiple dict entries
       // exist - always use the lemma and language from the first
-      let language = lemmaElements[0].hdwd ? lemmaElements[0].hdwd.lang : lemmaElements[0].lang;
+      let language = lemmaElements[0].hdwd ? lemmaElements[0].hdwd.lang : lemmaElements[0].lang
       // Get importer based on the language
-      let mappingData = this.getEngineLanguageMap(language);
+      let mappingData = this.getEngineLanguageMap(language)
       let features = [
         ['pofs', 'part'],
         ['case', 'grmCase'],
@@ -10852,96 +11256,96 @@ class AlpheiosTuftsAdapter extends BaseAdapter {
         ['note', 'note'],
         ['pron', 'pronunciation'],
         ['src', 'source']
-      ];
-      let lemmas = [];
-      let lexemeSet = [];
+      ]
+      let lemmas = []
+      let lexemeSet = []
       for (let entry of lemmaElements.entries()) {
-        let shortdefs = [];
-        let index = entry[0];
-        let elem = entry[1];
-        let lemmaText;
+        let shortdefs = []
+        let index = entry[0]
+        let elem = entry[1]
+        let lemmaText
         if (elem.hdwd) {
-          lemmaText = elem.hdwd.$;
+          lemmaText = elem.hdwd.$
         } else {
           // term
           if (elem.stem) {
-            lemmaText = elem.stem.$;
+            lemmaText = elem.stem.$
           }
           if (elem.suff) {
-            lemmaText += elem.suff.$;
+            lemmaText += elem.suff.$
           }
         }
         if (!lemmaText || !language) {
           continue
         }
-        let lemma = mappingData.parseLemma(lemmaText, language);
-        lemmas.push(lemma);
+        let lemma = mappingData.parseLemma(lemmaText, language)
+        lemmas.push(lemma)
         for (let feature of features) {
-          mappingData.mapFeature(lemma, elem, ...feature, this.config.allowUnknownValues);
+          mappingData.mapFeature(lemma, elem, ...feature, this.config.allowUnknownValues)
         }
-        let meanings = lexeme.rest.entry.mean;
+        let meanings = lexeme.rest.entry.mean
         if (!Array.isArray(meanings)) {
-          meanings = [meanings];
+          meanings = [meanings]
         }
-        meanings = meanings.filter((m) => m);
+        meanings = meanings.filter((m) => m)
         // if we have multiple dictionary elements, take the meaning with the matching index
         if (lemmaElements.length > 1) {
           if (meanings && meanings[index]) {
-            let meaning = meanings[index];
+            let meaning = meanings[index]
             // TODO: convert a source-specific language code to ISO 639-3 if don't match
-            let lang = meaning.lang ? meaning.lang : 'eng';
+            let lang = meaning.lang ? meaning.lang : 'eng'
             shortdefs.push(__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["ResourceProvider"].getProxy(provider,
-              new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Definition"](meaning.$, lang, 'text/plain', lemmas[index].word)));
+              new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Definition"](meaning.$, lang, 'text/plain', lemmas[index].word)))
           }
         } else {
           for (let meaning of meanings) {
-            let lang = meaning.lang ? meaning.lang : 'eng';
+            let lang = meaning.lang ? meaning.lang : 'eng'
             shortdefs.push(__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["ResourceProvider"].getProxy(provider,
-              new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Definition"](meaning.$, lang, 'text/plain', lemma.word)));
+              new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Definition"](meaning.$, lang, 'text/plain', lemma.word)))
           }
         }
-        let lexmodel = new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Lexeme"](lemma, []);
+        let lexmodel = new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Lexeme"](lemma, [])
 
-        lexmodel.meaning.appendShortDefs(shortdefs);
-        lexemeSet.push(__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["ResourceProvider"].getProxy(provider, lexmodel));
+        lexmodel.meaning.appendShortDefs(shortdefs)
+        lexemeSet.push(__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["ResourceProvider"].getProxy(provider, lexmodel))
       }
       if (lemmas.length === 0) {
         continue
       }
-      let inflections = [];
+      let inflections = []
       for (let inflectionJSON of inflectionsJSON) {
-        let inflection = new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Inflection"](inflectionJSON.term.stem.$, mappingData.language.toCode());
+        let inflection = new __WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Inflection"](inflectionJSON.term.stem.$, mappingData.language.toCode())
         if (inflectionJSON.term.suff) {
                     // Set suffix if provided by a morphological analyzer
-          inflection.suffix = inflectionJSON.term.suff.$;
+          inflection.suffix = inflectionJSON.term.suff.$
         }
 
         if (inflectionJSON.xmpl) {
-          inflection.example = inflectionJSON.xmpl.$;
+          inflection.example = inflectionJSON.xmpl.$
         }
         // Parse whatever grammatical features we're interested in
-        mappingData.mapFeature(inflection, inflectionJSON, 'pofs', 'part', this.config.allowUnknownValues);
-        mappingData.mapFeature(inflection, inflectionJSON, 'case', 'grmCase', this.config.allowUnknownValues);
-        mappingData.mapFeature(inflection, inflectionJSON, 'decl', 'declension', this.config.allowUnknownValues);
-        mappingData.mapFeature(inflection, inflectionJSON, 'num', 'number', this.config.allowUnknownValues);
-        mappingData.mapFeature(inflection, inflectionJSON, 'gend', 'gender', this.config.allowUnknownValues);
-        mappingData.mapFeature(inflection, inflectionJSON, 'conj', 'conjugation', this.config.allowUnknownValues);
-        mappingData.mapFeature(inflection, inflectionJSON, 'tense', 'tense', this.config.allowUnknownValues);
-        mappingData.mapFeature(inflection, inflectionJSON, 'voice', 'voice', this.config.allowUnknownValues);
-        mappingData.mapFeature(inflection, inflectionJSON, 'mood', 'mood', this.config.allowUnknownValues);
-        mappingData.mapFeature(inflection, inflectionJSON, 'pers', 'person', this.config.allowUnknownValues);
-        mappingData.mapFeature(inflection, inflectionJSON, 'comp', 'comparison', this.config.allowUnknownValues);
+        mappingData.mapFeature(inflection, inflectionJSON, 'pofs', 'part', this.config.allowUnknownValues)
+        mappingData.mapFeature(inflection, inflectionJSON, 'case', 'grmCase', this.config.allowUnknownValues)
+        mappingData.mapFeature(inflection, inflectionJSON, 'decl', 'declension', this.config.allowUnknownValues)
+        mappingData.mapFeature(inflection, inflectionJSON, 'num', 'number', this.config.allowUnknownValues)
+        mappingData.mapFeature(inflection, inflectionJSON, 'gend', 'gender', this.config.allowUnknownValues)
+        mappingData.mapFeature(inflection, inflectionJSON, 'conj', 'conjugation', this.config.allowUnknownValues)
+        mappingData.mapFeature(inflection, inflectionJSON, 'tense', 'tense', this.config.allowUnknownValues)
+        mappingData.mapFeature(inflection, inflectionJSON, 'voice', 'voice', this.config.allowUnknownValues)
+        mappingData.mapFeature(inflection, inflectionJSON, 'mood', 'mood', this.config.allowUnknownValues)
+        mappingData.mapFeature(inflection, inflectionJSON, 'pers', 'person', this.config.allowUnknownValues)
+        mappingData.mapFeature(inflection, inflectionJSON, 'comp', 'comparison', this.config.allowUnknownValues)
         if (inflectionJSON.stemtype) {
-          mappingData.mapFeature(inflection, inflectionJSON, 'stemtype', 'stemtype', this.config.allowUnknownValues);
+          mappingData.mapFeature(inflection, inflectionJSON, 'stemtype', 'stemtype', this.config.allowUnknownValues)
         }
         if (inflectionJSON.derivtype) {
-          mappingData.mapFeature(inflection, inflectionJSON, 'derivtype', 'derivtype', this.config.allowUnknownValues);
+          mappingData.mapFeature(inflection, inflectionJSON, 'derivtype', 'derivtype', this.config.allowUnknownValues)
         }
         if (inflectionJSON.dial) {
-          mappingData.mapFeature(inflection, inflectionJSON, 'dial', 'dialect', this.config.allowUnknownValues);
+          mappingData.mapFeature(inflection, inflectionJSON, 'dial', 'dialect', this.config.allowUnknownValues)
         }
         if (inflectionJSON.morph) {
-          mappingData.mapFeature(inflection, inflectionJSON, 'morph', 'morph', this.config.allowUnknownValues);
+          mappingData.mapFeature(inflection, inflectionJSON, 'morph', 'morph', this.config.allowUnknownValues)
         }
         // we only use the inflection if it tells us something the dictionary details do not
         if (inflection[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.grmCase] ||
@@ -10955,18 +11359,18 @@ class AlpheiosTuftsAdapter extends BaseAdapter {
           inflection[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.dialect] ||
           inflection[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.morph] ||
           inflection[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.example]) {
-          inflections.push(inflection);
+          inflections.push(inflection)
         }
         // inflection can provide lemma decl, pofs, conj
         for (let lemma of lemmas) {
           if (!lemma.features[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.declension]) {
-            mappingData.mapFeature(lemma, inflectionJSON, 'decl', 'declension', this.config.allowUnknownValues);
+            mappingData.mapFeature(lemma, inflectionJSON, 'decl', 'declension', this.config.allowUnknownValues)
           }
           if (!lemma.features[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.part]) {
-            mappingData.mapFeature(lemma, inflectionJSON, 'pofs', 'part', this.config.allowUnknownValues);
+            mappingData.mapFeature(lemma, inflectionJSON, 'pofs', 'part', this.config.allowUnknownValues)
           }
           if (!lemma.features[__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Feature"].types.conjugation]) {
-            mappingData.mapFeature(lemma, inflectionJSON, 'conj', 'conjugation', this.config.allowUnknownValues);
+            mappingData.mapFeature(lemma, inflectionJSON, 'conj', 'conjugation', this.config.allowUnknownValues)
           }
         }
       }
@@ -10974,8 +11378,8 @@ class AlpheiosTuftsAdapter extends BaseAdapter {
         // only process if we have a lemma that differs from the target
         // word or if we have at least a part of speech
         if (mappingData.reportLexeme(lex)) {
-          lex.inflections = inflections;
-          lexemes.push(lex);
+          lex.inflections = inflections
+          lexemes.push(lex)
         }
       }
     }
@@ -10987,9 +11391,9 @@ class AlpheiosTuftsAdapter extends BaseAdapter {
   }
 
   async getHomonym (lang, word) {
-    let jsonObj = await this.fetch(lang, word);
+    let jsonObj = await this.fetch(lang, word)
     if (jsonObj) {
-      let homonym = this.transform(jsonObj, word);
+      let homonym = this.transform(jsonObj, word)
       return homonym
     } else {
         // No data found for this word
@@ -42749,7 +43153,7 @@ class State {
 /* 8 */
 /***/ (function(module, exports) {
 
-module.exports = "<div id=\"alpheios-popup-embedded\" >\n    <popup :messages=\"messages\" :definitions=\"definitions\" :visible=\"visible\" :lexemes=\"lexemes\" :linkedfeatures=\"linkedFeatures\"\n           :data=\"popupData\" @close=\"close\" @closepopupnotifications=\"clearNotifications\" @showpaneltab=\"showPanelTab\"\n           @sendfeature=\"sendFeature\" @settingchange=\"settingChange\">\n    </popup>\n</div>\n<div id=\"alpheios-panel-embedded\">\n    <panel :data=\"panelData\" @close=\"close\" @closenotifications=\"clearNotifications\"\n           @setposition=\"setPositionTo\" @settingchange=\"settingChange\" @resourcesettingchange=\"resourceSettingChange\"\n           @changetab=\"changeTab\"></panel>\n</div>\n";
+module.exports = "<div id=\"alpheios-popup-embedded\" >\r\n    <popup :messages=\"messages\" :definitions=\"definitions\" :visible=\"visible\" :lexemes=\"lexemes\" :linkedfeatures=\"linkedFeatures\"\r\n           :data=\"popupData\" @close=\"close\" @closepopupnotifications=\"clearNotifications\" @showpaneltab=\"showPanelTab\"\r\n           @sendfeature=\"sendFeature\" @settingchange=\"settingChange\">\r\n    </popup>\r\n</div>\r\n<div id=\"alpheios-panel-embedded\">\r\n    <panel :data=\"panelData\" @close=\"close\" @closenotifications=\"clearNotifications\"\r\n           @setposition=\"setPositionTo\" @settingchange=\"settingChange\" @resourcesettingchange=\"resourceSettingChange\"\r\n           @changetab=\"changeTab\"></panel>\r\n</div>\r\n";
 
 /***/ })
 /******/ ]);
