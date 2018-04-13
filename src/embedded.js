@@ -1,6 +1,5 @@
 /* eslint-env jest */
 /* global Event */
-import {LanguageDataList} from 'alpheios-inflection-tables'
 import {Constants} from 'alpheios-data-models'
 import {AlpheiosTuftsAdapter} from 'alpheios-morph-client'
 import {Lexicons} from 'alpheios-lexicon-client'
@@ -29,7 +28,6 @@ class Embedded {
     this.options = new ContentOptions(this.optionSaver, this.optionLoader)
     this.resourceOptions = new ResourceOptions(this.optionSaver, this.optionLoader)
     this.maAdapter = new AlpheiosTuftsAdapter() // Morphological analyzer adapter, with default arguments
-    this.langData = new LanguageDataList().loadData()
     let manifest = { version: '1.0', name: 'Alpheios Embedded Library' }
     let template = { html: Template, panelId: 'alpheios-panel-embedded', popupId: 'alpheios-popup-embedded' }
     this.ui = new UIController(this.state, this.options, this.resourceOptions, manifest, template)
@@ -86,7 +84,6 @@ class Embedded {
         htmlSelector: htmlSelector,
         uiController: this.ui,
         maAdapter: this.maAdapter,
-        langData: this.langData,
         lexicons: Lexicons,
         resourceOptions: this.resourceOptions,
         langOpts: { [Constants.LANG_PERSIAN]: { lookupMorphLast: true } } // TODO this should be externalized
