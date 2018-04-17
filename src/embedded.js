@@ -3,7 +3,7 @@
 import {Constants} from 'alpheios-data-models'
 import {AlpheiosTuftsAdapter} from 'alpheios-morph-client'
 import {Lexicons} from 'alpheios-lexicon-client'
-import { UIController, HTMLSelector, LexicalQuery, ContentOptions, ResourceOptions } from 'alpheios-components'
+import { UIController, HTMLSelector, LexicalQuery, ContentOptionDefaults, LanguageOptionDefaults, Options } from 'alpheios-components'
 import State from './state'
 import Template from './template.htmlf'
 
@@ -25,8 +25,11 @@ class Embedded {
     this.anchor = anchor
     this.doc = doc
     this.state = new State()
-    this.options = new ContentOptions(this.optionSaver, this.optionLoader)
-    this.resourceOptions = new ResourceOptions(this.optionSaver, this.optionLoader)
+    let contentDefs = new ContentOptionDefaults()
+    let resourceDefs = new LanguageOptionDefaults()
+    this.options = new Options(contentDefs,this.optionSaver, this.optionLoader)
+    this.resourceOptions = new Options(resourceDefs,this.optionSaver, this.optionLoader)
+    this.siteOptions = []
     this.maAdapter = new AlpheiosTuftsAdapter() // Morphological analyzer adapter, with default arguments
     let manifest = { version: '1.0', name: 'Alpheios Embedded Library' }
     let template = { html: Template, panelId: 'alpheios-panel-embedded', popupId: 'alpheios-popup-embedded' }
@@ -72,6 +75,29 @@ class Embedded {
         o.addEventListener(t, event => { this.handler(event) })
       }
     }
+    let siteFixture = JSON.parse(`
+      [
+        {
+          "name": "testsite",
+          "uriMatch": "http://localhost",
+          "resourceOptions": {
+            "lexiconsShort-lat": ["https://github.com/balmas/testlex"]
+          }
+        }
+      ]
+    `)
+    for (let site of siteFixture) {
+      let siteDefs = new LanguageOptionDefaults(`alpheios-${site.name}-options`)
+      let loader = () => {
+        return new Promise((resolve, reject) => {
+          resolve(site.resourceOptions)
+        })
+      }
+      let resOpts = new Options(siteDefs, loader, this.optionSaver)
+      resOpts.load(() => {
+        this.siteOptions.push({ uriMatch: site.uriMatch, resourceOptions: resOpts })
+      })
+    }
   }
 
   handler (event) {
@@ -86,6 +112,7 @@ class Embedded {
         maAdapter: this.maAdapter,
         lexicons: Lexicons,
         resourceOptions: this.resourceOptions,
+        siteOptions:this.siteOptions,
         langOpts: { [Constants.LANG_PERSIAN]: { lookupMorphLast: true } } // TODO this should be externalized
       }
       ).getData()
