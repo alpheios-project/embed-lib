@@ -10,8 +10,25 @@
     <script src="../dist/alpheios-embedded.js"></script>
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function(event) {
-          new Alpheios.Embedded().activate();
+          console.log('Alpheios', window['Alpheios'])
+          new window['Alpheios'].Embedded().activate();
         });
+
+        // function ready(fn) {
+        //     if (document.readyState !== 'loading') {
+        //         fn();
+        //     } else if (document.addEventListener) {
+        //         document.addEventListener('DOMContentLoaded', fn);
+        //     } else {
+        //         document.attachEvent('onreadystatechange', function () {
+        //             if (document.readyState !== 'loading')
+        //                 fn();
+        //         });
+        //     }
+        // }
+        // ready(function(){
+        //   console.log('Alpheios', Alpheios)
+        // });
     </script>
     <div id="alpheios-main"
       data-trigger="dblclick,touchstart"

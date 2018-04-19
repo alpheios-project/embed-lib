@@ -39,8 +39,8 @@ class Embedded {
     Object.assign(this.ui.popup.popupData, popupData)
 
     console.log('**************************************************')
-    console.log('IS I am in embedded constructor 2 ... ')
-    let lemmaClient = LemmaTranslations.fetchTranslations()
+    console.log('IS I am in embedded constructor 3 ... ')
+    let lemmaClient = LemmaTranslations.fetchTranslations('lat', 'eng', 'mare')
     console.log('**************************************************')
   }
 
