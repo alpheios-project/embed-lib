@@ -29,6 +29,7 @@
     "alpheios-data-models": "git://github.com/alpheios-project/data-models.git",
     "alpheios-experience": "git://github.com/alpheios-project/experience.git",
     "alpheios-inflection-tables": "git://github.com/alpheios-project/inflection-tables.git",
+    "alpheios-lemma-client": "^1.15.4",
     "alpheios-lexicon-client": "git://github.com/alpheios-project/lexicon-client.git",
     "alpheios-morph-client": "git://github.com/alpheios-project/morph-client.git",
     "alpheios-res-client": "git://github.com/alpheios-project/res-client.git",

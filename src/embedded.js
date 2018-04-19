@@ -7,6 +7,9 @@ import { UIController, HTMLSelector, LexicalQuery, ContentOptions, ResourceOptio
 import State from './state'
 import Template from './template.htmlf'
 
+import {LemmaTranslations} from 'alpheios-lemma-client'
+
+
 /**
  * Encapsulation of Alpheios functionality which can be embedded in a webpage
  */
@@ -34,6 +37,11 @@ class Embedded {
     this.doc.body.addEventListener('Alpheios_Embedded_Check', event => { this.notifyExtension(event) })
     Object.assign(this.ui.panel.panelData, panelData)
     Object.assign(this.ui.popup.popupData, popupData)
+
+    console.log('**************************************************')
+    console.log('IS I am in embedded constructor 2 ... ')
+    let lemmaClient = LemmaTranslations.fetchTranslations()
+    console.log('**************************************************')
   }
 
   notifyExtension (event) {
@@ -85,6 +93,9 @@ class Embedded {
         uiController: this.ui,
         maAdapter: this.maAdapter,
         lexicons: Lexicons,
+
+        lemmaTranslations: LemmaTranslations,
+
         resourceOptions: this.resourceOptions,
         langOpts: { [Constants.LANG_PERSIAN]: { lookupMorphLast: true } } // TODO this should be externalized
       }

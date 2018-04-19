@@ -582,6 +582,13 @@ class DefinitionSet {
   }
 
   /**
+   * clear accumulated short definitions
+   */
+  clearShortDefs () {
+    this.shortDefs = [];
+  }
+
+  /**
    * Appends one or more definitions to a list of full definitions.
    * @param {Definition | Definition[]} definitions - One or more definition objects to add.
    * @return {Definition[]} A list of full definitions this object has.
@@ -593,6 +600,13 @@ class DefinitionSet {
       this.fullDefs = this.fullDefs.concat(definitions);
     }
     return this.fullDefs
+  }
+
+  /**
+   * clear accumulated full definitions
+   */
+  clearFullDefs () {
+    this.fullDefs = [];
   }
 }
 
@@ -3533,8 +3547,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__state__ = __webpack_require__(17);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__template_htmlf__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__template_htmlf___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__template_htmlf__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_alpheios_lemma_client__ = __webpack_require__(19);
 /* eslint-env jest */
 /* global Event */
+
+
+
 
 
 
@@ -3569,6 +3587,11 @@ class Embedded {
     this.doc.body.addEventListener('Alpheios_Embedded_Check', event => { this.notifyExtension(event) })
     Object.assign(this.ui.panel.panelData, panelData)
     Object.assign(this.ui.popup.popupData, popupData)
+
+    console.log('**************************************************')
+    console.log('IS I am in embedded constructor ... ')
+    let lemmaClient = __WEBPACK_IMPORTED_MODULE_6_alpheios_lemma_client__["a" /* LemmaTranslations */].fetchTranslations()
+    console.log('**************************************************')
   }
 
   notifyExtension (event) {
@@ -3620,6 +3643,9 @@ class Embedded {
         uiController: this.ui,
         maAdapter: this.maAdapter,
         lexicons: __WEBPACK_IMPORTED_MODULE_2_alpheios_lexicon_client__["a" /* Lexicons */],
+
+        lemmaTranslations: __WEBPACK_IMPORTED_MODULE_6_alpheios_lemma_client__["a" /* LemmaTranslations */],
+        
         resourceOptions: this.resourceOptions,
         langOpts: { [__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].LANG_PERSIAN]: { lookupMorphLast: true } } // TODO this should be externalized
       }
@@ -17274,7 +17300,130 @@ class State {
 /* 18 */
 /***/ (function(module, exports) {
 
-module.exports = "<div id=\"alpheios-popup-embedded\" >\n    <popup :messages=\"messages\" :definitions=\"definitions\" :visible=\"visible\" :lexemes=\"lexemes\" :linkedfeatures=\"linkedFeatures\"\n           :data=\"popupData\" @close=\"close\" @closepopupnotifications=\"clearNotifications\" @showpaneltab=\"showPanelTab\"\n           @sendfeature=\"sendFeature\" @settingchange=\"settingChange\">\n    </popup>\n</div>\n<div id=\"alpheios-panel-embedded\">\n    <panel :data=\"panelData\" @close=\"close\" @closenotifications=\"clearNotifications\"\n           @setposition=\"setPositionTo\" @settingchange=\"settingChange\" @resourcesettingchange=\"resourceSettingChange\"\n           @changetab=\"changeTab\"></panel>\n</div>\n";
+module.exports = "<div id=\"alpheios-popup-embedded\" >\r\n    <popup :messages=\"messages\" :definitions=\"definitions\" :visible=\"visible\" :lexemes=\"lexemes\" :linkedfeatures=\"linkedFeatures\"\r\n           :data=\"popupData\" @close=\"close\" @closepopupnotifications=\"clearNotifications\" @showpaneltab=\"showPanelTab\"\r\n           @sendfeature=\"sendFeature\" @settingchange=\"settingChange\">\r\n    </popup>\r\n</div>\r\n<div id=\"alpheios-panel-embedded\">\r\n    <panel :data=\"panelData\" @close=\"close\" @closenotifications=\"clearNotifications\"\r\n           @setposition=\"setPositionTo\" @settingchange=\"settingChange\" @resourcesettingchange=\"resourceSettingChange\"\r\n           @changetab=\"changeTab\"></panel>\r\n</div>\r\n";
+
+/***/ }),
+/* 19 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return LemmaTranslations; });
+/* unused harmony export AlpheiosLemmaTranslationsAdapter */
+/**
+ * Base Adapter Class for a Lemma Translation Service
+ */
+class BaseLemmaTranslationsAdapter {
+  /**
+   * Get the available lexicons provided by this adapter class for the
+   * requested language
+   * @param {string} language languageCode
+   * @return {Array} a Map of lexicon objects. Keys are lexicon uris, values are the lexicon description.
+   */
+  static getTranslations (language) {
+    return []
+  }
+}
+
+var DefaultConfig = "{\r\n\t\"url\": \"http://localhost:5000\",\r\n\t\"availableLangSource\": [\"lat\"]\r\n}";
+
+class AlpheiosLemmaTranslationsAdapter extends BaseLemmaTranslationsAdapter {
+  /**
+   * A Client Adapter for the Alpheios V1 Lemma service
+   * @constructor
+   * @param {Object} config - JSON configuration object override
+   */
+  constructor (config = null) {
+    super();
+
+    if (config == null) {
+      try {
+        let fullconfig = JSON.parse(DefaultConfig);
+        this.config = fullconfig;
+      } catch (e) {
+        this.config = DefaultConfig;
+      }
+    } else {
+      this.config = config;
+    }
+    this.mapLangUri = {};
+  }
+  /**
+   * Loads a available res languages for available lang array from the config
+   * @returns
+   */
+  async getAvailableResLang (avaLangIntem) {
+    let adapter = this;
+
+    let urlAvaLangsRes = adapter.config.url + '/' + avaLangIntem + '/';
+    let unparsed = await adapter._loadJSON(urlAvaLangsRes);
+
+    let mapLangUri = {};
+    unparsed.forEach(function (langItem) {
+      mapLangUri[langItem.lang] = langItem.uri;
+    });
+
+    adapter.mapLangUri[avaLangIntem] = mapLangUri;
+  }
+  /**
+   * Loads translations for input from inLang to outLang
+   * @param {string} inLang - source lang of the input
+   * @param {string} outLang - result lang for the input
+   * @param {string} input - text for translation
+   * @returns {Promise} a Promise that resolves to the text contents of the loaded file
+   */
+  async getTranslations (inLang, outLang, input) {
+    let adapter = this;
+
+    if (adapter.mapLangUri[inLang] === undefined) {
+      await adapter.getAvailableResLang(inLang);
+    }
+
+    if (adapter.mapLangUri[inLang] !== undefined && adapter.mapLangUri[inLang][outLang] !== undefined) {
+      let urlTranslations = adapter.mapLangUri[inLang][outLang] + '?input=' + input;
+
+      let unparsed = await adapter._loadJSON(urlTranslations);
+
+      return unparsed[0].translations
+    }
+  }
+  /**
+   * Loads a json data from a URL
+   * @param {string} url - the url
+   * @returns {Promise} a Promise that resolves to the text contents of the loaded file
+   */
+  _loadJSON (url) {
+    // TODO figure out best way to load this data
+    return new Promise((resolve, reject) => {
+      window.fetch(url, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json'
+        }
+      }).then(
+        function (response) {
+          let text = response.json();
+          resolve(text);
+        }
+      ).catch((error) => {
+        reject(error);
+      });
+    })
+  }
+}
+
+// import {LanguageModelFactory} from 'alpheios-data-models'
+class LemmaTranslations {
+  static async fetchTranslations (languageID) {
+    // let languageCode = LanguageModelFactory.getLanguageCodeFromId(languageID)
+    let lemmaAdapter = new AlpheiosLemmaTranslationsAdapter();
+    let translationsList = await lemmaAdapter.getTranslations('lat', 'eng', 'mare');
+
+    console.log('fetching translations', translationsList);
+  }
+}
+
+
+
 
 /***/ })
 /******/ ]);
