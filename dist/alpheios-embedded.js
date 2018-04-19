@@ -3589,7 +3589,7 @@ class Embedded {
     Object.assign(this.ui.popup.popupData, popupData)
 
     console.log('**************************************************')
-    console.log('IS I am in embedded constructor ... ')
+    console.log('IS I am in embedded constructor 2 ... ')
     let lemmaClient = __WEBPACK_IMPORTED_MODULE_6_alpheios_lemma_client__["a" /* LemmaTranslations */].fetchTranslations()
     console.log('**************************************************')
   }
@@ -3645,7 +3645,7 @@ class Embedded {
         lexicons: __WEBPACK_IMPORTED_MODULE_2_alpheios_lexicon_client__["a" /* Lexicons */],
 
         lemmaTranslations: __WEBPACK_IMPORTED_MODULE_6_alpheios_lemma_client__["a" /* LemmaTranslations */],
-        
+
         resourceOptions: this.resourceOptions,
         langOpts: { [__WEBPACK_IMPORTED_MODULE_0_alpheios_data_models__["Constants"].LANG_PERSIAN]: { lookupMorphLast: true } } // TODO this should be externalized
       }
