@@ -1,6 +1,6 @@
 /* eslint-env jest */
 /* global Event */
-import {Constants} from 'alpheios-data-models'
+import {Constants, Translation} from 'alpheios-data-models'
 import {AlpheiosTuftsAdapter} from 'alpheios-morph-client'
 import {Lexicons} from 'alpheios-lexicon-client'
 import { UIController, HTMLSelector, LexicalQuery, ContentOptions, ResourceOptions } from 'alpheios-components'
@@ -37,11 +37,6 @@ class Embedded {
     this.doc.body.addEventListener('Alpheios_Embedded_Check', event => { this.notifyExtension(event) })
     Object.assign(this.ui.panel.panelData, panelData)
     Object.assign(this.ui.popup.popupData, popupData)
-
-    console.log('**************************************************')
-    console.log('IS I am in embedded constructor 3 ... ')
-    let lemmaClient = LemmaTranslations.fetchTranslations('lat', 'eng', 'mare')
-    console.log('**************************************************')
   }
 
   notifyExtension (event) {
