@@ -27,8 +27,8 @@ class Embedded {
     this.state = new State()
     let contentDefs = new ContentOptionDefaults()
     let resourceDefs = new LanguageOptionDefaults()
-    this.options = new Options(contentDefs,this.optionSaver, this.optionLoader)
-    this.resourceOptions = new Options(resourceDefs,this.optionSaver, this.optionLoader)
+    this.options = new Options(contentDefs, this.optionSaver, this.optionLoader)
+    this.resourceOptions = new Options(resourceDefs, this.optionSaver, this.optionLoader)
     this.siteOptions = []
     this.maAdapter = new AlpheiosTuftsAdapter() // Morphological analyzer adapter, with default arguments
     let manifest = { version: '1.0', name: 'Alpheios Embedded Library' }
@@ -112,7 +112,7 @@ class Embedded {
         maAdapter: this.maAdapter,
         lexicons: Lexicons,
         resourceOptions: this.resourceOptions,
-        siteOptions:this.siteOptions,
+        siteOptions: this.siteOptions,
         langOpts: { [Constants.LANG_PERSIAN]: { lookupMorphLast: true } } // TODO this should be externalized
       }
       ).getData()
