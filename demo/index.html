@@ -1,61 +1,91 @@
-<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Wordsvc Test Page</title>
+    <title>Paideia Test Page</title>
     <link rel="stylesheet" href="../dist/style/style.min.css"/>
+    <link rel="stylesheet" href="../dist/skins/paideia/style.min.css"/>
 </head>
-
 <body>
     <script src="../dist/alpheios-embedded.js"></script>
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function(event) {
-          new Alpheios.Embedded().activate();
+          let siteOptions = `
+          [
+            {
+              "uriMatch": ".*",
+              "options": [
+                {
+                  "domain": "alpheios-resource-options",
+                  "items": {
+                    "lexiconsShort": {
+                      "labelText": "Lexicons (Short Definitions)",
+                      "group": {
+                        "lat": {
+                          "defaultValue": [ "https://github.com/balmas/pd" ],
+                          "values": [
+                            { "value": "https://github.com/balmas/pd",
+                              "test": "Example Site Lexcion"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+          `
+          let uiOptions = `
+          {
+            "domain": "alpheios-ui-options",
+            "items": {
+              "skin": {
+                "defaultValue": "paideia",
+                "labelText": "Skin",
+                "values": [
+                  {
+                    "value": "paideia",
+                    "text": "Paideia Skin"
+                  }
+                ]
+              },
+              "popup": {
+                "defaultValue": "popup",
+                "labelText": "Popup layout",
+                "values": [
+                  {
+                    "value": "popup",
+                    "text": "Default Popup Layout"
+                  }
+                ]
+              }
+            }
+          }
+          `
+          new Alpheios.Embedded("#alpheios-main",document,{},{},{ui: uiOptions, site: siteOptions}).activate();
         });
     </script>
+    <h2 style="border-bottom: 3px solid #5297cb; background-color:#d4d4d4;">Paideia Test Page</h2>
     <div id="alpheios-main"
       data-trigger="dblclick,touchstart"
       data-selector=".alpheios-enabled"></div>
-    <h4>Greek</h4>
-    <div class="alpheios-enabled" id="block1" xml:lang="grc">
-      ἄνδρα μοι ἔννεπε, μοῦσα, πολύτροπον
-    </div>
+      <div class="alpheios-enabled" xml:lang="lat">
+<p>Post conventum cum illa doctissima et pulcherrima puella Marcus domum advenit, et adhuc miratur eius eruditionem et pulchritudinem. Marcus novo amore, ut videtur, est incensus et inflammatus.</p>
 
-    <h4>Latin</h4>
-    <div class="alpheios-enabled" id="block2" lang="lat">
-      mare cupidinibus cepit
-    </div>
+<p>Marcus sibi: "Est hora secunda. Hora quinta ante museum adesse debeo. Si ad tempus advenire velim, hora quarta exire debeo. Haec puella mihi valde placet, et ad nostrum primum conventum sero advenire nullo modo velim. Sed tam multa mihi facienda sunt! Unde incipiam?</p>
 
-    <h4>Arabic</h4>
-    <div class="alpheios-enabled" id="block3" lang="ara" dir="rtl">
-       1 اَلدٌّنيَا دَارُ مَمَرٍ لاَ دَارُ مَقَرٍ * سُلطَان بِلاَ عَدلٍ كَنَهرٍ
-    </div>
+<p>Primum omnium lavari debeo, nam hodie mane non lautus ad univesitatem properavi et alae meae rancide olere incipiunt."</p>
 
-    <h4>Persian</h4>
-    <div class="alpheios-enabled" id="block4" lang="per" dir="rtl">
-                آبادائیدن
-                به نام خداوند جان و خرد
-                کزین برتر اندیشه برنگذرد
-                خداوند نام و خداوند جای
-                خداوند روزی ده رهنمای
-                خداوند کیوان و گردان سپهر
-                فروزنده ماه و ناهید و مهر
-                ز نام و نشان و گمان برترست
-                نگارندهٔ بر شده پیکرست
-                به بینندگان آفریننده را
-                نبینی مرنجان دو بیننده را
-                نیابد بدو نیز اندیشه راه
-                که او برتر از نام و از جایگاه
-                سخن هر چه زین گوهران بگذرد
-                نیابد بدو راه جان و خرد
-    </div>
+<p>(in balneo pluvio, sibi) "Quam pulchra et erudita est illa, et quam bene latine sciens! Quam bene litteras scit, quam bene latine loquitur! Litterae latinae Novi Eboraci non neglectae sunt neque iacent, sed artes liberales re vera vigent, si femina in tramine inveniri potest quae bonarum artium studio incensa et perfecte planeque erudita est!"</p>
 
-    <h4>Ovid</h4>
-    <div class="alpheios-enabled" lang="lat">
-      In nova fert <span tbref="1-1">animus</span> mutatas dicere formas
-corpora; di, coeptis (nam vos mutastis et illas)
-adspirate meis primaque ab origine mundi
-ad mea perpetuum deducite tempora carmen!
+<p>(Marcus ex balneo pluvio exit, se in speculo videt, et sibi dicit): "Barbam meam radere debeo. Puellis, aut aiunt, barbae non placent."</p>
+
+<p>Post barbam rasam: "multo melius. Sed dentes purgare non obliviscar, nam si ego, quis scit, Iuliae osculum do, aut illa mihi, quid dicet illa, si os meum male olet?"</p>
+
+<p>(post dentes purgatos) "Multo melius. Sum bene lautus."</p>
+
+<p>(Marcus in cubiculum suum intrat) "Nunc vestimenta pulchra induam.... Iuliae placere volo.  Haec camisia non mihi placet... hae bracae sunt immundae...hanc camisiam induam, et has bracas." (spectat in speculum) "non male se habet." (spectat ad horologium) "paene hora quarta est, properandum est mihi! Ubi sunt calcei mei? .... ecce calcei.... Et ubi posui telephonum meum? .... ecce."</p>
 </div>
 
 </body>
