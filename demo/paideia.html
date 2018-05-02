@@ -1,0 +1,92 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Paideia Test Page</title>
+    <link rel="stylesheet" href="../dist/style/style.min.css"/>
+    <link rel="stylesheet" href="../dist/skins/paideia/style.min.css"/>
+</head>
+<body>
+    <script src="../dist/alpheios-embedded.js"></script>
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function(event) {
+          let siteOptions = `
+          [
+            {
+              "uriMatch": ".*",
+              "options": [
+                {
+                  "domain": "alpheios-resource-options",
+                  "items": {
+                    "lexiconsShort": {
+                      "labelText": "Lexicons (Short Definitions)",
+                      "group": {
+                        "lat": {
+                          "defaultValue": [ "https://github.com/balmas/pd" ],
+                          "values": [
+                            { "value": "https://github.com/balmas/pd",
+                              "test": "Example Site Lexcion"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+          `
+          let uiOptions = `
+          {
+            "domain": "alpheios-ui-options",
+            "items": {
+              "skin": {
+                "defaultValue": "paideia",
+                "labelText": "Skin",
+                "values": [
+                  {
+                    "value": "paideia",
+                    "text": "Paideia Skin"
+                  }
+                ]
+              },
+              "popup": {
+                "defaultValue": "popup",
+                "labelText": "Popup layout",
+                "values": [
+                  {
+                    "value": "popup",
+                    "text": "Default Popup Layout"
+                  }
+                ]
+              }
+            }
+          }
+          `
+          new Alpheios.Embedded("#alpheios-main",document,{},{},{ui: uiOptions, site: siteOptions}).activate();
+        });
+    </script>
+    <h2 style="border-bottom: 3px solid #5297cb; background-color:#d4d4d4;">Paideia Test Page</h2>
+    <div id="alpheios-main"
+      data-trigger="dblclick,touchstart"
+      data-selector=".alpheios-enabled"></div>
+      <div class="alpheios-enabled" xml:lang="lat">
+<p>Post conventum cum illa doctissima et pulcherrima puella Marcus domum advenit, et adhuc miratur eius eruditionem et pulchritudinem. Marcus novo amore, ut videtur, est incensus et inflammatus.</p>
+
+<p>Marcus sibi: "Est hora secunda. Hora quinta ante museum adesse debeo. Si ad tempus advenire velim, hora quarta exire debeo. Haec puella mihi valde placet, et ad nostrum primum conventum sero advenire nullo modo velim. Sed tam multa mihi facienda sunt! Unde incipiam?</p>
+
+<p>Primum omnium lavari debeo, nam hodie mane non lautus ad univesitatem properavi et alae meae rancide olere incipiunt."</p>
+
+<p>(in balneo pluvio, sibi) "Quam pulchra et erudita est illa, et quam bene latine sciens! Quam bene litteras scit, quam bene latine loquitur! Litterae latinae Novi Eboraci non neglectae sunt neque iacent, sed artes liberales re vera vigent, si femina in tramine inveniri potest quae bonarum artium studio incensa et perfecte planeque erudita est!"</p>
+
+<p>(Marcus ex balneo pluvio exit, se in speculo videt, et sibi dicit): "Barbam meam radere debeo. Puellis, aut aiunt, barbae non placent."</p>
+
+<p>Post barbam rasam: "multo melius. Sed dentes purgare non obliviscar, nam si ego, quis scit, Iuliae osculum do, aut illa mihi, quid dicet illa, si os meum male olet?"</p>
+
+<p>(post dentes purgatos) "Multo melius. Sum bene lautus."</p>
+
+<p>(Marcus in cubiculum suum intrat) "Nunc vestimenta pulchra induam.... Iuliae placere volo.  Haec camisia non mihi placet... hae bracae sunt immundae...hanc camisiam induam, et has bracas." (spectat in speculum) "non male se habet." (spectat ad horologium) "paene hora quarta est, properandum est mihi! Ubi sunt calcei mei? .... ecce calcei.... Et ubi posui telephonum meum? .... ecce."</p>
+</div>
+
+</body>
+</html>

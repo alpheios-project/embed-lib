@@ -1,0 +1,10 @@
+{
+	"version": 3,
+	"file": "style.min.css",
+	"sources": [
+		"../../../src/skins/paideia/style.scss",
+		"../../../src/skins/shared/_skin.scss"
+	],
+	"names": [],
+	"mappings": "ACAA,AAAA,IAAI,AAAA,aAAa,CAAC,kBAAkB,AAAO,CACvC,UAAU,CDCS,OAAO,CCA7B,AAED,AAAA,IAAI,AAAA,aAAa,CAAC,2BAA2B,AAAO,CAChD,KAAK,CDHc,OAAO,CCI7B,AACD,AAAA,IAAI,AAAA,aAAa,CAAC,iCAAiC,AAAO,CACtD,KAAK,CDJc,IAAO,CCK7B,AAED,AAAA,IAAI,AAAA,aAAa,CAAC,gCAAgC,AAAO,CACvD,gBAAgB,CDTS,OAAO,CCUjC,AAED,AAAA,IAAI,AAAA,aAAa,CAAC,0BAA0B,AAAO,CACjD,SAAS,CAAE,OAAO,CACnB"
+}
