@@ -1,9 +1,10 @@
 /* eslint-env jest */
 /* global Event */
+import ComponentStyles from '../node_modules/alpheios-components/dist/style/style.min.css' // eslint-disable-line
 import {Constants} from 'alpheios-data-models'
 import {AlpheiosTuftsAdapter} from 'alpheios-morph-client'
 import {Lexicons} from 'alpheios-lexicon-client'
-import { UIController, HTMLSelector, LexicalQuery, ContentOptionDefaults, LanguageOptionDefaults, Options } from 'alpheios-components'
+import { UIController, HTMLSelector, LexicalQuery, DefaultsLoader, ContentOptionDefaults, LanguageOptionDefaults, UIOptionDefaults, Options, LocalStorageArea } from 'alpheios-components'
 import State from './state'
 import Template from './template.htmlf'
 
@@ -21,19 +22,26 @@ class Embedded {
    * @param {Object} popupData - popup data overrides
    * @param {Object} panelData - panel data overrides
    */
-  constructor (anchor = '#alpheios-main', doc = document, popupData = {}, panelData = {}) {
+  constructor (anchor = '#alpheios-main', doc = document, popupData = {}, panelData = {}, options = {}) {
     this.anchor = anchor
     this.doc = doc
     this.state = new State()
-    let contentDefs = new ContentOptionDefaults()
-    let resourceDefs = new LanguageOptionDefaults()
-    this.options = new Options(contentDefs, this.optionSaver, this.optionLoader)
-    this.resourceOptions = new Options(resourceDefs, this.optionSaver, this.optionLoader)
-    this.siteOptions = []
+    this.options = new Options(DefaultsLoader.fromJSON(ContentOptionDefaults), LocalStorageArea)
+    this.resourceOptions = new Options(DefaultsLoader.fromJSON(LanguageOptionDefaults), LocalStorageArea)
+    if (options.ui) {
+      this.uiOptions = new Options(DefaultsLoader.fromJSON(options.ui), LocalStorageArea)
+    } else {
+      this.uiOptions = new Options(DefaultsLoader.fromJSON(UIOptionDefaults), LocalStorageArea)
+    }
+    if (options.site) {
+      this.siteOptions = this.loadSiteOptions(options.site)
+    } else {
+      this.siteOptions = []
+    }
     this.maAdapter = new AlpheiosTuftsAdapter() // Morphological analyzer adapter, with default arguments
     let manifest = { version: '1.0', name: 'Alpheios Embedded Library' }
     let template = { html: Template, panelId: 'alpheios-panel-embedded', popupId: 'alpheios-popup-embedded' }
-    this.ui = new UIController(this.state, this.options, this.resourceOptions, manifest, template)
+    this.ui = new UIController(this.state, this.options, this.resourceOptions, this.uiOptions, manifest, template)
     this.doc.body.addEventListener('Alpheios_Embedded_Check', event => { this.notifyExtension(event) })
     Object.assign(this.ui.panel.panelData, panelData)
     Object.assign(this.ui.popup.popupData, popupData)
@@ -75,29 +83,6 @@ class Embedded {
         o.addEventListener(t, event => { this.handler(event) })
       }
     }
-    let siteFixture = JSON.parse(`
-      [
-        {
-          "name": "testsite",
-          "uriMatch": "http://localhost",
-          "resourceOptions": {
-            "lexiconsShort-lat": ["https://github.com/balmas/testlex"]
-          }
-        }
-      ]
-    `)
-    for (let site of siteFixture) {
-      let siteDefs = new LanguageOptionDefaults(`alpheios-${site.name}-options`)
-      let loader = () => {
-        return new Promise((resolve, reject) => {
-          resolve(site.resourceOptions)
-        })
-      }
-      let resOpts = new Options(siteDefs, loader, this.optionSaver)
-      resOpts.load(() => {
-        this.siteOptions.push({ uriMatch: site.uriMatch, resourceOptions: resOpts })
-      })
-    }
   }
 
   handler (event) {
@@ -117,6 +102,18 @@ class Embedded {
       }
       ).getData()
     }
+  }
+
+  loadSiteOptions (siteOptions) {
+    let allSiteOptions = []
+    let loaded = DefaultsLoader.fromJSON(siteOptions)
+    for (let site of loaded) {
+      for (let domain of site.options) {
+        let siteOpts = new Options(domain, LocalStorageArea)
+        allSiteOptions.push({ uriMatch: site.uriMatch, resourceOptions: siteOpts })
+      }
+    }
+    return allSiteOptions
   }
 }
 
