@@ -15375,7 +15375,7 @@ class AlpheiosLexAdapter extends _base_adapter_js__WEBPACK_IMPORTED_MODULE_0__["
     }
     let ids
     if (this.index) {
-      let model = alpheios_data_models__WEBPACK_IMPORTED_MODULE_2__["LanguageModelFactory"].getLanguageForCode(lemma.language)
+      let model = alpheios_data_models__WEBPACK_IMPORTED_MODULE_2__["LanguageModelFactory"].getLanguageModel(lemma.languageID)
       ids = this._lookupInDataIndex(this.index, lemma, model)
     }
     let url = this.getConfig('urls').full
@@ -15441,7 +15441,7 @@ class AlpheiosLexAdapter extends _base_adapter_js__WEBPACK_IMPORTED_MODULE_0__["
       let parsed = papaparse__WEBPACK_IMPORTED_MODULE_1___default.a.parse(unparsed, {quoteChar: '\u{0000}', delimiter: '|'})
       this.data = this._fillMap(parsed.data)
     }
-    let model = alpheios_data_models__WEBPACK_IMPORTED_MODULE_2__["LanguageModelFactory"].getLanguageForCode(lemma.language)
+    let model = alpheios_data_models__WEBPACK_IMPORTED_MODULE_2__["LanguageModelFactory"].getLanguageModel(lemma.languageID)
     let deftexts = this._lookupInDataIndex(this.data, lemma, model)
     let promises = []
     if (deftexts) {
