@@ -3,15 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <title>Wordsvc Test Page</title>
-    <link rel="stylesheet" href="../dist/styles/style.min.css"/>
+    <link rel="stylesheet" href="../dist/style/style.css"/>
 </head>
 
 <body>
     <script src="../dist/alpheios-embedded.js"></script>
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function(event) {
+          // console.log('Alpheios', window['Alpheios'])
           new Alpheios.Embedded().activate();
         });
+
+        // function ready(fn) {
+        //     if (document.readyState !== 'loading') {
+        //         fn();
+        //     } else if (document.addEventListener) {
+        //         document.addEventListener('DOMContentLoaded', fn);
+        //     } else {
+        //         document.attachEvent('onreadystatechange', function () {
+        //             if (document.readyState !== 'loading')
+        //                 fn();
+        //         });
+        //     }
+        // }
+        // ready(function(){
+        //   console.log('Alpheios', Alpheios)
+        // });
     </script>
     <div id="alpheios-main"
       data-trigger="dblclick,touchstart"
@@ -49,6 +66,14 @@
                 سخن هر چه زین گوهران بگذرد
                 نیابد بدو راه جان و خرد
     </div>
+
+    <h4>Ovid</h4>
+    <div class="alpheios-enabled" lang="lat">
+      In nova fert <span tbref="1-1">animus</span> mutatas dicere formas
+corpora; di, coeptis (nam vos mutastis et illas)
+adspirate meis primaque ab origine mundi
+ad mea perpetuum deducite tempora carmen!
+</div>
 
 </body>
 </html>
