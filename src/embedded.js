@@ -1,14 +1,14 @@
 /* eslint-env jest */
 /* global Event */
-import {Constants, Translation} from 'alpheios-data-models'
+import ComponentStyles from '../node_modules/alpheios-components/dist/style/style.min.css' // eslint-disable-line
+import {Constants} from 'alpheios-data-models'
 import {AlpheiosTuftsAdapter} from 'alpheios-morph-client'
 import {Lexicons} from 'alpheios-lexicon-client'
-import { UIController, HTMLSelector, LexicalQuery, ContentOptions, ResourceOptions } from 'alpheios-components'
+import { UIController, HTMLSelector, LexicalQuery, DefaultsLoader, ContentOptionDefaults, LanguageOptionDefaults, UIOptionDefaults, Options, LocalStorageArea } from 'alpheios-components'
 import State from './state'
 import Template from './template.htmlf'
 
 import {LemmaTranslations} from 'alpheios-lemma-client'
-
 
 /**
  * Encapsulation of Alpheios functionality which can be embedded in a webpage
@@ -24,16 +24,26 @@ class Embedded {
    * @param {Object} popupData - popup data overrides
    * @param {Object} panelData - panel data overrides
    */
-  constructor (anchor = '#alpheios-main', doc = document, popupData = {}, panelData = {}) {
+  constructor (anchor = '#alpheios-main', doc = document, popupData = {}, panelData = {}, options = {}) {
     this.anchor = anchor
     this.doc = doc
     this.state = new State()
-    this.options = new ContentOptions(this.optionSaver, this.optionLoader)
-    this.resourceOptions = new ResourceOptions(this.optionSaver, this.optionLoader)
+    this.options = new Options(DefaultsLoader.fromJSON(ContentOptionDefaults), LocalStorageArea)
+    this.resourceOptions = new Options(DefaultsLoader.fromJSON(LanguageOptionDefaults), LocalStorageArea)
+    if (options.ui) {
+      this.uiOptions = new Options(DefaultsLoader.fromJSON(options.ui), LocalStorageArea)
+    } else {
+      this.uiOptions = new Options(DefaultsLoader.fromJSON(UIOptionDefaults), LocalStorageArea)
+    }
+    if (options.site) {
+      this.siteOptions = this.loadSiteOptions(options.site)
+    } else {
+      this.siteOptions = []
+    }
     this.maAdapter = new AlpheiosTuftsAdapter() // Morphological analyzer adapter, with default arguments
     let manifest = { version: '1.0', name: 'Alpheios Embedded Library' }
     let template = { html: Template, panelId: 'alpheios-panel-embedded', popupId: 'alpheios-popup-embedded' }
-    this.ui = new UIController(this.state, this.options, this.resourceOptions, manifest, template)
+    this.ui = new UIController(this.state, this.options, this.resourceOptions, this.uiOptions, manifest, template)
     this.doc.body.addEventListener('Alpheios_Embedded_Check', event => { this.notifyExtension(event) })
     Object.assign(this.ui.panel.panelData, panelData)
     Object.assign(this.ui.popup.popupData, popupData)
@@ -92,10 +102,23 @@ class Embedded {
         lemmaTranslations: LemmaTranslations,
 
         resourceOptions: this.resourceOptions,
+        siteOptions: this.siteOptions,
         langOpts: { [Constants.LANG_PERSIAN]: { lookupMorphLast: true } } // TODO this should be externalized
       }
       ).getData()
     }
+  }
+
+  loadSiteOptions (siteOptions) {
+    let allSiteOptions = []
+    let loaded = DefaultsLoader.fromJSON(siteOptions)
+    for (let site of loaded) {
+      for (let domain of site.options) {
+        let siteOpts = new Options(domain, LocalStorageArea)
+        allSiteOptions.push({ uriMatch: site.uriMatch, resourceOptions: siteOpts })
+      }
+    }
+    return allSiteOptions
   }
 }
 
