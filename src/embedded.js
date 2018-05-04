@@ -8,8 +8,6 @@ import { UIController, HTMLSelector, LexicalQuery, DefaultsLoader, ContentOption
 import State from './state'
 import Template from './template.htmlf'
 
-import {LemmaTranslations} from 'alpheios-lemma-client'
-
 /**
  * Encapsulation of Alpheios functionality which can be embedded in a webpage
  */
@@ -99,7 +97,7 @@ class Embedded {
         maAdapter: this.maAdapter,
         lexicons: Lexicons,
 
-        lemmaTranslations: LemmaTranslations,
+        lemmaTranslations: null,
 
         resourceOptions: this.resourceOptions,
         siteOptions: this.siteOptions,
