@@ -8,6 +8,7 @@ import { UIController, HTMLSelector, LexicalQuery, DefaultsLoader, ContentOption
 import State from './state'
 import Template from './template.htmlf'
 
+const ALIGNMENT_HIGHLIGHT_CLASS = 'alpheios-alignment__highlight'
 /**
  * Encapsulation of Alpheios functionality which can be embedded in a webpage
  */
@@ -83,6 +84,11 @@ class Embedded {
         o.addEventListener(t, event => { this.handler(event) })
       }
     }
+    let alignments = this.doc.querySelectorAll('[data-alpheios_align_ref]')
+    for (let a of alignments) {
+      a.addEventListener('mouseenter', event => { this.enterAlignment(event) })
+      a.addEventListener('mouseleave', event => { this.leaveAlignment(event) })
+    }
   }
 
   handler (event) {
@@ -117,6 +123,36 @@ class Embedded {
       }
     }
     return allSiteOptions
+  }
+
+  leaveAlignment (event) {
+    this.doc.querySelectorAll(`.${ALIGNMENT_HIGHLIGHT_CLASS}`).forEach(e => e.classList.remove(ALIGNMENT_HIGHLIGHT_CLASS))
+  }
+
+  enterAlignment (event) {
+    let ref = event.target.dataset.alpheios_align_ref
+    if (ref) {
+      for (let r of ref.split(/,/)) {
+        let aligned = this.doc.querySelectorAll(r)
+        if (aligned) {
+          event.target.classList.add(ALIGNMENT_HIGHLIGHT_CLASS)
+          for (let a of aligned) {
+            a.classList.add(ALIGNMENT_HIGHLIGHT_CLASS)
+            let aref = a.dataset.alpheios_align_ref
+            if (aref) {
+              for (let ar of aref.split(/,/)) {
+                let reverse = this.doc.querySelectorAll(ar)
+                for (let reverseA of reverse) {
+                  if (reverseA !== event.target) {
+                    reverseA.classList.add(ALIGNMENT_HIGHLIGHT_CLASS)
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }
 
