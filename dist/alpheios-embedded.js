@@ -22728,8 +22728,52 @@ class Embedded {
               }
             }
           }
+          this.scrollToElement(aligned[0])
         }
       }
+    }
+  }
+
+  scrollToElement (elem) {
+    var top = elem.offsetTop
+    var left = elem.offsetLeft
+    var width = elem.offsetWidth
+    var height = elem.offsetHeight
+
+    while (elem.offsetParent) {
+      elem = elem.offsetParent
+      top += elem.offsetTop
+      left += elem.offsetLeft
+    }
+
+    var moveX = 0
+    var moveY = 0
+    if (left < elem.ownerDocument.defaultView.pageXOffset) {
+      moveX = left - elem.ownerDocument.defaultView.pageXOffset
+    } else if ((left + width) >
+               (elem.ownerDocument.defaultView.pageXOffset +
+                elem.ownerDocument.defaultView.innerWidth)
+    ) {
+      moveX = (left + width) -
+               (elem.ownerDocument.defaultView.pageXOffset +
+                elem.ownerDocument.defaultView.innerWidth)
+    }
+
+    if (top < elem.ownerDocument.defaultView.pageYOffset) {
+      moveY = top - elem.ownerDocument.defaultView.pageYOffset
+    } else if ((top >= elem.ownerDocument.defaultView.pageYOffset) &&
+                ((top + height) >
+                 (elem.ownerDocument.defaultView.pageYOffset +
+                  elem.ownerDocument.defaultView.innerHeight)
+                )
+    ) {
+      moveY =
+              (top + height) -
+              (elem.ownerDocument.defaultView.pageYOffset +
+               elem.ownerDocument.defaultView.innerHeight)
+    }
+    if (moveX !== 0 || moveY !== 0) {
+      elem.ownerDocument.defaultView.scrollBy(moveX, moveY)
     }
   }
 }
