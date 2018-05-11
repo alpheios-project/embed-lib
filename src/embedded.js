@@ -7,6 +7,7 @@ import {Lexicons} from 'alpheios-lexicon-client'
 import { UIController, HTMLSelector, LexicalQuery, DefaultsLoader, ContentOptionDefaults, LanguageOptionDefaults, UIOptionDefaults, Options, LocalStorageArea } from 'alpheios-components'
 import State from './state'
 import Template from './template.htmlf'
+import interact from 'interactjs'
 
 const ALIGNMENT_HIGHLIGHT_CLASS = 'alpheios-alignment__highlight'
 /**
@@ -89,6 +90,29 @@ class Embedded {
       a.addEventListener('mouseenter', event => { this.enterAlignment(event) })
       a.addEventListener('mouseleave', event => { this.leaveAlignment(event) })
     }
+    let alignedTranslation = this.doc.querySelectorAll('.aligned-translation')
+    for (let a of alignedTranslation) {
+      interact(a).resizable({
+        // resize from all edges and corners
+        edges: { left: true, right: true, bottom: false, top: false },
+
+        // minimum size
+        restrictSize: {
+          min: { width: 200 }
+        },
+
+        // keep the edges inside the parent
+        restrictEdges: {
+          outer: this.doc.body,
+          endOnly: true
+        },
+        inertia: true
+      }).on('resizemove', event => {
+        let target = event.target
+        // update the element's style
+        target.style.width = `${event.rect.width}px`
+      })
+    }
   }
 
   handler (event) {
@@ -130,6 +154,12 @@ class Embedded {
   }
 
   enterAlignment (event) {
+    let alignedTranslation = this.doc.querySelectorAll('.aligned-translation')
+    let visible = false
+    alignedTranslation.forEach(e => { if (e.classList.contains('visible')) { visible = true } })
+    if (!visible) {
+      return
+    }
     let ref = event.target.dataset.alpheios_align_ref
     if (ref) {
       for (let r of ref.split(/,/)) {
