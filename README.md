@@ -55,7 +55,7 @@ should have 2 data attributes:
 
 ## Prerequisites
 
-  * Node 8.7.0 or higher
+  * Node 9.10.1 or higher
 
 ## Install Dependencies
 
