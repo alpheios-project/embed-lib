@@ -10,3 +10,14 @@
            @setposition="setPositionTo" @settingchange="settingChange" @resourcesettingchange="resourceSettingChange"
            @changetab="changeTab"></panel>
 </div>
+<div id="alpheios-games" data-alpheios-ignore="all">
+  <component
+    v-bind:is="currentGamesComponents"
+
+    :data="gamesData"
+    :homonym="homonym"
+    :visible="visible"
+
+    @close="close"
+  ></component>
+</div> 
