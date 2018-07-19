@@ -7,7 +7,9 @@ import {Lexicons} from 'alpheios-lexicon-client'
 import { UIController, HTMLSelector, LexicalQuery, DefaultsLoader, ContentOptionDefaults, LanguageOptionDefaults, UIOptionDefaults, Options, LocalStorageArea } from 'alpheios-components'
 import State from './state'
 import Template from './template.htmlf'
+import interact from 'interactjs'
 
+const ALIGNMENT_HIGHLIGHT_CLASS = 'alpheios-alignment__highlight'
 /**
  * Encapsulation of Alpheios functionality which can be embedded in a webpage
  */
@@ -83,6 +85,34 @@ class Embedded {
         o.addEventListener(t, event => { this.handler(event) })
       }
     }
+    let alignments = this.doc.querySelectorAll('[data-alpheios_align_ref]')
+    for (let a of alignments) {
+      a.addEventListener('mouseenter', event => { this.enterAlignment(event) })
+      a.addEventListener('mouseleave', event => { this.leaveAlignment(event) })
+    }
+    let alignedTranslation = this.doc.querySelectorAll('.aligned-translation')
+    for (let a of alignedTranslation) {
+      interact(a).resizable({
+        // resize from all edges and corners
+        edges: { left: true, right: true, bottom: false, top: false },
+
+        // minimum size
+        restrictSize: {
+          min: { width: 200 }
+        },
+
+        // keep the edges inside the parent
+        restrictEdges: {
+          outer: this.doc.body,
+          endOnly: true
+        },
+        inertia: true
+      }).on('resizemove', event => {
+        let target = event.target
+        // update the element's style
+        target.style.width = `${event.rect.width}px`
+      })
+    }
   }
 
   handler (event) {
@@ -117,6 +147,86 @@ class Embedded {
       }
     }
     return allSiteOptions
+  }
+
+  leaveAlignment (event) {
+    this.doc.querySelectorAll(`.${ALIGNMENT_HIGHLIGHT_CLASS}`).forEach(e => e.classList.remove(ALIGNMENT_HIGHLIGHT_CLASS))
+  }
+
+  enterAlignment (event) {
+    let alignedTranslation = this.doc.querySelectorAll('.aligned-translation')
+    let visible = false
+    alignedTranslation.forEach(e => { if (e.classList.contains('visible')) { visible = true } })
+    if (!visible) {
+      return
+    }
+    let ref = event.target.dataset.alpheios_align_ref
+    if (ref) {
+      for (let r of ref.split(/,/)) {
+        let aligned = this.doc.querySelectorAll(r)
+        if (aligned) {
+          event.target.classList.add(ALIGNMENT_HIGHLIGHT_CLASS)
+          for (let a of aligned) {
+            a.classList.add(ALIGNMENT_HIGHLIGHT_CLASS)
+            let aref = a.dataset.alpheios_align_ref
+            if (aref) {
+              for (let ar of aref.split(/,/)) {
+                let reverse = this.doc.querySelectorAll(ar)
+                for (let reverseA of reverse) {
+                  if (reverseA !== event.target) {
+                    reverseA.classList.add(ALIGNMENT_HIGHLIGHT_CLASS)
+                  }
+                }
+              }
+            }
+          }
+          this.scrollToElement(aligned[0])
+        }
+      }
+    }
+  }
+
+  scrollToElement (elem) {
+    var top = elem.offsetTop
+    var left = elem.offsetLeft
+    var width = elem.offsetWidth
+    var height = elem.offsetHeight
+
+    while (elem.offsetParent) {
+      elem = elem.offsetParent
+      top += elem.offsetTop
+      left += elem.offsetLeft
+    }
+
+    var moveX = 0
+    var moveY = 0
+    if (left < elem.ownerDocument.defaultView.pageXOffset) {
+      moveX = left - elem.ownerDocument.defaultView.pageXOffset
+    } else if ((left + width) >
+               (elem.ownerDocument.defaultView.pageXOffset +
+                elem.ownerDocument.defaultView.innerWidth)
+    ) {
+      moveX = (left + width) -
+               (elem.ownerDocument.defaultView.pageXOffset +
+                elem.ownerDocument.defaultView.innerWidth)
+    }
+
+    if (top < elem.ownerDocument.defaultView.pageYOffset) {
+      moveY = top - elem.ownerDocument.defaultView.pageYOffset
+    } else if ((top >= elem.ownerDocument.defaultView.pageYOffset) &&
+                ((top + height) >
+                 (elem.ownerDocument.defaultView.pageYOffset +
+                  elem.ownerDocument.defaultView.innerHeight)
+                )
+    ) {
+      moveY =
+              (top + height) -
+              (elem.ownerDocument.defaultView.pageYOffset +
+               elem.ownerDocument.defaultView.innerHeight)
+    }
+    if (moveX !== 0 || moveY !== 0) {
+      elem.ownerDocument.defaultView.scrollBy(moveX, moveY)
+    }
   }
 }
 
