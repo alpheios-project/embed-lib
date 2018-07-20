@@ -4,7 +4,8 @@ import ComponentStyles from '../node_modules/alpheios-components/dist/style/styl
 import {Constants} from 'alpheios-data-models'
 import {AlpheiosTuftsAdapter} from 'alpheios-morph-client'
 import {Lexicons} from 'alpheios-lexicon-client'
-import { UIController, HTMLSelector, LexicalQuery, DefaultsLoader, ContentOptionDefaults, LanguageOptionDefaults, UIOptionDefaults, Options, LocalStorageArea } from 'alpheios-components'
+import { UIController, HTMLSelector, LexicalQuery, DefaultsLoader, ContentOptionDefaults, LanguageOptionDefaults, UIOptionDefaults, Options, LocalStorageArea, MouseDblClick, LongTap } from 'alpheios-components'
+
 import State from './state'
 import Template from './template.htmlf'
 import interact from 'interactjs'
@@ -80,11 +81,14 @@ class Embedded {
     if (activateOn.length === 0) {
       throw new Error(`activation element ${activateOn} is missing`)
     }
-    for (let o of activateOn) {
-      for (let t of trigger) {
-        o.addEventListener(t, event => { this.handler(event) })
+    for (let t of trigger) {
+      if (t === 'dblclick') {
+        MouseDblClick.listen(selector, evt => this.handler(evt))
+      } else if (t === 'touchstart') {
+        LongTap.listen(selector, evt => this.handler(evt), 5, 0)
       }
     }
+
     let alignments = this.doc.querySelectorAll('[data-alpheios_align_ref]')
     for (let a of alignments) {
       a.addEventListener('mouseenter', event => { this.enterAlignment(event) })
