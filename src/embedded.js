@@ -4,7 +4,8 @@ import ComponentStyles from '../node_modules/alpheios-components/dist/style/styl
 import {Constants} from 'alpheios-data-models'
 import {AlpheiosTuftsAdapter} from 'alpheios-morph-client'
 import {Lexicons} from 'alpheios-lexicon-client'
-import { UIController, HTMLSelector, LexicalQuery, DefaultsLoader, ContentOptionDefaults, LanguageOptionDefaults, UIOptionDefaults, Options, LocalStorageArea } from 'alpheios-components'
+import { UIController, HTMLSelector, LexicalQuery, ContentOptionDefaults, LanguageOptionDefaults,
+  UIOptionDefaults, Options, LocalStorageArea, MouseDblClick } from 'alpheios-components'
 import State from './state'
 import Template from './template.htmlf'
 
@@ -26,13 +27,10 @@ class Embedded {
     this.anchor = anchor
     this.doc = doc
     this.state = new State()
-    this.options = new Options(DefaultsLoader.fromJSON(ContentOptionDefaults), LocalStorageArea)
-    this.resourceOptions = new Options(DefaultsLoader.fromJSON(LanguageOptionDefaults), LocalStorageArea)
-    if (options.ui) {
-      this.uiOptions = new Options(DefaultsLoader.fromJSON(options.ui), LocalStorageArea)
-    } else {
-      this.uiOptions = new Options(DefaultsLoader.fromJSON(UIOptionDefaults), LocalStorageArea)
-    }
+    this.options = new Options(ContentOptionDefaults, LocalStorageArea)
+    this.resourceOptions = new Options(LanguageOptionDefaults, LocalStorageArea)
+    this.uiOptions = new Options(UIOptionDefaults, LocalStorageArea)
+
     if (options.site) {
       this.siteOptions = this.loadSiteOptions(options.site)
     } else {
@@ -74,7 +72,9 @@ class Embedded {
     if (!selector || !trigger) {
       throw new Error(`anchor element ${this.anchor} must define both trigger and selector`)
     }
-    let activateOn = this.doc.querySelectorAll(selector)
+    MouseDblClick.listen('body', evt => this.handler(evt))
+
+    /*    let activateOn = this.doc.querySelectorAll(selector)
     if (activateOn.length === 0) {
       throw new Error(`activation element ${activateOn} is missing`)
     }
@@ -82,7 +82,7 @@ class Embedded {
       for (let t of trigger) {
         o.addEventListener(t, event => { this.handler(event) })
       }
-    }
+    } */
   }
 
   handler (event) {
@@ -109,7 +109,7 @@ class Embedded {
 
   loadSiteOptions (siteOptions) {
     let allSiteOptions = []
-    let loaded = DefaultsLoader.fromJSON(siteOptions)
+    let loaded = siteOptions
     for (let site of loaded) {
       for (let domain of site.options) {
         let siteOpts = new Options(domain, LocalStorageArea)
