@@ -73,16 +73,6 @@ class Embedded {
       throw new Error(`anchor element ${this.anchor} must define both trigger and selector`)
     }
     MouseDblClick.listen('body', evt => this.handler(evt))
-
-    /*    let activateOn = this.doc.querySelectorAll(selector)
-    if (activateOn.length === 0) {
-      throw new Error(`activation element ${activateOn} is missing`)
-    }
-    for (let o of activateOn) {
-      for (let t of trigger) {
-        o.addEventListener(t, event => { this.handler(event) })
-      }
-    } */
   }
 
   handler (event) {
