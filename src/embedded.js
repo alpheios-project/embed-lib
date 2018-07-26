@@ -5,9 +5,10 @@ import {Constants} from 'alpheios-data-models'
 import {AlpheiosTuftsAdapter} from 'alpheios-morph-client'
 import {Lexicons} from 'alpheios-lexicon-client'
 import { UIController, HTMLSelector, LexicalQuery, ContentOptionDefaults, LanguageOptionDefaults,
-  UIOptionDefaults, Options, LocalStorageArea, MouseDblClick } from 'alpheios-components'
+  UIOptionDefaults, Options, LocalStorageArea, MouseDblClick, LongTap } from 'alpheios-components'
 import State from './state'
 import Template from './template.htmlf'
+import interact from 'interactjs'
 
 /**
  * Encapsulation of Alpheios functionality which can be embedded in a webpage
@@ -29,7 +30,12 @@ class Embedded {
     this.state = new State()
     this.options = new Options(ContentOptionDefaults, LocalStorageArea)
     this.resourceOptions = new Options(LanguageOptionDefaults, LocalStorageArea)
-    this.uiOptions = new Options(UIOptionDefaults, LocalStorageArea)
+
+    if (options.ui) {
+      this.uiOptions = new Options(options.ui, LocalStorageArea)
+    } else {
+      this.uiOptions = new Options(UIOptionDefaults, LocalStorageArea)
+    }
 
     if (options.site) {
       this.siteOptions = this.loadSiteOptions(options.site)
@@ -72,7 +78,46 @@ class Embedded {
     if (!selector || !trigger) {
       throw new Error(`anchor element ${this.anchor} must define both trigger and selector`)
     }
-    MouseDblClick.listen('body', evt => this.handler(evt))
+    let activateOn = this.doc.querySelectorAll(selector)
+    if (activateOn.length === 0) {
+      throw new Error(`activation element ${activateOn} is missing`)
+    }
+    for (let t of trigger) {
+      if (t === 'dblclick') {
+        MouseDblClick.listen(selector, evt => this.handler(evt))
+      } else if (t === 'touchstart') {
+        LongTap.listen(selector, evt => this.handler(evt), 5, 0)
+      }
+    }
+
+    let alignments = this.doc.querySelectorAll('[data-alpheios_align_ref]')
+    for (let a of alignments) {
+      a.addEventListener('mouseenter', event => { this.enterAlignment(event) })
+      a.addEventListener('mouseleave', event => { this.leaveAlignment(event) })
+    }
+    let alignedTranslation = this.doc.querySelectorAll('.aligned-translation')
+    for (let a of alignedTranslation) {
+      interact(a).resizable({
+        // resize from all edges and corners
+        edges: { left: true, right: true, bottom: false, top: false },
+
+        // minimum size
+        restrictSize: {
+          min: { width: 200 }
+        },
+
+        // keep the edges inside the parent
+        restrictEdges: {
+          outer: this.doc.body,
+          endOnly: true
+        },
+        inertia: true
+      }).on('resizemove', event => {
+        let target = event.target
+        // update the element's style
+        target.style.width = `${event.rect.width}px`
+      })
+    }
   }
 
   handler (event) {
