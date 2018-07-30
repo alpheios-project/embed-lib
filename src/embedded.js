@@ -2,9 +2,10 @@
 /* global Event */
 import ComponentStyles from '../node_modules/alpheios-components/dist/style/style.min.css' // eslint-disable-line
 import {Constants} from 'alpheios-data-models'
-import {AlpheiosTuftsAdapter} from 'alpheios-morph-client'
+import {AlpheiosTuftsAdapter, AlpheiosTreebankAdapter} from 'alpheios-morph-client'
 import {Lexicons} from 'alpheios-lexicon-client'
-import { UIController, HTMLSelector, LexicalQuery, DefaultsLoader, ContentOptionDefaults, LanguageOptionDefaults, UIOptionDefaults, Options, LocalStorageArea } from 'alpheios-components'
+import { UIController, HTMLSelector, LexicalQuery, DefaultsLoader, ContentOptionDefaults, LanguageOptionDefaults, UIOptionDefaults, Options, LocalStorageArea, MouseDblClick, LongTap } from 'alpheios-components'
+
 import State from './state'
 import Template from './template.htmlf'
 import interact from 'interactjs'
@@ -41,6 +42,7 @@ class Embedded {
       this.siteOptions = []
     }
     this.maAdapter = new AlpheiosTuftsAdapter() // Morphological analyzer adapter, with default arguments
+    this.tbAdapter = new AlpheiosTreebankAdapter() // Morphological analyzer adapter, with default arguments
     let manifest = { version: '1.0', name: 'Alpheios Embedded Library' }
     let template = { html: Template, panelId: 'alpheios-panel-embedded', popupId: 'alpheios-popup-embedded' }
     this.ui = new UIController(this.state, this.options, this.resourceOptions, this.uiOptions, manifest, template)
@@ -80,11 +82,14 @@ class Embedded {
     if (activateOn.length === 0) {
       throw new Error(`activation element ${activateOn} is missing`)
     }
-    for (let o of activateOn) {
-      for (let t of trigger) {
-        o.addEventListener(t, event => { this.handler(event) })
+    for (let t of trigger) {
+      if (t === 'dblclick') {
+        MouseDblClick.listen(selector, evt => this.handler(evt))
+      } else if (t === 'touchstart') {
+        LongTap.listen(selector, evt => this.handler(evt), 5, 0)
       }
     }
+
     let alignments = this.doc.querySelectorAll('[data-alpheios_align_ref]')
     for (let a of alignments) {
       a.addEventListener('mouseenter', event => { this.enterAlignment(event) })
@@ -125,6 +130,7 @@ class Embedded {
         htmlSelector: htmlSelector,
         uiController: this.ui,
         maAdapter: this.maAdapter,
+        tbAdapter: this.tbAdapter,
         lexicons: Lexicons,
 
         lemmaTranslations: null,

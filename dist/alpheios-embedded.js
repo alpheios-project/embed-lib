@@ -8509,22 +8509,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'WideInflectionsTable',
   props: {
-    /*
-     An object that represents a wide version of a table, consists of array of rows.
-     Each rows consists of an array of cells.
-    */
-    data: {
+    // An inflection table view
+    view: {
       type: [Object, Boolean],
       required: true
-    },
-
-    /*
-    An `InflectionData` object
-    */
-    inflectionData: {
-      type: [Object],
-      required: true
     }
+  },
+
+  data: function () {
+    return {
+      elementIDs: {
+        wideView: 'alph-inflection-table-wide',
+        footnotes: 'alph-inflection-footnotes'
+      }
+    }
+  },
+
+  computed: {
   },
 
   methods: {
@@ -8544,18 +8545,18 @@ __webpack_require__.r(__webpack_exports__);
         let cellClassName = 'infl-prdgm-tbl-cell--data'
         const fullMatchClassnName = 'infl-prdgm-tbl-cell--full-match'
         // Get a list of cell feature properties
-        let cellFeatures = []
+        let comparativeFeatures = []
         for (const prop of Object.keys(cell)) {
           // Eliminate "non-feature" keys
           if (prop !== 'role' && prop !== 'value') {
-            cellFeatures.push(prop)
+            comparativeFeatures.push(prop)
           }
         }
-        for (const lexeme of this.inflectionData.homonym.lexemes) {
+        for (const lexeme of this.view.homonym.lexemes) {
           for (const inflection of lexeme.inflections) {
             let fullMatch = true
-            for (const feature of cellFeatures) {
-              fullMatch = fullMatch && inflection.hasOwnProperty(feature) && inflection[feature].value === cell[feature]
+            for (const feature of comparativeFeatures) {
+              fullMatch = fullMatch && inflection.hasOwnProperty(feature) && cell[feature].hasValues(inflection[feature].values)
               if (!fullMatch) { break } // If at least one feature does not match, there is no reason to check others
             }
             if (fullMatch) {
@@ -8587,8 +8588,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _inflections_supp_table_wide_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./inflections-supp-table-wide.vue */ "./vue-components/inflections-supp-table-wide.vue");
 /* harmony import */ var _wordforms_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./wordforms.vue */ "./vue-components/wordforms.vue");
 /* harmony import */ var _tooltip_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./tooltip.vue */ "./vue-components/tooltip.vue");
-/* harmony import */ var alpheios_inflection_tables__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! alpheios-inflection-tables */ "alpheios-inflection-tables");
-/* harmony import */ var alpheios_inflection_tables__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(alpheios_inflection_tables__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var alpheios_data_models__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! alpheios-data-models */ "alpheios-data-models");
+/* harmony import */ var alpheios_data_models__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(alpheios_data_models__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var alpheios_inflection_tables__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! alpheios-inflection-tables */ "alpheios-inflection-tables");
+/* harmony import */ var alpheios_inflection_tables__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(alpheios_inflection_tables__WEBPACK_IMPORTED_MODULE_6__);
 //
 //
 //
@@ -8685,6 +8688,7 @@ __webpack_require__.r(__webpack_exports__);
 // Other dependencies
 
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'Inflections',
   components: {
@@ -8713,6 +8717,7 @@ __webpack_require__.r(__webpack_exports__);
 
   data: function () {
     return {
+      languageID: alpheios_data_models__WEBPACK_IMPORTED_MODULE_5__["Constants"].LANG_LATIN, // Default value
       events: {
         EVENT: 'event',
         DATA_UPDATE: 'dataUpdate'
@@ -8753,19 +8758,20 @@ __webpack_require__.r(__webpack_exports__);
           hiddenTooltip: this.messages.TOOLTIP_INFLECT_SHOWFULL
         }
       },
-      suppColors: ['rgb(208,255,254)', 'rgb(255,253,219)', 'rgb(228,255,222)', 'rgb(255,211,253)', 'rgb(255,231,211)']
+      suppColors: ['rgb(208,255,254)', 'rgb(255,253,219)', 'rgb(228,255,222)', 'rgb(255,211,253)', 'rgb(255,231,211)'],
+      sfCollapsed: true
     }
   },
 
   computed: {
     isEnabled: function () {
-      return this.data.enabled
+      return this.data.inflectionViewSet && this.data.inflectionViewSet.enabled
     },
     isContentAvailable: function () {
-      return this.data.enabled && Boolean(this.data.inflectionData)
+      return this.data.inflectionViewSet && this.data.inflectionViewSet.hasMatchingViews
     },
-    inflectionData: function () {
-      return this.data.inflectionData
+    inflectionViewSet: function () {
+      return this.data.inflectionViewSet
     },
     // Need this for a watcher that will monitor a parent container visibility state
     isVisible: function () {
@@ -8777,7 +8783,7 @@ __webpack_require__.r(__webpack_exports__);
       },
       set: function (newValue) {
         this.selectedPartOfSpeech = newValue
-        this.views = this.viewSet.getViews(this.selectedPartOfSpeech)
+        this.views = this.data.inflectionViewSet.getViews(this.selectedPartOfSpeech)
 
         this.selectedView = this.views[0]
         if (!this.selectedView.hasComponentData) {
@@ -8827,15 +8833,11 @@ __webpack_require__.r(__webpack_exports__);
   },
 
   watch: {
-
-    inflectionData: function (inflectionData) {
-      // Clear the panel when new inflections arrive
+    inflectionViewSet: function () {
       this.clearInflections().setDefaults()
-      if (inflectionData) {
-        this.viewSet = new alpheios_inflection_tables__WEBPACK_IMPORTED_MODULE_5__["ViewSet"](inflectionData, this.locale)
-
+      if (this.data.inflectionViewSet && this.data.inflectionViewSet.hasMatchingViews) {
         // Set colors for supplemental paradigm tables
-        for (let view of this.viewSet.getViews()) {
+        for (let view of this.data.inflectionViewSet.getViews()) {
           view.hlSuppParadigms = false
           if (view.hasSuppParadigms) {
             if (view.suppParadigms.length > 1) {
@@ -8851,10 +8853,10 @@ __webpack_require__.r(__webpack_exports__);
           }
         }
 
-        this.partsOfSpeech = this.viewSet.partsOfSpeech
+        this.partsOfSpeech = this.data.inflectionViewSet.partsOfSpeech
         if (this.partsOfSpeech.length > 0) {
           this.selectedPartOfSpeech = this.partsOfSpeech[0]
-          this.views = this.viewSet.getViews(this.selectedPartOfSpeech)
+          this.views = this.data.inflectionViewSet.getViews(this.selectedPartOfSpeech)
         } else {
           this.selectedPartOfSpeech = []
           this.views = []
@@ -8872,8 +8874,9 @@ __webpack_require__.r(__webpack_exports__);
         }
       }
       // Notify parent of inflection data change
-      this.$emit(this.events.EVENT, this.events.DATA_UPDATE, this.viewSet)
+      this.$emit(this.events.EVENT, this.events.DATA_UPDATE, this.data.inflectionViewSet)
     },
+
     /*
     An inflection component needs to notify its parent of how wide an inflection table content is. Parent will
     use this information to adjust a width of a container that displays an inflection component. However, a width
@@ -8891,7 +8894,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     locale: function (locale) {
       if (this.data.inflectionData) {
-        this.viewSet.setLocale(this.locale)
+        this.data.inflectionViewSet.setLocale(this.locale)
         if (!this.selectedView.hasComponentData) {
           // Rendering is not required for component-enabled views
           this.renderInflections().displayInflections() // Re-render inflections for a different locale
@@ -8929,7 +8932,7 @@ __webpack_require__.r(__webpack_exports__);
             console.warn(`[data-footnote] attribute has no index value`)
             break
           }
-          let indexes = index.replace(/\s+/g, ' ').trim().split(' ')
+          let indexes = index.replace(/(?:\s|,)+/g, ' ').trim().split(' ')
           let popup = document.createElement('div')
           popup.classList.add(popupClassName, hiddenClassName)
           let title = document.createElement('div')
@@ -9031,6 +9034,10 @@ __webpack_require__.r(__webpack_exports__);
           console.warn(`Cannot find #${reflink} element. Navigation cancelled`)
         }
       }
+    },
+
+    sfCollapse: function (currentState) {
+      this.sfCollapsed = currentState
     }
   },
 
@@ -9863,8 +9870,7 @@ __webpack_require__.r(__webpack_exports__);
       positionClassVariants: {
         left: 'alpheios-panel-left',
         right: 'alpheios-panel-right'
-      },
-      divClasses: ''
+      }
     }
   },
   props: {
@@ -9880,6 +9886,9 @@ __webpack_require__.r(__webpack_exports__);
   },
 
   computed: {
+    divClasses () {
+      return (this.data && this.data.classes ? this.data.classes.join(' ') : '') + ' ' + this.positionClasses
+    },
     clearLookupText: function () {
       // always true to clear panels lookup
       return true
@@ -9982,13 +9991,6 @@ __webpack_require__.r(__webpack_exports__);
       return null
     }
   },
-  watch: {
-    classesChanged: function (value) {
-      this.divClasses = this.data.classes.join(' ') + ' ' + this.positionClasses
-      this.setContentWidth('auto')
-    }
-  },
-
   methods: {
     updateZIndex: function (zIndexMax) {
       if (zIndexMax >= this.zIndex) {
@@ -10386,8 +10388,7 @@ __webpack_require__.r(__webpack_exports__);
       resizeDelta: 20, // Changes in size below this value (in pixels) will be ignored to avoid minor dimension updates
       resizeCount: 0, // Should not exceed `resizeCountMax`
       resizeCountMax: 100, // Max number of resize iteration
-      updateDimensionsTimeout: null,
-      divClasses: ''
+      updateDimensionsTimeout: null
     }
   },
   props: {
@@ -10435,6 +10436,9 @@ __webpack_require__.r(__webpack_exports__);
     })
   },
   computed: {
+    divClasses () {
+      return this.data && this.data.classes ? this.data.classes.join(' ') : ''
+    },
     uiController: function () {
       return (this.$parent && this.$parent.uiController) ? this.$parent.uiController : null
     },
@@ -10846,10 +10850,6 @@ __webpack_require__.r(__webpack_exports__);
     translationsDataReady: function(value) {
       let time = new Date().getTime()
       this.logger.log(`${time}: translation data became available`, this.translations)
-    },
-
-    classesChanged: function (value) {
-      this.divClasses = this.data.classes.join(' ')
     }
 
   }
@@ -11503,12 +11503,12 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm.data
+  return _vm.view.wideTable
     ? _c("div", [
         _c(
           "div",
           { staticClass: "infl-prdgm-tbl" },
-          _vm._l(_vm.data.rows, function(row) {
+          _vm._l(_vm.view.wideTable.rows, function(row) {
             return _c(
               "div",
               { staticClass: "infl-prdgm-tbl__row" },
@@ -11596,8 +11596,8 @@ var render = function() {
           {
             name: "show",
             rawName: "v-show",
-            value: _vm.isContentAvailable,
-            expression: "isContentAvailable"
+            value: _vm.isContentAvailable && _vm.sfCollapsed,
+            expression: "isContentAvailable && sfCollapsed"
           }
         ],
         staticClass: "alpheios-inflections__content"
@@ -11664,14 +11664,12 @@ var render = function() {
           "div",
           { staticClass: "alpheios-inflections__actions" },
           [
-            _vm.selectedView &&
-            _vm.data.inflectionData &&
-            _vm.data.inflectionData.homonym
+            _vm.selectedView && _vm.selectedView.homonym
               ? _c("word-forms", {
                   attrs: {
-                    partOfSpeech: _vm.selectedView.constructor.partOfSpeech,
-                    targetWord: _vm.data.inflectionData.homonym.targetWord,
-                    lexemes: _vm.data.inflectionData.homonym.lexemes
+                    partOfSpeech: _vm.selectedView.constructor.mainPartOfSpeech,
+                    targetWord: _vm.selectedView.homonym.targetWord,
+                    lexemes: _vm.selectedView.homonym.lexemes
                   }
                 })
               : _vm._e(),
@@ -11843,12 +11841,7 @@ var render = function() {
         _vm._v(" "),
         _vm.selectedView.hasComponentData
           ? [
-              _c("main-table-wide", {
-                attrs: {
-                  data: _vm.selectedView.wideTable,
-                  "inflection-data": _vm.selectedView.inflectionData
-                }
-              }),
+              _c("main-table-wide", { attrs: { view: _vm.selectedView } }),
               _vm._v(" "),
               _c("sub-tables-wide", {
                 attrs: { view: _vm.selectedView },
@@ -26468,23 +26461,25 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return UIController; });
 /* harmony import */ var alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! alpheios-data-models */ "alpheios-data-models");
 /* harmony import */ var alpheios_data_models__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var vue_dist_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vue/dist/vue */ "../node_modules/vue/dist/vue.js");
-/* harmony import */ var vue_dist_vue__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(vue_dist_vue__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _vue_components_panel_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../vue-components/panel.vue */ "./vue-components/panel.vue");
-/* harmony import */ var _vue_components_popup_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../vue-components/popup.vue */ "./vue-components/popup.vue");
-/* harmony import */ var _l10n_l10n__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../l10n/l10n */ "./lib/l10n/l10n.js");
-/* harmony import */ var _locales_locales__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../locales/locales */ "./locales/locales.js");
-/* harmony import */ var _locales_en_us_messages_json__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../locales/en-us/messages.json */ "./locales/en-us/messages.json");
-/* harmony import */ var _locales_en_us_messages_json__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_locales_en_us_messages_json__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var _locales_en_gb_messages_json__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../locales/en-gb/messages.json */ "./locales/en-gb/messages.json");
-/* harmony import */ var _locales_en_gb_messages_json__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_locales_en_gb_messages_json__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var _templates_template_htmlf__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../templates/template.htmlf */ "./templates/template.htmlf");
-/* harmony import */ var _templates_template_htmlf__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(_templates_template_htmlf__WEBPACK_IMPORTED_MODULE_8__);
-/* harmony import */ var alpheios_res_client__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! alpheios-res-client */ "alpheios-res-client");
-/* harmony import */ var alpheios_res_client__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(alpheios_res_client__WEBPACK_IMPORTED_MODULE_9__);
-/* harmony import */ var _queries_resource_query__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../queries/resource-query */ "./lib/queries/resource-query.js");
-/* global Node */
-/* global Event */
+/* harmony import */ var alpheios_inflection_tables__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! alpheios-inflection-tables */ "alpheios-inflection-tables");
+/* harmony import */ var alpheios_inflection_tables__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(alpheios_inflection_tables__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var vue_dist_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue/dist/vue */ "../node_modules/vue/dist/vue.js");
+/* harmony import */ var vue_dist_vue__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(vue_dist_vue__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _vue_components_panel_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../vue-components/panel.vue */ "./vue-components/panel.vue");
+/* harmony import */ var _vue_components_popup_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../vue-components/popup.vue */ "./vue-components/popup.vue");
+/* harmony import */ var _l10n_l10n__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../l10n/l10n */ "./lib/l10n/l10n.js");
+/* harmony import */ var _locales_locales__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../locales/locales */ "./locales/locales.js");
+/* harmony import */ var _locales_en_us_messages_json__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../locales/en-us/messages.json */ "./locales/en-us/messages.json");
+var _locales_en_us_messages_json__WEBPACK_IMPORTED_MODULE_7___namespace = /*#__PURE__*/__webpack_require__.t(/*! ../../locales/en-us/messages.json */ "./locales/en-us/messages.json", 1);
+/* harmony import */ var _locales_en_gb_messages_json__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../locales/en-gb/messages.json */ "./locales/en-gb/messages.json");
+var _locales_en_gb_messages_json__WEBPACK_IMPORTED_MODULE_8___namespace = /*#__PURE__*/__webpack_require__.t(/*! ../../locales/en-gb/messages.json */ "./locales/en-gb/messages.json", 1);
+/* harmony import */ var _templates_template_htmlf__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../templates/template.htmlf */ "./templates/template.htmlf");
+/* harmony import */ var _templates_template_htmlf__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(_templates_template_htmlf__WEBPACK_IMPORTED_MODULE_9__);
+/* harmony import */ var alpheios_res_client__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! alpheios-res-client */ "alpheios-res-client");
+/* harmony import */ var alpheios_res_client__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(alpheios_res_client__WEBPACK_IMPORTED_MODULE_10__);
+/* harmony import */ var _queries_resource_query__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../queries/resource-query */ "./lib/queries/resource-query.js");
+/* global Node, Event */
+
 
 // import {ObjectMonitor as ExpObjMon} from 'alpheios-experience'
  // Vue in a runtime + compiler configuration
@@ -26538,28 +26533,29 @@ class UIController {
     this.irregularBaseFontSize = !UIController.hasRegularBaseFontSize()
     this.manifest = manifest
     const templateDefaults = {
-      html: _templates_template_htmlf__WEBPACK_IMPORTED_MODULE_8___default.a,
+      html: _templates_template_htmlf__WEBPACK_IMPORTED_MODULE_9___default.a,
       panelId: 'alpheios-panel',
       panelComponents: {
-        panel: _vue_components_panel_vue__WEBPACK_IMPORTED_MODULE_2__["default"]
+        panel: _vue_components_panel_vue__WEBPACK_IMPORTED_MODULE_3__["default"]
       },
       defaultPanelComponent: 'panel',
       popupId: 'alpheios-popup',
       popupComponents: {
-        popup: _vue_components_popup_vue__WEBPACK_IMPORTED_MODULE_3__["default"]
+        popup: _vue_components_popup_vue__WEBPACK_IMPORTED_MODULE_4__["default"]
       },
       defaultPopupComponent: 'popup',
       draggable: true,
       resizable: true
     }
     this.template = Object.assign(templateDefaults, template)
+    this.inflectionsViewSet = null // Holds inflection tables ViewSet
 
     this.zIndex = this.getZIndexMax()
 
-    this.l10n = new _l10n_l10n__WEBPACK_IMPORTED_MODULE_4__["default"]()
-      .addMessages(_locales_en_us_messages_json__WEBPACK_IMPORTED_MODULE_6___default.a, _locales_locales__WEBPACK_IMPORTED_MODULE_5__["default"].en_US)
-      .addMessages(_locales_en_gb_messages_json__WEBPACK_IMPORTED_MODULE_7___default.a, _locales_locales__WEBPACK_IMPORTED_MODULE_5__["default"].en_GB)
-      .setLocale(_locales_locales__WEBPACK_IMPORTED_MODULE_5__["default"].en_US)
+    this.l10n = new _l10n_l10n__WEBPACK_IMPORTED_MODULE_5__["default"]()
+      .addMessages(_locales_en_us_messages_json__WEBPACK_IMPORTED_MODULE_7__, _locales_locales__WEBPACK_IMPORTED_MODULE_6__["default"].en_US)
+      .addMessages(_locales_en_gb_messages_json__WEBPACK_IMPORTED_MODULE_8__, _locales_locales__WEBPACK_IMPORTED_MODULE_6__["default"].en_GB)
+      .setLocale(_locales_locales__WEBPACK_IMPORTED_MODULE_6__["default"].en_US)
 
     // Inject HTML code of a plugin. Should go in reverse order.
     document.body.classList.add('alpheios')
@@ -26567,7 +26563,7 @@ class UIController {
     document.body.insertBefore(container, null)
     container.outerHTML = this.template.html
     // Initialize components
-    this.panel = new vue_dist_vue__WEBPACK_IMPORTED_MODULE_1___default.a({
+    this.panel = new vue_dist_vue__WEBPACK_IMPORTED_MODULE_2___default.a({
       el: `#${this.template.panelId}`,
       components: this.template.panelComponents,
       data: {
@@ -26586,8 +26582,7 @@ class UIController {
           lexemes: [],
           inflectionComponentData: {
             visible: false,
-            enabled: false,
-            inflectionData: false // If no inflection data present, it is set to false
+            inflectionViewSet: null
           },
           shortDefinitions: [],
           fullDefinitions: '',
@@ -26770,19 +26765,11 @@ class UIController {
           return this
         },
 
-        updateInflections: function (inflectionData) {
-          this.panelData.inflectionComponentData.inflectionData = inflectionData
-        },
-
-        enableInflections: function (enabled) {
-          this.panelData.inflectionComponentData.enabled = enabled
-        },
-
         requestGrammar: function (feature) {
           // ExpObjMon.track(
-          _queries_resource_query__WEBPACK_IMPORTED_MODULE_10__["default"].create(feature, {
+          _queries_resource_query__WEBPACK_IMPORTED_MODULE_11__["default"].create(feature, {
             uiController: this.uiController,
-            grammars: alpheios_res_client__WEBPACK_IMPORTED_MODULE_9__["Grammars"]
+            grammars: alpheios_res_client__WEBPACK_IMPORTED_MODULE_10__["Grammars"]
           }).getData()
           //, {
           // experience: 'Get resource',
@@ -26861,7 +26848,7 @@ class UIController {
     })
 
     // Create a Vue instance for a popup
-    this.popup = new vue_dist_vue__WEBPACK_IMPORTED_MODULE_1___default.a({
+    this.popup = new vue_dist_vue__WEBPACK_IMPORTED_MODULE_2___default.a({
       el: `#${this.template.popupId}`,
       components: this.template.popupComponents,
       data: {
@@ -26909,7 +26896,7 @@ class UIController {
           verboseMode: this.state.verboseMode,
           defDataReady: false,
           hasTreebank: false,
-          inflDataReady: false,
+          inflDataReady: this.inflDataReady,
           morphDataReady: false,
 
           translationsDataReady: false,
@@ -27209,8 +27196,17 @@ class UIController {
     this.popup.showImportantNotification(message)
   }
 
-  static getLanguageName (languageID) {
-    return languageNames.has(languageID) ? languageNames.get(languageID) : ''
+  /**
+   * Gets language name by either language ID (a symbol) or language code (string)
+   * @param {symbol|string} language - Either language ID or language code (see constants in `data-models` for definitions)
+   * @return {string} A language name
+   */
+  static getLanguageName (language) {
+    let langID
+    let langCode // eslint-disable-line
+    // Compatibility code in case method be called with languageCode instead of ID. Remove when not needed
+    ;({languageID: langID, languageCode: langCode} = alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__["LanguageModelFactory"].getLanguageAttrs(language))
+    return languageNames.has(langID) ? languageNames.get(langID) : ''
   }
 
   showLanguageInfo (homonym) {
@@ -27351,15 +27347,14 @@ class UIController {
     }
   }
 
-  updateLanguage (currentLanguage) {
-    this.state.setItem('currentLanguage', currentLanguage)
-    let languageID = alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__["LanguageModelFactory"].getLanguageIdFromCode(currentLanguage)
-    this.panel.requestGrammar({ type: 'table-of-contents', value: '', languageID: languageID })
-    this.panel.enableInflections(alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__["LanguageModelFactory"].getLanguageModel(languageID).canInflect())
+  updateLanguage (currentLanguageID) {
+    this.state.setItem('currentLanguage', alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__["LanguageModelFactory"].getLanguageCodeFromId(currentLanguageID))
+    this.panel.requestGrammar({ type: 'table-of-contents', value: '', languageID: currentLanguageID })
+    this.popup.popupData.inflDataReady = this.inflDataReady
 
-    this.panel.panelData.infoComponentData.languageName = UIController.getLanguageName(languageID)
+    this.panel.panelData.infoComponentData.languageName = UIController.getLanguageName(currentLanguageID)
 
-    vue_dist_vue__WEBPACK_IMPORTED_MODULE_1___default.a.set(this.popup.popupData, 'currentLanguageName', UIController.getLanguageName(languageID))
+    vue_dist_vue__WEBPACK_IMPORTED_MODULE_2___default.a.set(this.popup.popupData, 'currentLanguageName', UIController.getLanguageName(currentLanguageID))
     console.log(`Current language is ${this.state.currentLanguage}`)
   }
 
@@ -27369,11 +27364,17 @@ class UIController {
     this.popup.popupData.verboseMode = this.state.verboseMode
   }
 
-  updateInflections (inflectionData, homonym) {
-    let enabled = alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__["LanguageModelFactory"].getLanguageModel(homonym.languageID).canInflect()
-    this.panel.enableInflections(enabled)
-    this.panel.updateInflections(inflectionData, homonym)
-    this.popup.popupData.inflDataReady = enabled && inflectionData.hasInflectionSets
+  updateInflections (homonym) {
+    this.inflectionsViewSet = alpheios_inflection_tables__WEBPACK_IMPORTED_MODULE_1__["ViewSetFactory"].create(homonym, this.options.items.locale.currentValue)
+    this.panel.panelData.inflectionComponentData.inflectionViewSet = this.inflectionsViewSet
+    if (this.inflectionsViewSet.hasMatchingViews) {
+      this.addMessage(this.l10n.messages.TEXT_NOTICE_INFLDATA_READY)
+    }
+    this.popup.popupData.inflDataReady = this.inflDataReady
+  }
+
+  get inflDataReady () {
+    return this.inflectionsViewSet && this.inflectionsViewSet.hasMatchingViews
   }
 
   clear () {
@@ -27407,10 +27408,10 @@ class UIController {
       classes.push(`alpheios-color_schema_${this.uiOptions.items.colorSchema.currentValue}_class`)
     }
 
-    vue_dist_vue__WEBPACK_IMPORTED_MODULE_1___default.a.set(this.popup.popupData, 'classes', classes)
-    vue_dist_vue__WEBPACK_IMPORTED_MODULE_1___default.a.set(this.panel.panelData, 'classes', classes)
-    vue_dist_vue__WEBPACK_IMPORTED_MODULE_1___default.a.set(this.popup, 'classesChanged', this.popup.classesChanged + 1)
-    vue_dist_vue__WEBPACK_IMPORTED_MODULE_1___default.a.set(this.panel, 'classesChanged', this.panel.classesChanged + 1)
+    vue_dist_vue__WEBPACK_IMPORTED_MODULE_2___default.a.set(this.popup.popupData, 'classes', classes)
+    vue_dist_vue__WEBPACK_IMPORTED_MODULE_2___default.a.set(this.panel.panelData, 'classes', classes)
+    vue_dist_vue__WEBPACK_IMPORTED_MODULE_2___default.a.set(this.popup, 'classesChanged', this.popup.classesChanged + 1)
+    vue_dist_vue__WEBPACK_IMPORTED_MODULE_2___default.a.set(this.panel, 'classesChanged', this.panel.classesChanged + 1)
   }
 
   updateStyleClass (prefix, type) {
@@ -27421,9 +27422,9 @@ class UIController {
         popupClasses[index] = `${prefix}${type}_class`
       }
     })
-    vue_dist_vue__WEBPACK_IMPORTED_MODULE_1___default.a.set(this.popup.popupData, 'classes', popupClasses)
+    vue_dist_vue__WEBPACK_IMPORTED_MODULE_2___default.a.set(this.popup.popupData, 'classes', popupClasses)
 
-    vue_dist_vue__WEBPACK_IMPORTED_MODULE_1___default.a.set(this.popup, 'classesChanged', this.popup.classesChanged + 1)
+    vue_dist_vue__WEBPACK_IMPORTED_MODULE_2___default.a.set(this.popup, 'classesChanged', this.popup.classesChanged + 1)
 
     let panelClasses = this.panel.panelData.classes
     panelClasses.forEach(function (item, index) {
@@ -27432,8 +27433,8 @@ class UIController {
       }
     })
 
-    vue_dist_vue__WEBPACK_IMPORTED_MODULE_1___default.a.set(this.panel.panelData, 'classes', panelClasses)
-    vue_dist_vue__WEBPACK_IMPORTED_MODULE_1___default.a.set(this.panel, 'classesChanged', this.panel.classesChanged + 1)
+    vue_dist_vue__WEBPACK_IMPORTED_MODULE_2___default.a.set(this.panel.panelData, 'classes', panelClasses)
+    vue_dist_vue__WEBPACK_IMPORTED_MODULE_2___default.a.set(this.panel, 'classesChanged', this.panel.classesChanged + 1)
   }
 
   updateFontSizeClass (type) {
@@ -29130,14 +29131,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return LexicalQuery; });
 /* harmony import */ var alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! alpheios-data-models */ "alpheios-data-models");
 /* harmony import */ var alpheios_data_models__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var alpheios_inflection_tables__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! alpheios-inflection-tables */ "alpheios-inflection-tables");
-/* harmony import */ var alpheios_inflection_tables__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(alpheios_inflection_tables__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _query_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./query.js */ "./lib/queries/query.js");
+/* harmony import */ var _query_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./query.js */ "./lib/queries/query.js");
 
 
 
-
-class LexicalQuery extends _query_js__WEBPACK_IMPORTED_MODULE_2__["default"] {
+class LexicalQuery extends _query_js__WEBPACK_IMPORTED_MODULE_1__["default"] {
   constructor (name, selector, options) {
     super(name)
     this.selector = selector
@@ -29152,21 +29150,16 @@ class LexicalQuery extends _query_js__WEBPACK_IMPORTED_MODULE_2__["default"] {
     this.siteOptions = options.siteOptions || []
     this.lemmaTranslations = options.lemmaTranslations
     this.l10n = options.l10n
-    let langID = alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__["LanguageModelFactory"].getLanguageIdFromCode(this.selector.languageCode)
-    if (this.langOpts[langID] && this.langOpts[langID].lookupMorphLast) {
-      this.canReset = true
-    } else {
-      this.canReset = false
-    }
-    this.LDFAdapter = alpheios_inflection_tables__WEBPACK_IMPORTED_MODULE_1__["LanguageDatasetFactory"]
+    const langID = this.selector.languageID
+    this.canReset = (this.langOpts[langID] && this.langOpts[langID].lookupMorphLast)
   }
 
   static create (selector, options) {
-    return _query_js__WEBPACK_IMPORTED_MODULE_2__["default"].create(LexicalQuery, selector, options)
+    return _query_js__WEBPACK_IMPORTED_MODULE_1__["default"].create(LexicalQuery, selector, options)
   }
 
   async getData () {
-    this.languageID = alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__["LanguageModelFactory"].getLanguageIdFromCode(this.selector.languageCode)
+    this.languageID = this.selector.languageID
     this.ui.setTargetRect(this.htmlSelector.targetRect).newLexicalRequest().message(`Please wait while data is retrieved ...`)
     this.ui.showStatusInfo(this.selector.normalizedText, this.languageID)
     this.ui.updateWordAnnotationData(this.selector.data)
@@ -29175,7 +29168,7 @@ class LexicalQuery extends _query_js__WEBPACK_IMPORTED_MODULE_2__["default"] {
     let result = iterator.next()
     while (true) {
       if (!this.active) { this.finalize() }
-      if (_query_js__WEBPACK_IMPORTED_MODULE_2__["default"].isPromise(result.value)) {
+      if (_query_js__WEBPACK_IMPORTED_MODULE_1__["default"].isPromise(result.value)) {
         try {
           let resolvedValue = await result.value
           result = iterator.next(resolvedValue)
@@ -29192,16 +29185,18 @@ class LexicalQuery extends _query_js__WEBPACK_IMPORTED_MODULE_2__["default"] {
   }
 
   * iterations () {
-    let formLexeme = new alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__["Lexeme"](new alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__["Lemma"](this.selector.normalizedText, this.selector.languageCode), [])
-    this.ui.updateLanguage(this.selector.languageCode)
+    let formLexeme = new alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__["Lexeme"](new alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__["Lemma"](this.selector.normalizedText, this.selector.languageID), [])
+    this.ui.updateLanguage(this.selector.languageID)
     if (this.tbAdapter && this.selector.data.treebank && this.selector.data.treebank.word) {
-      this.annotatedHomonym = yield this.tbAdapter.getHomonym(this.selector.languageCode, this.selector.data.treebank.word)
+      this.annotatedHomonym = yield this.tbAdapter.getHomonym(this.selector.languageCode, this.selector.data.treebank.word.ref)
     }
     if (!this.canReset) {
       // if we can't reset, proceed with full lookup sequence
-      this.homonym = yield this.maAdapter.getHomonym(this.selector.languageCode, this.selector.normalizedText)
+      this.homonym = yield this.maAdapter.getHomonym(this.selector.languageID, this.selector.normalizedText)
       if (this.homonym) {
-        this.homonym.disambiguate(this.annotatedHomonym)
+        if (this.annotatedHomonym) {
+          this.homonym.disambiguate(this.annotatedHomonym)
+        }
         this.ui.addMessage(this.ui.l10n.messages.TEXT_NOTICE_MORPHDATA_READY)
       } else {
         if (this.annotatedHomonym) {
@@ -29236,10 +29231,7 @@ class LexicalQuery extends _query_js__WEBPACK_IMPORTED_MODULE_2__["default"] {
     this.ui.updateDefinitions(this.homonym)
     // Update status info with data from a morphological analyzer
     this.ui.showStatusInfo(this.homonym.targetWord, this.homonym.languageID)
-
-    this.lexicalData = yield this.LDFAdapter.getInflectionData(this.homonym)
-    this.ui.addMessage(this.ui.l10n.messages.TEXT_NOTICE_INFLDATA_READY)
-    this.ui.updateInflections(this.lexicalData, this.homonym)
+    this.ui.updateInflections(this.homonym)
 
     let definitionRequests = []
 
@@ -29304,7 +29296,8 @@ class LexicalQuery extends _query_js__WEBPACK_IMPORTED_MODULE_2__["default"] {
     let userLang = navigator.language || navigator.userLanguage
 
     if (this.lemmaTranslations) {
-      yield this.lemmaTranslations.fetchTranslations(lemmaList, this.selector.languageCode, userLang)
+      const languageCode = alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__["LanguageModelFactory"].getLanguageCodeFromId(this.selector.languageID)
+      yield this.lemmaTranslations.fetchTranslations(lemmaList, languageCode, userLang)
       this.ui.updateTranslations(this.homonym)
     }
 
@@ -29334,19 +29327,20 @@ class LexicalQuery extends _query_js__WEBPACK_IMPORTED_MODULE_2__["default"] {
       // to show language info. It will catch empty data.
       this.ui.showLanguageInfo(this.homonym)
     }
-    _query_js__WEBPACK_IMPORTED_MODULE_2__["default"].destroy(this)
+    _query_js__WEBPACK_IMPORTED_MODULE_1__["default"].destroy(this)
     return result
   }
 
   getLexiconOptions (lexiconKey) {
     let allOptions
+    const languageCode = alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__["LanguageModelFactory"].getLanguageCodeFromId(this.selector.languageID)
     let siteMatch = this.siteOptions.filter((s) => this.selector.location.match(new RegExp(s.uriMatch)))
     if (siteMatch.length > 0 && siteMatch[0].resourceOptions.items[lexiconKey]) {
       allOptions = [...siteMatch[0].resourceOptions.items[lexiconKey], ...this.resourceOptions.items[lexiconKey]]
     } else {
       allOptions = this.resourceOptions.items[lexiconKey] || []
     }
-    let lexiconOpts = allOptions.filter((l) => this.resourceOptions.parseKey(l.name).group === this.selector.languageCode
+    let lexiconOpts = allOptions.filter((l) => this.resourceOptions.parseKey(l.name).group === languageCode
     ).map((l) => { return {allow: l.currentValue} }
     )
     if (lexiconOpts.length > 0) {
@@ -30102,10 +30096,10 @@ class TextQuoteSelector {
 /*!*************************************!*\
   !*** ./locales/en-gb/messages.json ***!
   \*************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/*! exports provided: COOKIE_TEST_MESSAGE, NUM_LINES_TEST_MESSAGE, default */
+/***/ (function(module) {
 
-module.exports = "{\n  \"COOKIE_TEST_MESSAGE\": {\n    \"message\": \"This is a test message about a biscuit.\",\n    \"description\": \"A test message that is shown in a panel\",\n    \"component\": \"Panel\"\n  },\n  \"NUM_LINES_TEST_MESSAGE\": {\n    \"message\": \"There {numLines, plural, =0 {are no queues} =1 {is one queue} other {are # queues}}.\",\n    \"description\": \"A test message that is shown in a panel\",\n    \"component\": \"Panel\",\n    \"params\": [\"numLines\"]\n  }\n}"
+module.exports = {"COOKIE_TEST_MESSAGE":{"message":"This is a test message about a biscuit.","description":"A test message that is shown in a panel","component":"Panel"},"NUM_LINES_TEST_MESSAGE":{"message":"There {numLines, plural, =0 {are no queues} =1 {is one queue} other {are # queues}}.","description":"A test message that is shown in a panel","component":"Panel","params":["numLines"]}};
 
 /***/ }),
 
@@ -30113,10 +30107,10 @@ module.exports = "{\n  \"COOKIE_TEST_MESSAGE\": {\n    \"message\": \"This is a 
 /*!*************************************!*\
   !*** ./locales/en-us/messages.json ***!
   \*************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/*! exports provided: COOKIE_TEST_MESSAGE, NUM_LINES_TEST_MESSAGE, TOOLTIP_MOVE_PANEL_LEFT, TOOLTIP_MOVE_PANEL_RIGHT, TOOLTIP_CLOSE_PANEL, TOOLTIP_HELP, TOOLTIP_INFLECT, TOOLTIP_DEFINITIONS, TOOLTIP_GRAMMAR, TOOLTIP_TREEBANK, TOOLTIP_OPTIONS, TOOLTIP_STATUS, TOOLTIP_SHOW_INFLECTIONS, TOOLTIP_SHOW_DEFINITIONS, TOOLTIP_SHOW_OPTIONS, PLACEHOLDER_DEFINITIONS, PLACEHOLDER_INFLECT, PLACEHOLDER_INFLECT_UNAVAILABLE, LABEL_INFLECT_SELECT_POFS, LABEL_INFLECT_SHOWFULL, LABEL_INFLECT_COLLAPSE, TOOLTIP_INFLECT_SHOWFULL, TOOLTIP_INFLECT_COLLAPSE, LABEL_INFLECT_HIDEEMPTY, LABEL_INFLECT_SHOWEMPTY, TOOLTIP_INFLECT_HIDEEMPTY, TOOLTIP_INFLECT_SHOWEMPTY, TEXT_INFO_GETTINGSTARTED, TEXT_INFO_ACTIVATE, TEXT_INFO_CLICK, TEXT_INFO_LANGDETECT, LABEL_INFO_CURRENTLANGUAGE, TEXT_INFO_SETTINGS, TEXT_INFO_ARROW, TEXT_INFO_REOPEN, TEXT_INFO_DEACTIVATE, TOOLTIP_POPUP_CLOSE, LABEL_POPUP_TREEBANK, LABEL_POPUP_INFLECT, LABEL_POPUP_OPTIONS, LABEL_POPUP_DEFINE, PLACEHOLDER_POPUP_DATA, PLACEHOLDER_NO_LANGUAGE_POPUP_DATA, PLACEHOLDER_NO_DATA_POPUP_DATA, LABEL_POPUP_CREDITS, LABEL_POPUP_SHOWCREDITS, LABEL_POPUP_HIDECREDITS, TEXT_NOTICE_CHANGE_LANGUAGE, TEXT_NOTICE_LANGUAGE_UNKNOWN, TEXT_NOTICE_GRAMMAR_NOTFOUND, TEXT_NOTICE_MORPHDATA_READY, TEXT_NOTICE_MORPHDATA_NOTFOUND, TEXT_NOTICE_INFLDATA_READY, TEXT_NOTICE_DEFSDATA_READY, TEXT_NOTICE_DEFSDATA_NOTFOUND, TEXT_NOTICE_LEXQUERY_COMPLETE, TEXT_NOTICE_GRAMMAR_READY, TEXT_NOTICE_GRAMMAR_COMPLETE, TEXT_NOTICE_RESQUERY_COMPLETE, LABEL_BROWSERACTION_DEACTIVATE, LABEL_BROWSERACTION_ACTIVATE, LABEL_BROWSERACTION_DISABLED, LABEL_CTXTMENU_DEACTIVATE, LABEL_CTXTMENU_ACTIVATE, LABEL_CTXTMENU_DISABLED, LABEL_CTXTMENU_OPENPANEL, LABEL_CTXTMENU_INFO, LABEL_CTXTMENU_SENDEXP, LABEL_LOOKUP_BUTTON, TOOLTIP_LOOKUP_BUTTON, LABEL_LOOKUP_SETTINGS, LABEL_RESKIN_SETTINGS, TOOLTIP_RESKIN_SMALLFONT, TOOLTIP_RESKIN_MEDIUMFONT, TOOLTIP_RESKIN_LARGEFONT, TOOLTIP_RESKIN_LIGHTBG, TOOLTIP_RESKIN_DARKBG, INFLECTIONS_CREDITS_TITLE, INFLECTIONS_PARADIGMS_EXPLANATORY_HINT, INFLECTIONS_MAIN_TABLE_LINK_TEXT, default */
+/***/ (function(module) {
 
-module.exports = "{\n  \"COOKIE_TEST_MESSAGE\": {\n    \"message\": \"This is a test message about a cookie.\",\n    \"description\": \"A test message that is shown in a panel\",\n    \"component\": \"Panel\"\n  },\n  \"NUM_LINES_TEST_MESSAGE\": {\n    \"message\": \"There {numLines, plural, =0 {are no lines} =1 {is one line} other {are # lines}}.\",\n    \"description\": \"A test message that is shown in a panel\",\n    \"component\": \"Panel\",\n    \"params\": [\"numLines\"]\n  },\n  \"TOOLTIP_MOVE_PANEL_LEFT\": {\n    \"message\": \"Move Panel to Left\",\n    \"description\": \"tooltip for moving the panel to the left\",\n    \"component\": \"Panel\"\n  },\n  \"TOOLTIP_MOVE_PANEL_RIGHT\": {\n    \"message\": \"Move Panel to Right\",\n    \"description\": \"tooltip for moving the panel to the right\",\n    \"component\": \"Panel\"\n  },\n  \"TOOLTIP_CLOSE_PANEL\": {\n    \"message\": \"Close Panel\",\n    \"description\": \"tooltip for closing the panel\",\n    \"component\": \"Panel\"\n  },\n  \"TOOLTIP_HELP\": {\n    \"message\": \"Help\",\n    \"description\": \"tooltip for help tab\",\n    \"component\": \"Panel\"\n  },\n  \"TOOLTIP_INFLECT\": {\n    \"message\": \"Inflection Tables\",\n    \"description\": \"tooltip for inflections tab\",\n    \"component\": \"Panel\"\n  },\n  \"TOOLTIP_DEFINITIONS\": {\n    \"message\": \"Definitions\",\n    \"description\": \"tooltip for definitions tab\",\n    \"component\": \"Panel\"\n  },\n  \"TOOLTIP_GRAMMAR\": {\n    \"message\": \"Grammar\",\n    \"description\": \"tooltip for grammar tab\",\n    \"component\": \"Panel\"\n  },\n  \"TOOLTIP_TREEBANK\": {\n    \"message\": \"Diagram\",\n    \"description\": \"tooltip for treebank tab\",\n    \"component\": \"Panel\"\n  },\n  \"TOOLTIP_OPTIONS\": {\n    \"message\": \"Options\",\n    \"description\": \"tooltip for settings tab\",\n    \"component\": \"Panel\"\n  },\n  \"TOOLTIP_STATUS\": {\n    \"message\": \"Status Messages\",\n    \"description\": \"tooltip for status tab\",\n    \"component\": \"Panel\"\n  },\n\n  \"TOOLTIP_SHOW_INFLECTIONS\": {\n    \"message\": \"Show inflections\",\n    \"description\": \"tooltip for button inflections\",\n    \"component\": \"Popup\"\n  },\n  \"TOOLTIP_SHOW_DEFINITIONS\": {\n    \"message\": \"Show definitions\",\n    \"description\": \"tooltip for button definitions\",\n    \"component\": \"Popup\"\n  },\n  \"TOOLTIP_SHOW_OPTIONS\": {\n    \"message\": \"Show options\",\n    \"description\": \"tooltip for button options\",\n    \"component\": \"Popup\"\n  },\n\n  \"PLACEHOLDER_DEFINITIONS\":  {\n    \"message\": \"Lookup a word to show definitions...\",\n    \"description\": \"placeholder for definitions panel\",\n    \"component\": \"Panel\"\n  },\n  \"PLACEHOLDER_INFLECT\":  {\n    \"message\": \"Lookup a word to show inflections...\",\n    \"description\": \"placeholder for inflections panel\",\n    \"component\": \"Panel\"\n  },\n  \"PLACEHOLDER_INFLECT_UNAVAILABLE\":  {\n    \"message\": \"Inflection data is unavailable\",\n    \"description\": \"placeholder for inflections panel if unavailable\",\n    \"component\": \"Panel\"\n  },\n  \"LABEL_INFLECT_SELECT_POFS\":  {\n    \"message\": \"Part of speech:\",\n    \"description\": \"label for part of speech selector on inflections panel\",\n    \"component\": \"Panel\"\n  },\n  \"LABEL_INFLECT_SHOWFULL\": {\n    \"message\": \"Full Table\",\n    \"description\": \"label for show full table button on inflections panel\",\n    \"component\": \"Panel\"\n  },\n  \"LABEL_INFLECT_COLLAPSE\": {\n    \"message\": \"Collapse\",\n    \"description\": \"label for collapse table button on inflections panel\",\n    \"component\": \"Panel\"\n  },\n\n  \"TOOLTIP_INFLECT_SHOWFULL\": {\n    \"message\": \"Show full Table\",\n    \"description\": \"tooltip for show full table button on inflections panel\",\n    \"component\": \"Panel\"\n  },\n  \"TOOLTIP_INFLECT_COLLAPSE\": {\n    \"message\": \"Show collapsed table\",\n    \"description\": \"tooltip for collapse table button on inflections panel\",\n    \"component\": \"Panel\"\n  },\n\n  \"LABEL_INFLECT_HIDEEMPTY\": {\n    \"message\": \"Hide empty columns\",\n    \"description\": \"label for hide empty columns button on inflections panel\",\n    \"component\": \"Panel\"\n  },\n  \"LABEL_INFLECT_SHOWEMPTY\": {\n    \"message\": \"Show empty columns\",\n    \"description\": \"label for show empty columns button on inflections panel\",\n    \"component\": \"Panel\"\n  },\n\n  \"TOOLTIP_INFLECT_HIDEEMPTY\": {\n    \"message\": \"Show table without empty columns\",\n    \"description\": \"tooltip for hide empty columns button on inflections panel\",\n    \"component\": \"Panel\"\n  },\n  \"TOOLTIP_INFLECT_SHOWEMPTY\": {\n    \"message\": \"Show table with empty columns\",\n    \"description\": \"tooltip for show empty columns button on inflections panel\",\n    \"component\": \"Panel\"\n  },\n\n  \"TEXT_INFO_GETTINGSTARTED\": {\n    \"message\": \"Getting Started\",\n    \"description\": \"info text\",\n    \"component\": \"Panel\"\n  },\n  \"TEXT_INFO_GETTINGSTARTED\": {\n    \"message\": \"Getting Started\",\n    \"description\": \"info text\",\n    \"component\": \"Panel\"\n  },\n  \"TEXT_INFO_ACTIVATE\": {\n    \"message\": \"Activate on a page with Latin, Ancient Greek, Arabic or Persian text.\",\n    \"description\": \"info text\",\n    \"component\": \"Panel\"\n  },\n  \"TEXT_INFO_CLICK\": {\n    \"message\": \"Double-click on a word to retrieve morphology and short definitions.\",\n    \"description\": \"info text\",\n    \"component\": \"Panel\"\n  },\n  \"TEXT_INFO_LANGDETECT\": {\n    \"message\": \"Alpheios will try to detect the language of the word from the page markup. If it cannot it will use the default language.\",\n    \"description\": \"info text\",\n    \"component\": \"Panel\"\n  },\n  \"LABEL_INFO_CURRENTLANGUAGE\": {\n    \"message\": \"Current language:\",\n    \"description\": \"label for current language in info text\",\n    \"component\": \"Panel\"\n  },\n  \"TEXT_INFO_SETTINGS\": {\n    \"message\": \"Click the Settings wheel to change the default language, default dictionaries or to disable the popup (set UI Type to 'panel').\",\n    \"description\": \"info text\",\n    \"component\": \"Panel\"\n  },\n  \"TEXT_INFO_ARROW\": {\n    \"message\": \"Use the arrow at the top of this panel to move it from the right to left of your browser window.\",\n    \"description\": \"info text\",\n    \"component\": \"Panel\"\n  },\n  \"TEXT_INFO_REOPEN\": {\n    \"message\": \"You can reopen this panel at any time by selecting 'Info' from the Alpheios Reading Tools option in your browser's context menu.\",\n    \"description\": \"info text\",\n    \"component\": \"Panel\"\n  },\n  \"TEXT_INFO_DEACTIVATE\": {\n    \"message\": \"Deactivate Alpheios by clicking the toolbar icon or choosing 'Deactivate' from the Alpheios Reading Tools option in your browser's context menu.\",\n    \"description\": \"info text\",\n    \"component\": \"Panel\"\n  },\n  \"TOOLTIP_POPUP_CLOSE\": {\n    \"message\": \"Close Popup\",\n    \"description\": \"tooltip for closing the popup\",\n    \"component\": \"Popup\"\n  },\n  \"LABEL_POPUP_TREEBANK\": {\n    \"message\": \"Diagram\",\n    \"description\": \"label for treebank button on popup\",\n    \"component\": \"Popup\"\n  },\n  \"LABEL_POPUP_INFLECT\": {\n    \"message\": \"Inflect\",\n    \"description\": \"label for inflect button on popup\",\n    \"component\": \"Popup\"\n  },\n  \"LABEL_POPUP_OPTIONS\": {\n    \"message\": \"Options\",\n    \"description\": \"label for options button on popup\",\n    \"component\": \"Popup\"\n  },\n  \"LABEL_POPUP_DEFINE\": {\n    \"message\": \"Define\",\n    \"description\": \"label for define button on popup\",\n    \"component\": \"Popup\"\n  },\n  \"PLACEHOLDER_POPUP_DATA\": {\n    \"message\": \"Lexical data is loading\",\n    \"description\": \"placeholder text for popup data\",\n    \"component\": \"Popup\"\n  },\n  \"PLACEHOLDER_NO_LANGUAGE_POPUP_DATA\": {\n    \"message\": \"Lexical data couldn't be populated because page language is not defined\",\n    \"description\": \"placeholder text for popup data when language is not defined\",\n    \"component\": \"Popup\"\n  },\n  \"PLACEHOLDER_NO_DATA_POPUP_DATA\": {\n    \"message\": \"Lexical data couldn't be populated  for unknown reason\",\n    \"description\": \"placeholder text for popup data\",\n    \"component\": \"Popup\"\n  },\n  \"LABEL_POPUP_CREDITS\": {\n    \"message\": \"Credits:\",\n    \"description\": \"label for credits on popup\",\n    \"component\": \"Popup\"\n  },\n  \"LABEL_POPUP_SHOWCREDITS\": {\n    \"message\": \"Credits\",\n    \"description\": \"label for show credits link on popup\",\n    \"component\": \"Popup\"\n  },\n  \"LABEL_POPUP_HIDECREDITS\": {\n    \"message\": \"Hide Credits\",\n    \"description\": \"label for hide credits link on popup\",\n    \"component\": \"Popup\"\n  },\n  \"TEXT_NOTICE_CHANGE_LANGUAGE\": {\n    \"message\": \"Language: {languageName}<br>Wrong? Change to:\",\n    \"description\": \"language notification\",\n    \"component\": \"UI\",\n    \"params\": [\"languageName\"]\n  },\n  \"TEXT_NOTICE_LANGUAGE_UNKNOWN\": {\n    \"message\": \"unknown\",\n    \"description\": \"unknown language notification\",\n    \"component\": \"UI\"\n  },\n  \"TEXT_NOTICE_GRAMMAR_NOTFOUND\": {\n    \"message\": \"The requested grammar resource is not currently available\",\n    \"description\": \"grammar not found notification\",\n    \"component\": \"UI\"\n  },\n  \"TEXT_NOTICE_MORPHDATA_READY\": {\n    \"message\": \"Morphological analyzer data is ready\",\n    \"description\": \"morph data ready notice\",\n    \"component\": \"UI\"\n  },\n  \"TEXT_NOTICE_MORPHDATA_NOTFOUND\": {\n    \"message\": \"Morphological data not found. Definition queries pending.\",\n    \"description\": \"morph data not found notice\",\n    \"component\": \"UI\"\n  },\n  \"TEXT_NOTICE_INFLDATA_READY\": {\n    \"message\": \"Inflection data is ready\",\n    \"description\": \"inflection data ready notice\",\n    \"component\": \"UI\"\n  },\n  \"TEXT_NOTICE_DEFSDATA_READY\": {\n    \"message\":\"{requestType} request is completed successfully. Lemma: \\\"{lemma}\\\"\",\n    \"description\": \"definition request success notice\",\n    \"component\": \"UI\",\n    \"params\": [\"requestType\",\"lemma\"]\n  },\n  \"TEXT_NOTICE_DEFSDATA_NOTFOUND\": {\n    \"message\":\"{requestType} request failed. Lemma not found for: \\\"{word}\\\"\",\n    \"description\": \"definition request success notice\",\n    \"component\": \"UI\",\n    \"params\": [\"requestType\",\"word\"]\n  },\n  \"TEXT_NOTICE_LEXQUERY_COMPLETE\": {\n    \"message\": \"All lexical queries complete.\",\n    \"description\": \"lexical queries complete notice\",\n    \"component\": \"UI\"\n  },\n  \"TEXT_NOTICE_GRAMMAR_READY\": {\n    \"message\": \"Grammar resource retrieved\",\n    \"description\": \"grammar retrieved notice\",\n    \"component\": \"UI\"\n  },\n  \"TEXT_NOTICE_GRAMMAR_COMPLETE\": {\n    \"message\": \"All grammar resource data retrieved\",\n    \"description\": \"grammar retrieved notice\",\n    \"component\": \"UI\"\n  },\n  \"TEXT_NOTICE_RESQUERY_COMPLETE\": {\n    \"message\": \"All resource data retrieved\",\n    \"description\": \"resource query complete notice\",\n    \"component\": \"UI\"\n  },\n  \"LABEL_BROWSERACTION_DEACTIVATE\": {\n    \"message\": \"Deactivate Alpheios\",\n    \"description\": \"Deactivate browser action title\",\n    \"component\": \"UI\"\n  },\n  \"LABEL_BROWSERACTION_ACTIVATE\": {\n    \"message\": \"Activate Alpheios\",\n    \"description\": \"Activate browser action title\",\n    \"component\": \"UI\"\n  },\n  \"LABEL_BROWSERACTION_DISABLED\": {\n    \"message\": \"(Alpheios Extension Disabled For Page)\",\n    \"description\": \"Disabled browser action title\",\n    \"component\": \"UI\"\n  },\n  \"LABEL_CTXTMENU_DEACTIVATE\": {\n    \"message\": \"Deactivate\",\n    \"description\": \"Deactivate context menu label\",\n    \"component\": \"UI\"\n  },\n  \"LABEL_CTXTMENU_ACTIVATE\": {\n    \"message\": \"Activate\",\n    \"description\": \"Activate context menu label\",\n    \"component\": \"UI\"\n  },\n  \"LABEL_CTXTMENU_DISABLED\": {\n    \"message\": \"(Disabled)\",\n    \"description\": \"Disabled context menu label\",\n    \"component\": \"UI\"\n  },\n  \"LABEL_CTXTMENU_OPENPANEL\": {\n    \"message\": \"Open Panel\",\n    \"description\": \"Open Panel context menu label\",\n    \"component\": \"UI\"\n  },\n  \"LABEL_CTXTMENU_INFO\": {\n    \"message\": \"Info\",\n    \"description\": \"Info context menu label\",\n    \"component\": \"UI\"\n  },\n  \"LABEL_CTXTMENU_SENDEXP\": {\n    \"message\": \"Send Experiences to remote server\",\n    \"description\": \"send exp data context menu label\",\n    \"component\": \"UI\"\n  },\n  \"LABEL_LOOKUP_BUTTON\": {\n    \"message\": \"Lookup\",\n    \"description\": \"lookup button in lookup.vue\",\n    \"component\": \"Popup\"\n  },\n  \"TOOLTIP_LOOKUP_BUTTON\": {\n    \"message\": \"Lookup word\",\n    \"description\": \"Tooltip for the lookup button in lookup.vue\",\n    \"component\": \"Lookup\"\n  },\n  \"LABEL_LOOKUP_SETTINGS\": {\n    \"message\": \"Using Language...\",\n    \"description\": \"Settings link-label in the lookup block in lookup.vue\",\n    \"component\": \"Lookup\"\n  },\n  \"LABEL_RESKIN_SETTINGS\": {\n    \"message\": \"Reskin settings\",\n    \"description\": \"Label for Reskin component\",\n    \"component\": \"ReskinFontColor\"\n  },\n  \"TOOLTIP_RESKIN_SMALLFONT\": {\n    \"message\": \"Small font\",\n    \"description\": \"Tooltip for small font icon\",\n    \"component\": \"ReskinFontColor\"\n  },\n  \"TOOLTIP_RESKIN_MEDIUMFONT\": {\n    \"message\": \"Medium font\",\n    \"description\": \"Tooltip for medium font icon\",\n    \"component\": \"ReskinFontColor\"\n  },\n  \"TOOLTIP_RESKIN_LARGEFONT\": {\n    \"message\": \"Large font\",\n    \"description\": \"Tooltip for large font icon\",\n    \"component\": \"ReskinFontColor\"\n  },\n  \"TOOLTIP_RESKIN_LIGHTBG\": {\n    \"message\": \"Light background\",\n    \"description\": \"Tooltip for light colors schema icon\",\n    \"component\": \"ReskinFontColor\"\n  },\n  \"TOOLTIP_RESKIN_DARKBG\": {\n    \"message\": \"Dark background\",\n    \"description\": \"Tooltip for dark colors schema icon\",\n    \"component\": \"ReskinFontColor\"\n  },\n  \"INFLECTIONS_CREDITS_TITLE\": {\n    \"message\": \"Credits\",\n    \"description\": \"Title of credits section on inflection tables panel\",\n    \"component\": \"InflectionTables\"\n  },\n  \"INFLECTIONS_PARADIGMS_EXPLANATORY_HINT\": {\n    \"message\": \"The following table(s) show conjugation patterns for verbs which are similar to those of <span>{word}</span>\",\n    \"description\": \"A hint that indicates that the current table is representative pattern for verbs similar to the one chosen\",\n    \"component\": \"InflectionTables\",\n    \"params\": [\"word\"]\n  },\n  \"INFLECTIONS_MAIN_TABLE_LINK_TEXT\": {\n    \"message\": \"Back to main\",\n    \"description\": \"A link pointing to a main inflection table\",\n    \"component\": \"InflectionTables\"\n  }\n}"
+module.exports = {"COOKIE_TEST_MESSAGE":{"message":"This is a test message about a cookie.","description":"A test message that is shown in a panel","component":"Panel"},"NUM_LINES_TEST_MESSAGE":{"message":"There {numLines, plural, =0 {are no lines} =1 {is one line} other {are # lines}}.","description":"A test message that is shown in a panel","component":"Panel","params":["numLines"]},"TOOLTIP_MOVE_PANEL_LEFT":{"message":"Move Panel to Left","description":"tooltip for moving the panel to the left","component":"Panel"},"TOOLTIP_MOVE_PANEL_RIGHT":{"message":"Move Panel to Right","description":"tooltip for moving the panel to the right","component":"Panel"},"TOOLTIP_CLOSE_PANEL":{"message":"Close Panel","description":"tooltip for closing the panel","component":"Panel"},"TOOLTIP_HELP":{"message":"Help","description":"tooltip for help tab","component":"Panel"},"TOOLTIP_INFLECT":{"message":"Inflection Tables","description":"tooltip for inflections tab","component":"Panel"},"TOOLTIP_DEFINITIONS":{"message":"Definitions","description":"tooltip for definitions tab","component":"Panel"},"TOOLTIP_GRAMMAR":{"message":"Grammar","description":"tooltip for grammar tab","component":"Panel"},"TOOLTIP_TREEBANK":{"message":"Diagram","description":"tooltip for treebank tab","component":"Panel"},"TOOLTIP_OPTIONS":{"message":"Options","description":"tooltip for settings tab","component":"Panel"},"TOOLTIP_STATUS":{"message":"Status Messages","description":"tooltip for status tab","component":"Panel"},"TOOLTIP_SHOW_INFLECTIONS":{"message":"Show inflections","description":"tooltip for button inflections","component":"Popup"},"TOOLTIP_SHOW_DEFINITIONS":{"message":"Show definitions","description":"tooltip for button definitions","component":"Popup"},"TOOLTIP_SHOW_OPTIONS":{"message":"Show options","description":"tooltip for button options","component":"Popup"},"PLACEHOLDER_DEFINITIONS":{"message":"Lookup a word to show definitions...","description":"placeholder for definitions panel","component":"Panel"},"PLACEHOLDER_INFLECT":{"message":"Lookup a word to show inflections...","description":"placeholder for inflections panel","component":"Panel"},"PLACEHOLDER_INFLECT_UNAVAILABLE":{"message":"Inflection data is unavailable","description":"placeholder for inflections panel if unavailable","component":"Panel"},"LABEL_INFLECT_SELECT_POFS":{"message":"Part of speech:","description":"label for part of speech selector on inflections panel","component":"Panel"},"LABEL_INFLECT_SHOWFULL":{"message":"Full Table","description":"label for show full table button on inflections panel","component":"Panel"},"LABEL_INFLECT_COLLAPSE":{"message":"Collapse","description":"label for collapse table button on inflections panel","component":"Panel"},"TOOLTIP_INFLECT_SHOWFULL":{"message":"Show full Table","description":"tooltip for show full table button on inflections panel","component":"Panel"},"TOOLTIP_INFLECT_COLLAPSE":{"message":"Show collapsed table","description":"tooltip for collapse table button on inflections panel","component":"Panel"},"LABEL_INFLECT_HIDEEMPTY":{"message":"Hide empty columns","description":"label for hide empty columns button on inflections panel","component":"Panel"},"LABEL_INFLECT_SHOWEMPTY":{"message":"Show empty columns","description":"label for show empty columns button on inflections panel","component":"Panel"},"TOOLTIP_INFLECT_HIDEEMPTY":{"message":"Show table without empty columns","description":"tooltip for hide empty columns button on inflections panel","component":"Panel"},"TOOLTIP_INFLECT_SHOWEMPTY":{"message":"Show table with empty columns","description":"tooltip for show empty columns button on inflections panel","component":"Panel"},"TEXT_INFO_GETTINGSTARTED":{"message":"Getting Started","description":"info text","component":"Panel"},"TEXT_INFO_ACTIVATE":{"message":"Activate on a page with Latin, Ancient Greek, Arabic or Persian text.","description":"info text","component":"Panel"},"TEXT_INFO_CLICK":{"message":"Double-click on a word to retrieve morphology and short definitions.","description":"info text","component":"Panel"},"TEXT_INFO_LANGDETECT":{"message":"Alpheios will try to detect the language of the word from the page markup. If it cannot it will use the default language.","description":"info text","component":"Panel"},"LABEL_INFO_CURRENTLANGUAGE":{"message":"Current language:","description":"label for current language in info text","component":"Panel"},"TEXT_INFO_SETTINGS":{"message":"Click the Settings wheel to change the default language, default dictionaries or to disable the popup (set UI Type to 'panel').","description":"info text","component":"Panel"},"TEXT_INFO_ARROW":{"message":"Use the arrow at the top of this panel to move it from the right to left of your browser window.","description":"info text","component":"Panel"},"TEXT_INFO_REOPEN":{"message":"You can reopen this panel at any time by selecting 'Info' from the Alpheios Reading Tools option in your browser's context menu.","description":"info text","component":"Panel"},"TEXT_INFO_DEACTIVATE":{"message":"Deactivate Alpheios by clicking the toolbar icon or choosing 'Deactivate' from the Alpheios Reading Tools option in your browser's context menu.","description":"info text","component":"Panel"},"TOOLTIP_POPUP_CLOSE":{"message":"Close Popup","description":"tooltip for closing the popup","component":"Popup"},"LABEL_POPUP_TREEBANK":{"message":"Diagram","description":"label for treebank button on popup","component":"Popup"},"LABEL_POPUP_INFLECT":{"message":"Inflect","description":"label for inflect button on popup","component":"Popup"},"LABEL_POPUP_OPTIONS":{"message":"Options","description":"label for options button on popup","component":"Popup"},"LABEL_POPUP_DEFINE":{"message":"Define","description":"label for define button on popup","component":"Popup"},"PLACEHOLDER_POPUP_DATA":{"message":"Lexical data is loading","description":"placeholder text for popup data","component":"Popup"},"PLACEHOLDER_NO_LANGUAGE_POPUP_DATA":{"message":"Lexical data couldn't be populated because page language is not defined","description":"placeholder text for popup data when language is not defined","component":"Popup"},"PLACEHOLDER_NO_DATA_POPUP_DATA":{"message":"Lexical data couldn't be populated  for unknown reason","description":"placeholder text for popup data","component":"Popup"},"LABEL_POPUP_CREDITS":{"message":"Credits:","description":"label for credits on popup","component":"Popup"},"LABEL_POPUP_SHOWCREDITS":{"message":"Credits","description":"label for show credits link on popup","component":"Popup"},"LABEL_POPUP_HIDECREDITS":{"message":"Hide Credits","description":"label for hide credits link on popup","component":"Popup"},"TEXT_NOTICE_CHANGE_LANGUAGE":{"message":"Language: {languageName}<br>Wrong? Change to:","description":"language notification","component":"UI","params":["languageName"]},"TEXT_NOTICE_LANGUAGE_UNKNOWN":{"message":"unknown","description":"unknown language notification","component":"UI"},"TEXT_NOTICE_GRAMMAR_NOTFOUND":{"message":"The requested grammar resource is not currently available","description":"grammar not found notification","component":"UI"},"TEXT_NOTICE_MORPHDATA_READY":{"message":"Morphological analyzer data is ready","description":"morph data ready notice","component":"UI"},"TEXT_NOTICE_MORPHDATA_NOTFOUND":{"message":"Morphological data not found. Definition queries pending.","description":"morph data not found notice","component":"UI"},"TEXT_NOTICE_INFLDATA_READY":{"message":"Inflection data is ready","description":"inflection data ready notice","component":"UI"},"TEXT_NOTICE_DEFSDATA_READY":{"message":"{requestType} request is completed successfully. Lemma: \"{lemma}\"","description":"definition request success notice","component":"UI","params":["requestType","lemma"]},"TEXT_NOTICE_DEFSDATA_NOTFOUND":{"message":"{requestType} request failed. Lemma not found for: \"{word}\"","description":"definition request success notice","component":"UI","params":["requestType","word"]},"TEXT_NOTICE_LEXQUERY_COMPLETE":{"message":"All lexical queries complete.","description":"lexical queries complete notice","component":"UI"},"TEXT_NOTICE_GRAMMAR_READY":{"message":"Grammar resource retrieved","description":"grammar retrieved notice","component":"UI"},"TEXT_NOTICE_GRAMMAR_COMPLETE":{"message":"All grammar resource data retrieved","description":"grammar retrieved notice","component":"UI"},"TEXT_NOTICE_RESQUERY_COMPLETE":{"message":"All resource data retrieved","description":"resource query complete notice","component":"UI"},"LABEL_BROWSERACTION_DEACTIVATE":{"message":"Deactivate Alpheios","description":"Deactivate browser action title","component":"UI"},"LABEL_BROWSERACTION_ACTIVATE":{"message":"Activate Alpheios","description":"Activate browser action title","component":"UI"},"LABEL_BROWSERACTION_DISABLED":{"message":"(Alpheios Extension Disabled For Page)","description":"Disabled browser action title","component":"UI"},"LABEL_CTXTMENU_DEACTIVATE":{"message":"Deactivate","description":"Deactivate context menu label","component":"UI"},"LABEL_CTXTMENU_ACTIVATE":{"message":"Activate","description":"Activate context menu label","component":"UI"},"LABEL_CTXTMENU_DISABLED":{"message":"(Disabled)","description":"Disabled context menu label","component":"UI"},"LABEL_CTXTMENU_OPENPANEL":{"message":"Open Panel","description":"Open Panel context menu label","component":"UI"},"LABEL_CTXTMENU_INFO":{"message":"Info","description":"Info context menu label","component":"UI"},"LABEL_CTXTMENU_SENDEXP":{"message":"Send Experiences to remote server","description":"send exp data context menu label","component":"UI"},"LABEL_LOOKUP_BUTTON":{"message":"Lookup","description":"lookup button in lookup.vue","component":"Popup"},"TOOLTIP_LOOKUP_BUTTON":{"message":"Lookup word","description":"Tooltip for the lookup button in lookup.vue","component":"Lookup"},"LABEL_LOOKUP_SETTINGS":{"message":"Using Language...","description":"Settings link-label in the lookup block in lookup.vue","component":"Lookup"},"LABEL_RESKIN_SETTINGS":{"message":"Reskin settings","description":"Label for Reskin component","component":"ReskinFontColor"},"TOOLTIP_RESKIN_SMALLFONT":{"message":"Small font","description":"Tooltip for small font icon","component":"ReskinFontColor"},"TOOLTIP_RESKIN_MEDIUMFONT":{"message":"Medium font","description":"Tooltip for medium font icon","component":"ReskinFontColor"},"TOOLTIP_RESKIN_LARGEFONT":{"message":"Large font","description":"Tooltip for large font icon","component":"ReskinFontColor"},"TOOLTIP_RESKIN_LIGHTBG":{"message":"Light background","description":"Tooltip for light colors schema icon","component":"ReskinFontColor"},"TOOLTIP_RESKIN_DARKBG":{"message":"Dark background","description":"Tooltip for dark colors schema icon","component":"ReskinFontColor"},"INFLECTIONS_CREDITS_TITLE":{"message":"Credits","description":"Title of credits section on inflection tables panel","component":"InflectionTables"},"INFLECTIONS_PARADIGMS_EXPLANATORY_HINT":{"message":"The following table(s) show conjugation patterns for verbs which are similar to those of <span>{word}</span>","description":"A hint that indicates that the current table is representative pattern for verbs similar to the one chosen","component":"InflectionTables","params":["word"]},"INFLECTIONS_MAIN_TABLE_LINK_TEXT":{"message":"Back to main","description":"A link pointing to a main inflection table","component":"InflectionTables"}};
 
 /***/ }),
 
@@ -30130,9 +30124,9 @@ module.exports = "{\n  \"COOKIE_TEST_MESSAGE\": {\n    \"message\": \"This is a 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _en_us_messages_json__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./en-us/messages.json */ "./locales/en-us/messages.json");
-/* harmony import */ var _en_us_messages_json__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_en_us_messages_json__WEBPACK_IMPORTED_MODULE_0__);
+var _en_us_messages_json__WEBPACK_IMPORTED_MODULE_0___namespace = /*#__PURE__*/__webpack_require__.t(/*! ./en-us/messages.json */ "./locales/en-us/messages.json", 1);
 /* harmony import */ var _en_gb_messages_json__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./en-gb/messages.json */ "./locales/en-gb/messages.json");
-/* harmony import */ var _en_gb_messages_json__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_en_gb_messages_json__WEBPACK_IMPORTED_MODULE_1__);
+var _en_gb_messages_json__WEBPACK_IMPORTED_MODULE_1___namespace = /*#__PURE__*/__webpack_require__.t(/*! ./en-gb/messages.json */ "./locales/en-gb/messages.json", 1);
 
 
 
@@ -30140,8 +30134,8 @@ __webpack_require__.r(__webpack_exports__);
   en_US: 'en-US',
   en_GB: 'en-GB',
   messages: {
-    en_US: _en_us_messages_json__WEBPACK_IMPORTED_MODULE_0___default.a,
-    en_GB: _en_gb_messages_json__WEBPACK_IMPORTED_MODULE_1___default.a
+    en_US: _en_us_messages_json__WEBPACK_IMPORTED_MODULE_0__,
+    en_GB: _en_gb_messages_json__WEBPACK_IMPORTED_MODULE_1__
   }
 });
 
@@ -30176,11 +30170,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Locales", function() { return _locales_locales__WEBPACK_IMPORTED_MODULE_5__["default"]; });
 
 /* harmony import */ var _locales_en_us_messages_json__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./locales/en-us/messages.json */ "./locales/en-us/messages.json");
-/* harmony import */ var _locales_en_us_messages_json__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_locales_en_us_messages_json__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony reexport (default from non-harmony) */ __webpack_require__.d(__webpack_exports__, "enUS", function() { return _locales_en_us_messages_json__WEBPACK_IMPORTED_MODULE_6___default.a; });
+var _locales_en_us_messages_json__WEBPACK_IMPORTED_MODULE_6___namespace = /*#__PURE__*/__webpack_require__.t(/*! ./locales/en-us/messages.json */ "./locales/en-us/messages.json", 1);
+/* harmony reexport (default from named exports) */ __webpack_require__.d(__webpack_exports__, "enUS", function() { return _locales_en_us_messages_json__WEBPACK_IMPORTED_MODULE_6__; });
 /* harmony import */ var _locales_en_gb_messages_json__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./locales/en-gb/messages.json */ "./locales/en-gb/messages.json");
-/* harmony import */ var _locales_en_gb_messages_json__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_locales_en_gb_messages_json__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony reexport (default from non-harmony) */ __webpack_require__.d(__webpack_exports__, "enGB", function() { return _locales_en_gb_messages_json__WEBPACK_IMPORTED_MODULE_7___default.a; });
+var _locales_en_gb_messages_json__WEBPACK_IMPORTED_MODULE_7___namespace = /*#__PURE__*/__webpack_require__.t(/*! ./locales/en-gb/messages.json */ "./locales/en-gb/messages.json", 1);
+/* harmony reexport (default from named exports) */ __webpack_require__.d(__webpack_exports__, "enGB", function() { return _locales_en_gb_messages_json__WEBPACK_IMPORTED_MODULE_7__; });
 /* harmony import */ var _lib_controllers_ui_controller_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./lib/controllers/ui-controller.js */ "./lib/controllers/ui-controller.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "UIController", function() { return _lib_controllers_ui_controller_js__WEBPACK_IMPORTED_MODULE_8__["default"]; });
 
@@ -30209,14 +30203,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ExtensionSyncStorage", function() { return _lib_options_extension_sync_storage_js__WEBPACK_IMPORTED_MODULE_16__["default"]; });
 
 /* harmony import */ var _settings_content_options_defaults_json__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./settings/content-options-defaults.json */ "./settings/content-options-defaults.json");
-/* harmony import */ var _settings_content_options_defaults_json__WEBPACK_IMPORTED_MODULE_17___default = /*#__PURE__*/__webpack_require__.n(_settings_content_options_defaults_json__WEBPACK_IMPORTED_MODULE_17__);
-/* harmony reexport (default from non-harmony) */ __webpack_require__.d(__webpack_exports__, "ContentOptionDefaults", function() { return _settings_content_options_defaults_json__WEBPACK_IMPORTED_MODULE_17___default.a; });
+var _settings_content_options_defaults_json__WEBPACK_IMPORTED_MODULE_17___namespace = /*#__PURE__*/__webpack_require__.t(/*! ./settings/content-options-defaults.json */ "./settings/content-options-defaults.json", 1);
+/* harmony reexport (default from named exports) */ __webpack_require__.d(__webpack_exports__, "ContentOptionDefaults", function() { return _settings_content_options_defaults_json__WEBPACK_IMPORTED_MODULE_17__; });
 /* harmony import */ var _settings_language_options_defaults_json__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./settings/language-options-defaults.json */ "./settings/language-options-defaults.json");
-/* harmony import */ var _settings_language_options_defaults_json__WEBPACK_IMPORTED_MODULE_18___default = /*#__PURE__*/__webpack_require__.n(_settings_language_options_defaults_json__WEBPACK_IMPORTED_MODULE_18__);
-/* harmony reexport (default from non-harmony) */ __webpack_require__.d(__webpack_exports__, "LanguageOptionDefaults", function() { return _settings_language_options_defaults_json__WEBPACK_IMPORTED_MODULE_18___default.a; });
+var _settings_language_options_defaults_json__WEBPACK_IMPORTED_MODULE_18___namespace = /*#__PURE__*/__webpack_require__.t(/*! ./settings/language-options-defaults.json */ "./settings/language-options-defaults.json", 1);
+/* harmony reexport (default from named exports) */ __webpack_require__.d(__webpack_exports__, "LanguageOptionDefaults", function() { return _settings_language_options_defaults_json__WEBPACK_IMPORTED_MODULE_18__; });
 /* harmony import */ var _settings_ui_options_defaults_json__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./settings/ui-options-defaults.json */ "./settings/ui-options-defaults.json");
-/* harmony import */ var _settings_ui_options_defaults_json__WEBPACK_IMPORTED_MODULE_19___default = /*#__PURE__*/__webpack_require__.n(_settings_ui_options_defaults_json__WEBPACK_IMPORTED_MODULE_19__);
-/* harmony reexport (default from non-harmony) */ __webpack_require__.d(__webpack_exports__, "UIOptionDefaults", function() { return _settings_ui_options_defaults_json__WEBPACK_IMPORTED_MODULE_19___default.a; });
+var _settings_ui_options_defaults_json__WEBPACK_IMPORTED_MODULE_19___namespace = /*#__PURE__*/__webpack_require__.t(/*! ./settings/ui-options-defaults.json */ "./settings/ui-options-defaults.json", 1);
+/* harmony reexport (default from named exports) */ __webpack_require__.d(__webpack_exports__, "UIOptionDefaults", function() { return _settings_ui_options_defaults_json__WEBPACK_IMPORTED_MODULE_19__; });
 /* harmony import */ var _lib_options_defaults_loader_js__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./lib/options/defaults-loader.js */ "./lib/options/defaults-loader.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DefaultsLoader", function() { return _lib_options_defaults_loader_js__WEBPACK_IMPORTED_MODULE_20__["default"]; });
 
@@ -30278,10 +30272,10 @@ __webpack_require__.r(__webpack_exports__);
 /*!************************************************!*\
   !*** ./settings/content-options-defaults.json ***!
   \************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/*! exports provided: domain, items, default */
+/***/ (function(module) {
 
-module.exports = "{\n  \"domain\": \"alpheios-content-options\",\n  \"items\": {\n    \"locale\": {\n      \"defaultValue\": \"en-US\",\n      \"labelText\": \"UI Locale:\",\n      \"values\": [\n        {\n          \"value\": \"en-US\",\n          \"text\": \"English (US)\"\n        },\n        {\n          \"value\": \"en-GB\",\n          \"text\": \"English (GB)\"\n        }\n      ]\n    },\n    \"panelPosition\": {\n      \"defaultValue\": \"left\",\n      \"labelText\": \"Panel position:\",\n      \"values\": [\n        {\n          \"value\": \"left\",\n          \"text\": \"Left\"\n        },\n        {\n          \"value\": \"right\",\n          \"text\": \"Right\"\n        }\n      ]\n    },\n    \"popupPosition\": {\n      \"defaultValue\": \"fixed\",\n      \"labelText\": \"Popup position:\",\n      \"values\": [\n        {\n          \"value\": \"flexible\",\n          \"text\": \"Flexible\"\n        },\n        {\n          \"value\": \"fixed\",\n          \"text\": \"Fixed\"\n        }\n      ]\n    },\n    \"uiType\": {\n      \"defaultValue\": \"popup\",\n      \"labelText\": \"UI type:\",\n      \"values\": [\n        {\n          \"value\": \"popup\",\n          \"text\": \"Pop-up\"\n        },\n        {\n          \"value\": \"panel\",\n          \"text\": \"Panel\"\n        }\n      ]\n    },\n    \"preferredLanguage\": {\n      \"defaultValue\": \"lat\",\n      \"labelText\": \"Page language:\",\n      \"values\": [\n        {\n          \"value\": \"lat\",\n          \"text\": \"Latin\"\n        },\n        {\n          \"value\": \"grc\",\n          \"text\": \"Greek\"\n        },\n        {\n          \"value\": \"ara\",\n          \"text\": \"Arabic\"\n        },\n        {\n          \"value\": \"per\",\n          \"text\": \"Persian\"\n        }\n      ]\n    },\n    \"verboseMode\": {\n      \"defaultValue\": \"normal\",\n      \"labelText\": \"Log Level\",\n      \"values\": [\n        {\n          \"value\": \"verbose\",\n          \"text\": \"Verbose\"\n        },\n        {\n          \"value\": \"normal\",\n          \"text\": \"Normal\"\n        }\n      ]\n    },\n    \"lookupLanguage\": {\n      \"defaultValue\": \"lat\",\n      \"labelText\": \"Page language:\",\n      \"values\": [\n        {\n          \"value\": \"lat\",\n          \"text\": \"Latin\"\n        },\n        {\n          \"value\": \"grc\",\n          \"text\": \"Greek\"\n        },\n        {\n          \"value\": \"ara\",\n          \"text\": \"Arabic\"\n        },\n        {\n          \"value\": \"per\",\n          \"text\": \"Persian\"\n        }\n      ]\n    }\n  }\n}\n"
+module.exports = {"domain":"alpheios-content-options","items":{"locale":{"defaultValue":"en-US","labelText":"UI Locale:","values":[{"value":"en-US","text":"English (US)"},{"value":"en-GB","text":"English (GB)"}]},"panelPosition":{"defaultValue":"left","labelText":"Panel position:","values":[{"value":"left","text":"Left"},{"value":"right","text":"Right"}]},"popupPosition":{"defaultValue":"fixed","labelText":"Popup position:","values":[{"value":"flexible","text":"Flexible"},{"value":"fixed","text":"Fixed"}]},"uiType":{"defaultValue":"popup","labelText":"UI type:","values":[{"value":"popup","text":"Pop-up"},{"value":"panel","text":"Panel"}]},"preferredLanguage":{"defaultValue":"lat","labelText":"Page language:","values":[{"value":"lat","text":"Latin"},{"value":"grc","text":"Greek"},{"value":"ara","text":"Arabic"},{"value":"per","text":"Persian"}]},"verboseMode":{"defaultValue":"normal","labelText":"Log Level","values":[{"value":"verbose","text":"Verbose"},{"value":"normal","text":"Normal"}]},"lookupLanguage":{"defaultValue":"lat","labelText":"Page language:","values":[{"value":"lat","text":"Latin"},{"value":"grc","text":"Greek"},{"value":"ara","text":"Arabic"},{"value":"per","text":"Persian"}]}}};
 
 /***/ }),
 
@@ -30289,10 +30283,10 @@ module.exports = "{\n  \"domain\": \"alpheios-content-options\",\n  \"items\": {
 /*!*************************************************!*\
   !*** ./settings/language-options-defaults.json ***!
   \*************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/*! exports provided: domain, items, default */
+/***/ (function(module) {
 
-module.exports = "{\n  \"domain\": \"alpheios-resource-options\",\n  \"items\": {\n    \"lexicons\": {\n      \"labelText\": \"Lexicons (Full Definitions)\",\n      \"group\": {\n        \"grc\": {\n          \"defaultValue\": [\n            \"https://github.com/alpheios-project/lsj\"\n          ],\n          \"labelText\": \"Greek Lexicons\",\n          \"multiValue\": true,\n          \"values\": [\n            {\n              \"value\": \"https://github.com/alpheios-project/ml\",\n              \"text\": \"Middle Liddell\"\n            },\n            {\n              \"value\": \"https://github.com/alpheios-project/lsj\",\n              \"text\": \"Liddell, Scott, Jones\"\n            },\n            {\n              \"value\": \"https://github.com/alpheios-project/aut\",\n              \"text\": \"Autenrieth Homeric Lexicon\"\n            },\n            {\n              \"value\": \"https://github.com/alpheios-project/dod\",\n              \"text\": \"Dodson\"\n            },\n            {\n              \"value\": \"https://github.com/alpheios-project/as\",\n              \"text\": \"Abbott-Smith\"\n            }\n          ]\n        },\n        \"lat\": {\n          \"defaultValue\": [\n            \"https://github.com/alpheios-project/ls\"\n          ],\n          \"labelText\": \"Latin Lexicons\",\n          \"multiValue\": true,\n          \"values\": [\n            {\n              \"value\": \"https://github.com/alpheios-project/ls\",\n              \"text\": \"Lewis & Short\"\n            }\n          ]\n        },\n        \"ara\": {\n          \"defaultValue\": [\n            \"https://github.com/alpheios-project/lan\"\n          ],\n          \"labelText\": \"Arabic Lexicons\",\n          \"multiValue\": true,\n          \"values\": [\n            {\n              \"value\": \"https://github.com/alpheios-project/lan\",\n              \"text\": \"Lane\"\n            },\n            {\n              \"value\": \"https://github.com/alpheios-project/sal\",\n              \"text\": \"Salmone\"\n            }\n          ]\n        },\n        \"per\": {\n          \"defaultValue\": [\n            \"https://github.com/alpheios-project/stg\"\n          ],\n          \"labelText\": \"Persian Lexicons\",\n          \"multiValue\": true,\n          \"values\": [\n            {\n              \"value\": \"https://github.com/alpheios-project/stg\",\n              \"text\": \"Steingass\"\n            }\n          ]\n        }\n      }\n    },\n    \"lexiconsShort\": {\n      \"labelText\": \"Lexicons (Short Definitions)\",\n      \"group\": {\n        \"grc\": {\n          \"defaultValue\": [\n            \"https://github.com/alpheios-project/lsj\"\n          ],\n          \"labelText\": \"Greek Lexicons (short)\",\n          \"multiValue\": true,\n          \"values\": [\n            {\n              \"value\": \"https://github.com/alpheios-project/ml\",\n              \"text\": \"Middle Liddell\"\n            },\n            {\n              \"value\": \"https://github.com/alpheios-project/lsj\",\n              \"text\": \"Liddell, Scott, Jones\"\n            },\n            {\n              \"value\": \"https://github.com/alpheios-project/aut\",\n              \"text\": \"Autenrieth Homeric Lexicon\"\n            },\n            {\n              \"value\": \"https://github.com/alpheios-project/dod\",\n              \"text\": \"Dodson\"\n            },\n            {\n              \"value\": \"https://github.com/alpheios-project/as\",\n              \"text\": \"Abbott-Smith\"\n            }\n          ]\n        },\n        \"per\": {\n          \"defaultValue\": [\n            \"https://github.com/alpheios-project/stg\"\n          ],\n          \"labelText\": \"Persian Lexicons (short)\",\n          \"multiValue\": true,\n          \"values\": [\n            {\n              \"value\": \"https://github.com/alpheios-project/stg\",\n              \"text\": \"Steingass\"\n            }\n          ]\n        }\n      }\n    },\n    \"treebanks\": {\n      \"labelText\": \"Treebanks\",\n      \"defaultValue\": [],\n      \"labelText\": \"Latin Treebanks\",\n      \"multiValue\": true,\n      \"values\": [ ]\n    }\n  }\n}\n"
+module.exports = {"domain":"alpheios-resource-options","items":{"lexicons":{"labelText":"Lexicons (Full Definitions)","group":{"grc":{"defaultValue":["https://github.com/alpheios-project/lsj"],"labelText":"Greek Lexicons","multiValue":true,"values":[{"value":"https://github.com/alpheios-project/ml","text":"Middle Liddell"},{"value":"https://github.com/alpheios-project/lsj","text":"Liddell, Scott, Jones"},{"value":"https://github.com/alpheios-project/aut","text":"Autenrieth Homeric Lexicon"},{"value":"https://github.com/alpheios-project/dod","text":"Dodson"},{"value":"https://github.com/alpheios-project/as","text":"Abbott-Smith"}]},"lat":{"defaultValue":["https://github.com/alpheios-project/ls"],"labelText":"Latin Lexicons","multiValue":true,"values":[{"value":"https://github.com/alpheios-project/ls","text":"Lewis & Short"}]},"ara":{"defaultValue":["https://github.com/alpheios-project/lan"],"labelText":"Arabic Lexicons","multiValue":true,"values":[{"value":"https://github.com/alpheios-project/lan","text":"Lane"},{"value":"https://github.com/alpheios-project/sal","text":"Salmone"}]},"per":{"defaultValue":["https://github.com/alpheios-project/stg"],"labelText":"Persian Lexicons","multiValue":true,"values":[{"value":"https://github.com/alpheios-project/stg","text":"Steingass"}]}}},"lexiconsShort":{"labelText":"Lexicons (Short Definitions)","group":{"grc":{"defaultValue":["https://github.com/alpheios-project/lsj"],"labelText":"Greek Lexicons (short)","multiValue":true,"values":[{"value":"https://github.com/alpheios-project/ml","text":"Middle Liddell"},{"value":"https://github.com/alpheios-project/lsj","text":"Liddell, Scott, Jones"},{"value":"https://github.com/alpheios-project/aut","text":"Autenrieth Homeric Lexicon"},{"value":"https://github.com/alpheios-project/dod","text":"Dodson"},{"value":"https://github.com/alpheios-project/as","text":"Abbott-Smith"}]},"per":{"defaultValue":["https://github.com/alpheios-project/stg"],"labelText":"Persian Lexicons (short)","multiValue":true,"values":[{"value":"https://github.com/alpheios-project/stg","text":"Steingass"}]}}},"treebanks":{"labelText":"Latin Treebanks","defaultValue":[],"multiValue":true,"values":[]}}};
 
 /***/ }),
 
@@ -30300,10 +30294,10 @@ module.exports = "{\n  \"domain\": \"alpheios-resource-options\",\n  \"items\": 
 /*!*******************************************!*\
   !*** ./settings/ui-options-defaults.json ***!
   \*******************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/*! exports provided: domain, items, default */
+/***/ (function(module) {
 
-module.exports = "{\n  \"domain\": \"alpheios-ui-options\",\n  \"items\": {\n    \"skin\": {\n      \"defaultValue\": \"default\",\n      \"labelText\": \"Skin\",\n      \"values\": [\n        {\n          \"value\": \"default\",\n          \"text\": \"Alpheios Default Skin\"\n        }\n      ]\n    },\n    \"popup\": {\n      \"defaultValue\": \"popup\",\n      \"labelText\": \"Popup layout\",\n      \"values\": [\n        {\n          \"value\": \"popup\",\n          \"text\": \"Default Popup Layout\"\n        }\n      ]\n    },\n    \"panelOnActivate\": {\n      \"defaultValue\": false,\n      \"labelText\": \"Panel on activate\",\n      \"boolean\": true,\n      \"values\": [\n        {\n          \"value\": true,\n          \"text\": \"Open\"\n        },\n        {\n          \"value\": false,\n          \"text\": \"Close\"\n        }\n      ]\n    },\n    \"fontSize\": {\n      \"defaultValue\": \"medium\",\n      \"labelText\": \"Font size\",\n      \"values\": [\n        {\n          \"value\": \"small\",\n          \"text\": \"Small font size\"\n        },\n        {\n          \"value\": \"medium\",\n          \"text\": \"Medium font size\"\n        },\n        {\n          \"value\": \"large\",\n          \"text\": \"Large font size\"\n        }\n      ]\n    },\n    \"colorSchema\": {\n      \"defaultValue\": \"light\",\n      \"labelText\": \"Color schema\",\n      \"values\": [\n        {\n          \"value\": \"light\",\n          \"text\": \"Light color schema\"\n        },\n        {\n          \"value\": \"dark\",\n          \"text\": \"Dark color schema\"\n        }\n      ]\n    }\n\n  }\n}"
+module.exports = {"domain":"alpheios-ui-options","items":{"skin":{"defaultValue":"default","labelText":"Skin","values":[{"value":"default","text":"Alpheios Default Skin"}]},"popup":{"defaultValue":"popup","labelText":"Popup layout","values":[{"value":"popup","text":"Default Popup Layout"}]},"panelOnActivate":{"defaultValue":true,"labelText":"Panel on activate","boolean":true,"values":[{"value":true,"text":"Open"},{"value":false,"text":"Close"}]},"fontSize":{"defaultValue":"medium","labelText":"Font size","values":[{"value":"small","text":"Small font size"},{"value":"medium","text":"Medium font size"},{"value":"large","text":"Large font size"}]},"colorSchema":{"defaultValue":"light","labelText":"Color schema","values":[{"value":"light","text":"Light color schema"},{"value":"dark","text":"Dark color schema"}]}}};
 
 /***/ }),
 
@@ -34579,6 +34573,18 @@ class Homonym {
     }
     return inflections
   }
+
+  /**
+   * Disambiguate a homymyn object with another
+   * @param {Homonym} homonym the homonym to use to disambiguate
+   */
+  disambiguate (homonym) {
+    for (let lexeme of this.lexemes) {
+      for (let disambiguator of homonym.lexemes) {
+        lexeme.disambiguate(disambiguator)
+      }
+    }
+  }
 }
 /* harmony default export */ __webpack_exports__["default"] = (Homonym);
 
@@ -34894,6 +34900,22 @@ class Inflection {
     return normalize
       ? model.normalizeWord(value) === model.normalizeWord(word)
       : value === word
+  }
+
+  /**
+   * Check to see if the supplied inflection can disambiguate this one
+   * @param {Inflection} infl Inflection object to be used for disambiguation
+   *                          Must have the obligatoryMatches constraint set
+   */
+  disambiguatedBy (infl) {
+    let matched = true
+    for (let feature of infl.constraints.obligatoryMatches) {
+      if (!this[feature] || !this[feature].isEqual(infl[feature])) {
+        matched = false
+        break
+      }
+    }
+    return matched
   }
 
   static readObject (jsonObject) {
@@ -35952,7 +35974,9 @@ class LatinLanguageModel extends _language_model_js__WEBPACK_IMPORTED_MODULE_0__
   }
 
   static get typeFeatures () {
-    if (!typeFeaturesInitialized) { this.initTypeFeatures() }
+    if (!typeFeaturesInitialized) {
+      this.initTypeFeatures()
+    }
     return typeFeatures
   }
 
@@ -36219,6 +36243,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _inflection_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./inflection.js */ "./inflection.js");
 /* harmony import */ var _definition_set__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./definition-set */ "./definition-set.js");
 /* harmony import */ var _language_model_factory__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./language_model_factory */ "./language_model_factory.js");
+/* harmony import */ var _feature_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./feature.js */ "./feature.js");
+
 
 
 
@@ -36280,6 +36306,27 @@ class Lexeme {
     return Object.entries(this.lemma.features).length > 0 ||
       !this.meaning.isEmpty() ||
       this.inflections.length > 0
+  }
+
+  /**
+   * disambiguate a Lexeme with a supplied Lexeme
+   * @param {Lexeme} lexeme the lexeme to use for disambiguation
+   */
+  disambiguate (lexeme) {
+    // lemma and lemma part of speech must match
+    if (this.lemma === lexeme.lemma && this.lemma.features[_feature_js__WEBPACK_IMPORTED_MODULE_4__["default"].types.part] && lexeme.lemma.features[_feature_js__WEBPACK_IMPORTED_MODULE_4__["default"].types.part] &&
+      this.lemma.features[_feature_js__WEBPACK_IMPORTED_MODULE_4__["default"].types.part].isEqual(lexeme.lemma.features[_feature_js__WEBPACK_IMPORTED_MODULE_4__["default"].types.part])) {
+      let keepInflections = []
+      // iterate through this lexemes inflections and keep only thoes that are disambiguatedBy by the supplied lexeme's inflection
+      for (let inflection of this.inflections) {
+        if (inflection.disambiguatedBy(lexeme.inflections[0])) {
+          keepInflections.push(inflection)
+        }
+      }
+      if (keepInflections.length > 0) {
+        this.inflections = keepInflections
+      }
+    }
   }
 
   getGroupedInflections () {
@@ -56507,6 +56554,449 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ({
 
+/***/ "../node_modules/webpack/buildin/module.js":
+/*!*************************************************!*\
+  !*** ../node_modules/webpack/buildin/module.js ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = function(module) {
+	if (!module.webpackPolyfill) {
+		module.deprecate = function() {};
+		module.paths = [];
+		// module.parent = undefined by default
+		if (!module.children) module.children = [];
+		Object.defineProperty(module, "loaded", {
+			enumerable: true,
+			get: function() {
+				return module.l;
+			}
+		});
+		Object.defineProperty(module, "id", {
+			enumerable: true,
+			get: function() {
+				return module.i;
+			}
+		});
+		module.webpackPolyfill = 1;
+	}
+	return module;
+};
+
+
+/***/ }),
+
+/***/ "../node_modules/xmltojson/lib/xmlToJSON.js":
+/*!**************************************************!*\
+  !*** ../node_modules/xmltojson/lib/xmlToJSON.js ***!
+  \**************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(module) {var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright 2015 William Summers, MetaTribal LLC
+ * adapted from https://developer.mozilla.org/en-US/docs/JXON
+ *
+ * Licensed under the MIT License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://opensource.org/licenses/MIT
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * @author William Summers
+ *
+ */
+
+var xmlToJSON = (function () {
+
+    this.version = "1.3.5";
+
+    var options = { // set up the default options
+        mergeCDATA: true, // extract cdata and merge with text
+        grokAttr: true, // convert truthy attributes to boolean, etc
+        grokText: true, // convert truthy text/attr to boolean, etc
+        normalize: true, // collapse multiple spaces to single space
+        xmlns: true, // include namespaces as attribute in output
+        namespaceKey: '_ns', // tag name for namespace objects
+        textKey: '_text', // tag name for text nodes
+        valueKey: '_value', // tag name for attribute values
+        attrKey: '_attr', // tag for attr groups
+        cdataKey: '_cdata', // tag for cdata nodes (ignored if mergeCDATA is true)
+        attrsAsObject: true, // if false, key is used as prefix to name, set prefix to '' to merge children and attrs.
+        stripAttrPrefix: true, // remove namespace prefixes from attributes
+        stripElemPrefix: true, // for elements of same name in diff namespaces, you can enable namespaces and access the nskey property
+        childrenAsArray: true // force children into arrays
+    };
+
+    var prefixMatch = new RegExp(/(?!xmlns)^.*:/);
+    var trimMatch = new RegExp(/^\s+|\s+$/g);
+
+    this.grokType = function (sValue) {
+        if (/^\s*$/.test(sValue)) {
+            return null;
+        }
+        if (/^(?:true|false)$/i.test(sValue)) {
+            return sValue.toLowerCase() === "true";
+        }
+        if (isFinite(sValue)) {
+            return parseFloat(sValue);
+        }
+        return sValue;
+    };
+
+    this.parseString = function (xmlString, opt) {
+        return this.parseXML(this.stringToXML(xmlString), opt);
+    }
+
+    this.parseXML = function (oXMLParent, opt) {
+
+        // initialize options
+        for (var key in opt) {
+            options[key] = opt[key];
+        }
+
+        var vResult = {},
+            nLength = 0,
+            sCollectedTxt = "";
+
+        // parse namespace information
+        if (options.xmlns && oXMLParent.namespaceURI) {
+            vResult[options.namespaceKey] = oXMLParent.namespaceURI;
+        }
+
+        // parse attributes
+        // using attributes property instead of hasAttributes method to support older browsers
+        if (oXMLParent.attributes && oXMLParent.attributes.length > 0) {
+            var vAttribs = {};
+
+            for (nLength; nLength < oXMLParent.attributes.length; nLength++) {
+                var oAttrib = oXMLParent.attributes.item(nLength);
+                vContent = {};
+                var attribName = '';
+
+                if (options.stripAttrPrefix) {
+                    attribName = oAttrib.name.replace(prefixMatch, '');
+
+                } else {
+                    attribName = oAttrib.name;
+                }
+
+                if (options.grokAttr) {
+                    vContent[options.valueKey] = this.grokType(oAttrib.value.replace(trimMatch, ''));
+                } else {
+                    vContent[options.valueKey] = oAttrib.value.replace(trimMatch, '');
+                }
+
+                if (options.xmlns && oAttrib.namespaceURI) {
+                    vContent[options.namespaceKey] = oAttrib.namespaceURI;
+                }
+
+                if (options.attrsAsObject) { // attributes with same local name must enable prefixes
+                    vAttribs[attribName] = vContent;
+                } else {
+                    vResult[options.attrKey + attribName] = vContent;
+                }
+            }
+
+            if (options.attrsAsObject) {
+                vResult[options.attrKey] = vAttribs;
+            } else { }
+        }
+
+        // iterate over the children
+        if (oXMLParent.hasChildNodes()) {
+            for (var oNode, sProp, vContent, nItem = 0; nItem < oXMLParent.childNodes.length; nItem++) {
+                oNode = oXMLParent.childNodes.item(nItem);
+
+                if (oNode.nodeType === 4) {
+                    if (options.mergeCDATA) {
+                        sCollectedTxt += oNode.nodeValue;
+                    } else {
+                        if (vResult.hasOwnProperty(options.cdataKey)) {
+                            if (vResult[options.cdataKey].constructor !== Array) {
+                                vResult[options.cdataKey] = [vResult[options.cdataKey]];
+                            }
+                            vResult[options.cdataKey].push(oNode.nodeValue);
+
+                        } else {
+                            if (options.childrenAsArray) {
+                                vResult[options.cdataKey] = [];
+                                vResult[options.cdataKey].push(oNode.nodeValue);
+                            } else {
+                                vResult[options.cdataKey] = oNode.nodeValue;
+                            }
+                        }
+                    }
+                } /* nodeType is "CDATASection" (4) */
+                else if (oNode.nodeType === 3) {
+                    sCollectedTxt += oNode.nodeValue;
+                } /* nodeType is "Text" (3) */
+                else if (oNode.nodeType === 1) { /* nodeType is "Element" (1) */
+
+                    if (nLength === 0) {
+                        vResult = {};
+                    }
+
+                    // using nodeName to support browser (IE) implementation with no 'localName' property
+                    if (options.stripElemPrefix) {
+                        sProp = oNode.nodeName.replace(prefixMatch, '');
+                    } else {
+                        sProp = oNode.nodeName;
+                    }
+
+                    vContent = xmlToJSON.parseXML(oNode);
+
+                    if (vResult.hasOwnProperty(sProp)) {
+                        if (vResult[sProp].constructor !== Array) {
+                            vResult[sProp] = [vResult[sProp]];
+                        }
+                        vResult[sProp].push(vContent);
+
+                    } else {
+                        if (options.childrenAsArray) {
+                            vResult[sProp] = [];
+                            vResult[sProp].push(vContent);
+                        } else {
+                            vResult[sProp] = vContent;
+                        }
+                        nLength++;
+                    }
+                }
+            }
+        } else if (!sCollectedTxt) { // no children and no text, return null
+            if (options.childrenAsArray) {
+                vResult[options.textKey] = [];
+                vResult[options.textKey].push(null);
+            } else {
+                vResult[options.textKey] = null;
+            }
+        }
+
+        if (sCollectedTxt) {
+            if (options.grokText) {
+                var value = this.grokType(sCollectedTxt.replace(trimMatch, ''));
+                if (value !== null && value !== undefined) {
+                    vResult[options.textKey] = value;
+                }
+            } else if (options.normalize) {
+                vResult[options.textKey] = sCollectedTxt.replace(trimMatch, '').replace(/\s+/g, " ");
+            } else {
+                vResult[options.textKey] = sCollectedTxt.replace(trimMatch, '');
+            }
+        }
+
+        return vResult;
+    }
+
+
+    // Convert xmlDocument to a string
+    // Returns null on failure
+    this.xmlToString = function (xmlDoc) {
+        try {
+            var xmlString = xmlDoc.xml ? xmlDoc.xml : (new XMLSerializer()).serializeToString(xmlDoc);
+            return xmlString;
+        } catch (err) {
+            return null;
+        }
+    }
+
+    // Convert a string to XML Node Structure
+    // Returns null on failure
+    this.stringToXML = function (xmlString) {
+        try {
+            var xmlDoc = null;
+
+            if (window.DOMParser) {
+
+                var parser = new DOMParser();
+                xmlDoc = parser.parseFromString(xmlString, "text/xml");
+
+                return xmlDoc;
+            } else {
+                xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+                xmlDoc.async = false;
+                xmlDoc.loadXML(xmlString);
+
+                return xmlDoc;
+            }
+        } catch (e) {
+            return null;
+        }
+    }
+
+    return this;
+}).call({});
+
+if (typeof module != "undefined" && module !== null && module.exports) module.exports = xmlToJSON;
+else if (true) !(__WEBPACK_AMD_DEFINE_RESULT__ = (function () { return xmlToJSON }).call(exports, __webpack_require__, exports, module),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../webpack/buildin/module.js */ "../node_modules/webpack/buildin/module.js")(module)))
+
+/***/ }),
+
+/***/ "./alpheiostb/adapter.js":
+/*!*******************************!*\
+  !*** ./alpheiostb/adapter.js ***!
+  \*******************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _base_adapter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../base_adapter */ "./base_adapter.js");
+/* harmony import */ var alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! alpheios-data-models */ "alpheios-data-models");
+/* harmony import */ var alpheios_data_models__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _config_json__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./config.json */ "./alpheiostb/config.json");
+var _config_json__WEBPACK_IMPORTED_MODULE_2___namespace = /*#__PURE__*/__webpack_require__.t(/*! ./config.json */ "./alpheiostb/config.json", 1);
+/* harmony import */ var xmltojson__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! xmltojson */ "../node_modules/xmltojson/lib/xmlToJSON.js");
+/* harmony import */ var xmltojson__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(xmltojson__WEBPACK_IMPORTED_MODULE_3__);
+
+
+
+
+
+class AlpheiosTreebankAdapter extends _base_adapter__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  /**
+   * A Morph Client Adapter for the Tufts Morphology Service
+   * @constructor
+   * @param {object} config configuraiton object
+   */
+  constructor (config = {}) {
+    super()
+    try {
+      this.config = JSON.parse(_config_json__WEBPACK_IMPORTED_MODULE_2__)
+    } catch (e) {
+      this.config = Object.assign({}, _config_json__WEBPACK_IMPORTED_MODULE_2__)
+    }
+    Object.assign(this.config, config)
+    this.models = { 'lat': alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["LatinLanguageModel"],
+      'grc': alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["GreekLanguageModel"]
+    }
+  }
+
+  /**
+   * Fetch response from a remote URL
+   * @override BaseAdapter#fetch
+   * @param {String} word is expected to be a reference to a word identifier fragement
+  *                       in a text in the form textid#wordid
+   *                      e.g. 1999.02.0066#1-1
+   */
+  fetch (lang, word) {
+    let [text, fragment] = word.split(/#/)
+    let url
+    if (this.config.texts.includes(text)) {
+      url = this.config.url.replace('r_WORD', fragment)
+    }
+    return new Promise((resolve, reject) => {
+      if (url) {
+        window.fetch(url).then(
+          function (response) {
+            try {
+              if (response.ok) {
+                let xmlString = response.text()
+                resolve(xmlString)
+              } else {
+                reject(response.statusText)
+              }
+            } catch (error) {
+              reject(error)
+            }
+          }
+        ).catch((error) => {
+          reject(error)
+        }
+        )
+      } else {
+        reject(new Error(`Invalid or unknown reference ${word}`))
+      }
+    })
+  }
+
+  /**
+   * A function that maps a morphological service's specific data types and values into an inflection library standard.
+   * @param {object} jsonObj - A JSON data from a Morphological Analyzer.
+   * @param {object} targetWord - the target of the analysis
+   * @returns {Models.Homonym} A library standard Homonym object.
+   */
+  transform (jsonObj, targetWord) {
+    'use strict'
+    let providerUri = this.config.providerUri
+    let providerRights = this.config.providerRights
+    let provider = new alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["ResourceProvider"](providerUri, providerRights)
+    let hdwd = jsonObj.words[0].word[0].entry[0].dict[0].hdwd[0]
+    let lemmaText = hdwd._text
+    let model = this.models[hdwd._attr.lang._value]
+    let lemma = new alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["Lemma"](lemmaText, model.languageCode)
+    let lexmodel = new alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["Lexeme"](lemma, [])
+    let inflection = new alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["Inflection"](lemmaText, model.languageID, null, null, null)
+    let infl = jsonObj.words[0].word[0].entry[0].infl[0]
+    inflection.addFeature(new alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["Feature"](alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["Feature"].types.fullForm, targetWord, model.languageID))
+    let features = [
+      ['pofs', 'part', true],
+      ['case', 'grmCase', false],
+      ['num', 'number', false],
+      ['gend', 'gender', false],
+      ['voice', 'voice', false],
+      ['mood', 'mood', false],
+      ['pers', 'person', false],
+      ['comp', 'comparison', false]
+    ]
+    for (let feature of features) {
+      let localName = feature[0]
+      let featureType = feature[1]
+      let addToLemma = feature[2]
+      if (infl[localName]) {
+        let obj = model.typeFeature(alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["Feature"].types[featureType]).createFeatures(infl[localName][0]._text, 1)
+        inflection.addFeature(obj)
+        // add this feature to this list of features for obligatory matching
+        inflection.constraints.obligatoryMatches.push(featureType)
+        if (addToLemma) {
+          lemma.addFeature(obj)
+        }
+      }
+    }
+    lexmodel.inflections = [ inflection ]
+    return new alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["Homonym"]([alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["ResourceProvider"].getProxy(provider, lexmodel)], targetWord)
+  }
+
+  async getHomonym (lang, word) {
+    let xmlString = await this.fetch(lang, word)
+    if (xmlString) {
+      let jsonObj = xmltojson__WEBPACK_IMPORTED_MODULE_3___default.a.parseString(xmlString)
+      jsonObj.words[0].word[0].entry[0].dict[0].hdwd[0]._attr = { lang: { _value: lang } }
+      let homonym = this.transform(jsonObj, jsonObj.words[0].word[0].form[0]._text)
+      return homonym
+    } else {
+      // No data found for this word
+      return undefined
+    }
+  }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (AlpheiosTreebankAdapter);
+
+
+/***/ }),
+
+/***/ "./alpheiostb/config.json":
+/*!********************************!*\
+  !*** ./alpheiostb/config.json ***!
+  \********************************/
+/*! exports provided: texts, url, providerUri, providerRights, allowUnknownValues, default */
+/***/ (function(module) {
+
+module.exports = {"texts":["1999.02.0066","phi0959.phi006.alpheios-text-lat1"],"url":"http://tools.alpheios.net/exist/rest/db/xq/treebank-getmorph.xq?f=1999.02.0066&w=r_WORD","providerUri":"https://alpheios.net","providerRights":"The Alpheios Treebank data is licenced under the Creative Commons 3.0 Share-Alike license.","allowUnknownValues":true};
+
+/***/ }),
+
 /***/ "./base_adapter.js":
 /*!*************************!*\
   !*** ./base_adapter.js ***!
@@ -56616,7 +57106,7 @@ class BaseAdapter {
 /*!*******************!*\
   !*** ./driver.js ***!
   \*******************/
-/*! exports provided: BaseAdapter, AlpheiosTuftsAdapter */
+/*! exports provided: BaseAdapter, AlpheiosTuftsAdapter, AlpheiosTreebankAdapter */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -56626,6 +57116,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony import */ var _base_adapter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./base_adapter */ "./base_adapter.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BaseAdapter", function() { return _base_adapter__WEBPACK_IMPORTED_MODULE_1__["default"]; });
+
+/* harmony import */ var _alpheiostb_adapter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./alpheiostb/adapter */ "./alpheiostb/adapter.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AlpheiosTreebankAdapter", function() { return _alpheiostb_adapter__WEBPACK_IMPORTED_MODULE_2__["default"]; });
+
 
 
 
@@ -68804,6 +69298,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 const ALIGNMENT_HIGHLIGHT_CLASS = 'alpheios-alignment__highlight'
 /**
  * Encapsulation of Alpheios functionality which can be embedded in a webpage
@@ -68836,6 +69331,7 @@ class Embedded {
       this.siteOptions = []
     }
     this.maAdapter = new alpheios_morph_client__WEBPACK_IMPORTED_MODULE_2__["AlpheiosTuftsAdapter"]() // Morphological analyzer adapter, with default arguments
+    this.tbAdapter = new alpheios_morph_client__WEBPACK_IMPORTED_MODULE_2__["AlpheiosTreebankAdapter"]() // Morphological analyzer adapter, with default arguments
     let manifest = { version: '1.0', name: 'Alpheios Embedded Library' }
     let template = { html: _template_htmlf__WEBPACK_IMPORTED_MODULE_6___default.a, panelId: 'alpheios-panel-embedded', popupId: 'alpheios-popup-embedded' }
     this.ui = new alpheios_components__WEBPACK_IMPORTED_MODULE_4__["UIController"](this.state, this.options, this.resourceOptions, this.uiOptions, manifest, template)
@@ -68875,11 +69371,14 @@ class Embedded {
     if (activateOn.length === 0) {
       throw new Error(`activation element ${activateOn} is missing`)
     }
-    for (let o of activateOn) {
-      for (let t of trigger) {
-        o.addEventListener(t, event => { this.handler(event) })
+    for (let t of trigger) {
+      if (t === 'dblclick') {
+        alpheios_components__WEBPACK_IMPORTED_MODULE_4__["MouseDblClick"].listen(selector, evt => this.handler(evt))
+      } else if (t === 'touchstart') {
+        alpheios_components__WEBPACK_IMPORTED_MODULE_4__["LongTap"].listen(selector, evt => this.handler(evt), 5, 0)
       }
     }
+
     let alignments = this.doc.querySelectorAll('[data-alpheios_align_ref]')
     for (let a of alignments) {
       a.addEventListener('mouseenter', event => { this.enterAlignment(event) })
@@ -68920,6 +69419,7 @@ class Embedded {
         htmlSelector: htmlSelector,
         uiController: this.ui,
         maAdapter: this.maAdapter,
+        tbAdapter: this.tbAdapter,
         lexicons: alpheios_lexicon_client__WEBPACK_IMPORTED_MODULE_3__["Lexicons"],
 
         lemmaTranslations: null,
