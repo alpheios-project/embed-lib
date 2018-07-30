@@ -11175,8 +11175,11 @@ __webpack_require__.r(__webpack_exports__);
         this.$emit('treebankcontentwidth', '43em')
         let newSrcUrl
         if (this.res.word && this.res.word.src && this.res.word.ref) {
-          let [s,w] = this.res.word.ref.split(/-/)
-          newSrcUrl = this.res.word.src.replace('SENTENCE',s).replace('WORD',w)
+          let [doc,ref] = this.res.word.ref.split(/#/)
+          if (doc && ref) {
+            let [s,w] = ref.split(/-/)
+            newSrcUrl = this.res.word.src.replace('DOC',doc).replace('SENTENCE',s).replace('WORD',w)
+          }
           // only update the srcUrl property if we have a new URL - we don't
           // want to reload if it was hidden after being populated but hasn't
           // actually changed
@@ -29188,7 +29191,7 @@ class LexicalQuery extends _query_js__WEBPACK_IMPORTED_MODULE_1__["default"] {
     let formLexeme = new alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__["Lexeme"](new alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__["Lemma"](this.selector.normalizedText, this.selector.languageID), [])
     this.ui.updateLanguage(this.selector.languageID)
     if (this.tbAdapter && this.selector.data.treebank && this.selector.data.treebank.word) {
-      this.annotatedHomonym = yield this.tbAdapter.getHomonym(this.selector.languageCode, this.selector.data.treebank.word.ref)
+      this.annotatedHomonym = yield this.tbAdapter.getHomonym(this.selector.languageID, this.selector.data.treebank.word.ref)
     }
     if (!this.canReset) {
       // if we can't reset, proceed with full lookup sequence
@@ -36223,6 +36226,19 @@ class Lemma {
 
     this.translation = translation
   }
+
+  /**
+   * Test to see if two lemmas could represent the same word
+   * @param {Lemma} lemma the lemma to compare
+   * @return {Boolean} true or false
+   */
+  isEqual (lemma) {
+    // returns true if the word and part of speech match
+    return this.word === lemma.word &&
+      this.features[_feature_js__WEBPACK_IMPORTED_MODULE_1__["default"].types.part] &&
+      lemma.features[_feature_js__WEBPACK_IMPORTED_MODULE_1__["default"].types.part] &&
+      this.features[_feature_js__WEBPACK_IMPORTED_MODULE_1__["default"].types.part].isEqual(lemma.features[_feature_js__WEBPACK_IMPORTED_MODULE_1__["default"].types.part])
+  }
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (Lemma);
@@ -36243,8 +36259,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _inflection_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./inflection.js */ "./inflection.js");
 /* harmony import */ var _definition_set__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./definition-set */ "./definition-set.js");
 /* harmony import */ var _language_model_factory__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./language_model_factory */ "./language_model_factory.js");
-/* harmony import */ var _feature_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./feature.js */ "./feature.js");
-
 
 
 
@@ -36313,9 +36327,7 @@ class Lexeme {
    * @param {Lexeme} lexeme the lexeme to use for disambiguation
    */
   disambiguate (lexeme) {
-    // lemma and lemma part of speech must match
-    if (this.lemma === lexeme.lemma && this.lemma.features[_feature_js__WEBPACK_IMPORTED_MODULE_4__["default"].types.part] && lexeme.lemma.features[_feature_js__WEBPACK_IMPORTED_MODULE_4__["default"].types.part] &&
-      this.lemma.features[_feature_js__WEBPACK_IMPORTED_MODULE_4__["default"].types.part].isEqual(lexeme.lemma.features[_feature_js__WEBPACK_IMPORTED_MODULE_4__["default"].types.part])) {
+    if (this.lemma.isEqual(lexeme.lemma)) {
       let keepInflections = []
       // iterate through this lexemes inflections and keep only thoes that are disambiguatedBy by the supplied lexeme's inflection
       for (let inflection of this.inflections) {
@@ -56882,6 +56894,16 @@ class AlpheiosTreebankAdapter extends _base_adapter__WEBPACK_IMPORTED_MODULE_0__
     }
   }
 
+  prepareRequestUrl (lang, word) {
+    let [text, fragment] = word.split(/#/)
+    let url
+    if (this.config.texts.includes(text)) {
+      url = this.config.url.replace('r_TEXT', text)
+      url = url.replace('r_WORD', fragment)
+    }
+    return url
+  }
+
   /**
    * Fetch response from a remote URL
    * @override BaseAdapter#fetch
@@ -56889,12 +56911,9 @@ class AlpheiosTreebankAdapter extends _base_adapter__WEBPACK_IMPORTED_MODULE_0__
   *                       in a text in the form textid#wordid
    *                      e.g. 1999.02.0066#1-1
    */
-  fetch (lang, word) {
-    let [text, fragment] = word.split(/#/)
-    let url
-    if (this.config.texts.includes(text)) {
-      url = this.config.url.replace('r_WORD', fragment)
-    }
+  fetch (languageID, word) {
+    const langCode = alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["LanguageModelFactory"].getLanguageCodeFromId(languageID)
+    let url = this.prepareRequestUrl(langCode, word)
     return new Promise((resolve, reject) => {
       if (url) {
         window.fetch(url).then(
@@ -56933,6 +56952,9 @@ class AlpheiosTreebankAdapter extends _base_adapter__WEBPACK_IMPORTED_MODULE_0__
     let provider = new alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["ResourceProvider"](providerUri, providerRights)
     let hdwd = jsonObj.words[0].word[0].entry[0].dict[0].hdwd[0]
     let lemmaText = hdwd._text
+    // the Alpheios v1 treebank data kept trailing digits on the lemmas
+    // these won't match morphology service lemmas which have them stripped
+    lemmaText = lemmaText.replace(/\d+$/, '')
     let model = this.models[hdwd._attr.lang._value]
     let lemma = new alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["Lemma"](lemmaText, model.languageCode)
     let lexmodel = new alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["Lexeme"](lemma, [])
@@ -56957,7 +56979,7 @@ class AlpheiosTreebankAdapter extends _base_adapter__WEBPACK_IMPORTED_MODULE_0__
         let obj = model.typeFeature(alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["Feature"].types[featureType]).createFeatures(infl[localName][0]._text, 1)
         inflection.addFeature(obj)
         // add this feature to this list of features for obligatory matching
-        inflection.constraints.obligatoryMatches.push(featureType)
+        inflection.constraints.obligatoryMatches.push(alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["Feature"].types[featureType])
         if (addToLemma) {
           lemma.addFeature(obj)
         }
@@ -56967,17 +56989,23 @@ class AlpheiosTreebankAdapter extends _base_adapter__WEBPACK_IMPORTED_MODULE_0__
     return new alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["Homonym"]([alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["ResourceProvider"].getProxy(provider, lexmodel)], targetWord)
   }
 
-  async getHomonym (lang, word) {
-    let xmlString = await this.fetch(lang, word)
+  async getHomonym (languageID, word) {
+    let xmlString = await this.fetch(languageID, word)
     if (xmlString) {
+      let langCode = this.getLanguageCode(languageID)
+      console.log(`LangCode ${langCode}`)
       let jsonObj = xmltojson__WEBPACK_IMPORTED_MODULE_3___default.a.parseString(xmlString)
-      jsonObj.words[0].word[0].entry[0].dict[0].hdwd[0]._attr = { lang: { _value: lang } }
+      jsonObj.words[0].word[0].entry[0].dict[0].hdwd[0]._attr = { lang: { _value: langCode } }
       let homonym = this.transform(jsonObj, jsonObj.words[0].word[0].form[0]._text)
       return homonym
     } else {
       // No data found for this word
       return undefined
     }
+  }
+
+  getLanguageCode (languageID) {
+    return alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["LanguageModelFactory"].getLanguageCodeFromId(languageID)
   }
 }
 
@@ -56993,7 +57021,7 @@ class AlpheiosTreebankAdapter extends _base_adapter__WEBPACK_IMPORTED_MODULE_0__
 /*! exports provided: texts, url, providerUri, providerRights, allowUnknownValues, default */
 /***/ (function(module) {
 
-module.exports = {"texts":["1999.02.0066","phi0959.phi006.alpheios-text-lat1"],"url":"http://tools.alpheios.net/exist/rest/db/xq/treebank-getmorph.xq?f=1999.02.0066&w=r_WORD","providerUri":"https://alpheios.net","providerRights":"The Alpheios Treebank data is licenced under the Creative Commons 3.0 Share-Alike license.","allowUnknownValues":true};
+module.exports = {"texts":["1999.02.0066","phi0959.phi006.alpheios-text-lat1"],"url":"http://tools.alpheios.net/exist/rest/db/xq/treebank-getmorph.xq?f=r_TEXT&w=r_WORD","providerUri":"https://alpheios.net","providerRights":"The Alpheios Treebank data is licenced under the Creative Commons 3.0 Share-Alike license.","allowUnknownValues":true};
 
 /***/ }),
 
@@ -57006,6 +57034,10 @@ module.exports = {"texts":["1999.02.0066","phi0959.phi006.alpheios-text-lat1"],"
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! alpheios-data-models */ "alpheios-data-models");
+/* harmony import */ var alpheios_data_models__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__);
+
+
 /**
  * Base Adapter Class for a Morphology Service Client
  */
@@ -57025,24 +57057,25 @@ class BaseAdapter {
   /**
    * Lookup the supplied word using the preconfigured engines and
    * and return a Homonym
-   * @param {string} lang - ISO 639-2 language code for the word
+   * @param {symbol} languageID - A language ID as defined in Constants.LANG_XXX in data models
    * @param {string} word - the word to lookup
    * @return {Homonym} homonym object
    */
-  async getHomonym (lang, word) {
-    // implement in the derived adapater class
+  async getHomonym (languageID, word) {
+    // implement in the derived adapter class
     return undefined
   }
 
   /**
    * Fetch response from a remote URL
-   * @param {string} lang - the language code
+   * @param {symbol} languageID - A language ID
    * @param {string} word - the word to lookup
    * @returns {Promise} a promse which if successful resolves to json response object
    *                    with the results of the analysis
    */
-  fetch (lang, word) {
-    let url = this.prepareRequestUrl(lang, word)
+  fetch (languageID, word) {
+    const langCode = alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__["LanguageModelFactory"].getLanguageCodeFromId(languageID)
+    let url = this.prepareRequestUrl(langCode, word)
     return new Promise((resolve, reject) => {
       if (url) {
         window.fetch(url).then(
@@ -57063,7 +57096,7 @@ class BaseAdapter {
         }
         )
       } else {
-        reject(new Error(`Unable to prepare parser request url for ${lang}`))
+        reject(new Error(`Unable to prepare parser request url for ${languageID.toString()}`))
       }
     })
   }
@@ -57404,10 +57437,11 @@ class AlpheiosTuftsAdapter extends _base_adapter__WEBPACK_IMPORTED_MODULE_0__["d
     }
   }
 
-  async getHomonym (lang, word) {
-    let jsonObj = await this.fetch(lang, word)
+  async getHomonym (languageID, word) {
+    let jsonObj = await this.fetch(languageID, word)
     if (jsonObj) {
       let homonym = this.transform(jsonObj, word)
+      homonym.lexemes.sort(alpheios_data_models__WEBPACK_IMPORTED_MODULE_5__["Lexeme"].getSortByTwoLemmaFeatures(alpheios_data_models__WEBPACK_IMPORTED_MODULE_5__["Feature"].types.frequency, alpheios_data_models__WEBPACK_IMPORTED_MODULE_5__["Feature"].types.part))
       return homonym
     } else {
       // No data found for this word
@@ -69298,8 +69332,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
-const ALIGNMENT_HIGHLIGHT_CLASS = 'alpheios-alignment__highlight'
 /**
  * Encapsulation of Alpheios functionality which can be embedded in a webpage
  */
@@ -69318,13 +69350,15 @@ class Embedded {
     this.anchor = anchor
     this.doc = doc
     this.state = new _state__WEBPACK_IMPORTED_MODULE_5__["default"]()
-    this.options = new alpheios_components__WEBPACK_IMPORTED_MODULE_4__["Options"](alpheios_components__WEBPACK_IMPORTED_MODULE_4__["DefaultsLoader"].fromJSON(alpheios_components__WEBPACK_IMPORTED_MODULE_4__["ContentOptionDefaults"]), alpheios_components__WEBPACK_IMPORTED_MODULE_4__["LocalStorageArea"])
-    this.resourceOptions = new alpheios_components__WEBPACK_IMPORTED_MODULE_4__["Options"](alpheios_components__WEBPACK_IMPORTED_MODULE_4__["DefaultsLoader"].fromJSON(alpheios_components__WEBPACK_IMPORTED_MODULE_4__["LanguageOptionDefaults"]), alpheios_components__WEBPACK_IMPORTED_MODULE_4__["LocalStorageArea"])
+    this.options = new alpheios_components__WEBPACK_IMPORTED_MODULE_4__["Options"](alpheios_components__WEBPACK_IMPORTED_MODULE_4__["ContentOptionDefaults"], alpheios_components__WEBPACK_IMPORTED_MODULE_4__["LocalStorageArea"])
+    this.resourceOptions = new alpheios_components__WEBPACK_IMPORTED_MODULE_4__["Options"](alpheios_components__WEBPACK_IMPORTED_MODULE_4__["LanguageOptionDefaults"], alpheios_components__WEBPACK_IMPORTED_MODULE_4__["LocalStorageArea"])
+
     if (options.ui) {
-      this.uiOptions = new alpheios_components__WEBPACK_IMPORTED_MODULE_4__["Options"](alpheios_components__WEBPACK_IMPORTED_MODULE_4__["DefaultsLoader"].fromJSON(options.ui), alpheios_components__WEBPACK_IMPORTED_MODULE_4__["LocalStorageArea"])
+      this.uiOptions = new alpheios_components__WEBPACK_IMPORTED_MODULE_4__["Options"](options.ui, alpheios_components__WEBPACK_IMPORTED_MODULE_4__["LocalStorageArea"])
     } else {
-      this.uiOptions = new alpheios_components__WEBPACK_IMPORTED_MODULE_4__["Options"](alpheios_components__WEBPACK_IMPORTED_MODULE_4__["DefaultsLoader"].fromJSON(alpheios_components__WEBPACK_IMPORTED_MODULE_4__["UIOptionDefaults"]), alpheios_components__WEBPACK_IMPORTED_MODULE_4__["LocalStorageArea"])
+      this.uiOptions = new alpheios_components__WEBPACK_IMPORTED_MODULE_4__["Options"](alpheios_components__WEBPACK_IMPORTED_MODULE_4__["UIOptionDefaults"], alpheios_components__WEBPACK_IMPORTED_MODULE_4__["LocalStorageArea"])
     }
+
     if (options.site) {
       this.siteOptions = this.loadSiteOptions(options.site)
     } else {
@@ -69434,7 +69468,7 @@ class Embedded {
 
   loadSiteOptions (siteOptions) {
     let allSiteOptions = []
-    let loaded = alpheios_components__WEBPACK_IMPORTED_MODULE_4__["DefaultsLoader"].fromJSON(siteOptions)
+    let loaded = siteOptions
     for (let site of loaded) {
       for (let domain of site.options) {
         let siteOpts = new alpheios_components__WEBPACK_IMPORTED_MODULE_4__["Options"](domain, alpheios_components__WEBPACK_IMPORTED_MODULE_4__["LocalStorageArea"])
@@ -69442,86 +69476,6 @@ class Embedded {
       }
     }
     return allSiteOptions
-  }
-
-  leaveAlignment (event) {
-    this.doc.querySelectorAll(`.${ALIGNMENT_HIGHLIGHT_CLASS}`).forEach(e => e.classList.remove(ALIGNMENT_HIGHLIGHT_CLASS))
-  }
-
-  enterAlignment (event) {
-    let alignedTranslation = this.doc.querySelectorAll('.aligned-translation')
-    let visible = false
-    alignedTranslation.forEach(e => { if (e.classList.contains('visible')) { visible = true } })
-    if (!visible) {
-      return
-    }
-    let ref = event.target.dataset.alpheios_align_ref
-    if (ref) {
-      for (let r of ref.split(/,/)) {
-        let aligned = this.doc.querySelectorAll(r)
-        if (aligned) {
-          event.target.classList.add(ALIGNMENT_HIGHLIGHT_CLASS)
-          for (let a of aligned) {
-            a.classList.add(ALIGNMENT_HIGHLIGHT_CLASS)
-            let aref = a.dataset.alpheios_align_ref
-            if (aref) {
-              for (let ar of aref.split(/,/)) {
-                let reverse = this.doc.querySelectorAll(ar)
-                for (let reverseA of reverse) {
-                  if (reverseA !== event.target) {
-                    reverseA.classList.add(ALIGNMENT_HIGHLIGHT_CLASS)
-                  }
-                }
-              }
-            }
-          }
-          this.scrollToElement(aligned[0])
-        }
-      }
-    }
-  }
-
-  scrollToElement (elem) {
-    var top = elem.offsetTop
-    var left = elem.offsetLeft
-    var width = elem.offsetWidth
-    var height = elem.offsetHeight
-
-    while (elem.offsetParent) {
-      elem = elem.offsetParent
-      top += elem.offsetTop
-      left += elem.offsetLeft
-    }
-
-    var moveX = 0
-    var moveY = 0
-    if (left < elem.ownerDocument.defaultView.pageXOffset) {
-      moveX = left - elem.ownerDocument.defaultView.pageXOffset
-    } else if ((left + width) >
-               (elem.ownerDocument.defaultView.pageXOffset +
-                elem.ownerDocument.defaultView.innerWidth)
-    ) {
-      moveX = (left + width) -
-               (elem.ownerDocument.defaultView.pageXOffset +
-                elem.ownerDocument.defaultView.innerWidth)
-    }
-
-    if (top < elem.ownerDocument.defaultView.pageYOffset) {
-      moveY = top - elem.ownerDocument.defaultView.pageYOffset
-    } else if ((top >= elem.ownerDocument.defaultView.pageYOffset) &&
-                ((top + height) >
-                 (elem.ownerDocument.defaultView.pageYOffset +
-                  elem.ownerDocument.defaultView.innerHeight)
-                )
-    ) {
-      moveY =
-              (top + height) -
-              (elem.ownerDocument.defaultView.pageYOffset +
-               elem.ownerDocument.defaultView.innerHeight)
-    }
-    if (moveX !== 0 || moveY !== 0) {
-      elem.ownerDocument.defaultView.scrollBy(moveX, moveY)
-    }
   }
 }
 
