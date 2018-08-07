@@ -4759,7 +4759,7 @@ class InflectionSet {
 
   /**
    * Adds an `Inflections` group of certain type.
-   * @param {Inflections} inflectionsObject
+   * @param {InflectionList} inflectionsObject
    */
   addInflectionsObject (inflectionsObject) {
     if (!inflectionsObject) {
