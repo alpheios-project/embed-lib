@@ -5,7 +5,7 @@ import {Constants} from 'alpheios-data-models'
 import {AlpheiosTuftsAdapter} from 'alpheios-morph-client'
 import {Lexicons} from 'alpheios-lexicon-client'
 import { UIController, HTMLSelector, LexicalQuery, ContentOptionDefaults, LanguageOptionDefaults,
-  UIOptionDefaults, Options, LocalStorageArea, MouseDblClick, LongTap } from 'alpheios-components'
+  UIOptionDefaults, Options, LocalStorageArea, MouseDblClick, LongTap, AlignmentSelector } from 'alpheios-components'
 import State from './state'
 import Template from './template.htmlf'
 import interact from 'interactjs'
@@ -90,11 +90,8 @@ class Embedded {
       }
     }
 
-    let alignments = this.doc.querySelectorAll('[data-alpheios_align_ref]')
-    for (let a of alignments) {
-      a.addEventListener('mouseenter', event => { this.enterAlignment(event) })
-      a.addEventListener('mouseleave', event => { this.leaveAlignment(event) })
-    }
+    let alignment = new AlignmentSelector(this.doc, {})
+    alignment.activate()
     let alignedTranslation = this.doc.querySelectorAll('.aligned-translation')
     for (let a of alignedTranslation) {
       interact(a).resizable({
