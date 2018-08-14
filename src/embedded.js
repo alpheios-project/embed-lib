@@ -2,7 +2,7 @@
 /* global Event */
 import ComponentStyles from '../node_modules/alpheios-components/dist/style/style.min.css' // eslint-disable-line
 import {Constants} from 'alpheios-data-models'
-import {AlpheiosTuftsAdapter} from 'alpheios-morph-client'
+import {AlpheiosTuftsAdapter, AlpheiosTreebankAdapter} from 'alpheios-morph-client'
 import {Lexicons} from 'alpheios-lexicon-client'
 import { UIController, HTMLSelector, LexicalQuery, ContentOptionDefaults, LanguageOptionDefaults,
   UIOptionDefaults, Options, LocalStorageArea, MouseDblClick, LongTap, AlignmentSelector } from 'alpheios-components'
@@ -43,6 +43,7 @@ class Embedded {
       this.siteOptions = []
     }
     this.maAdapter = new AlpheiosTuftsAdapter() // Morphological analyzer adapter, with default arguments
+    this.tbAdapter = new AlpheiosTreebankAdapter() // Morphological analyzer adapter, with default arguments
     let manifest = { version: '1.0', name: 'Alpheios Embedded Library' }
     let template = { html: Template, panelId: 'alpheios-panel-embedded', popupId: 'alpheios-popup-embedded' }
     this.ui = new UIController(this.state, this.options, this.resourceOptions, this.uiOptions, manifest, template)
@@ -127,6 +128,7 @@ class Embedded {
         htmlSelector: htmlSelector,
         uiController: this.ui,
         maAdapter: this.maAdapter,
+        tbAdapter: this.tbAdapter,
         lexicons: Lexicons,
 
         lemmaTranslations: null,

@@ -71839,6 +71839,7 @@ class Embedded {
       this.siteOptions = []
     }
     this.maAdapter = new alpheios_morph_client__WEBPACK_IMPORTED_MODULE_2__["AlpheiosTuftsAdapter"]() // Morphological analyzer adapter, with default arguments
+    this.tbAdapter = new alpheios_morph_client__WEBPACK_IMPORTED_MODULE_2__["AlpheiosTreebankAdapter"]() // Morphological analyzer adapter, with default arguments
     let manifest = { version: '1.0', name: 'Alpheios Embedded Library' }
     let template = { html: _template_htmlf__WEBPACK_IMPORTED_MODULE_6___default.a, panelId: 'alpheios-panel-embedded', popupId: 'alpheios-popup-embedded' }
     this.ui = new alpheios_components__WEBPACK_IMPORTED_MODULE_4__["UIController"](this.state, this.options, this.resourceOptions, this.uiOptions, manifest, template)
@@ -71923,6 +71924,7 @@ class Embedded {
         htmlSelector: htmlSelector,
         uiController: this.ui,
         maAdapter: this.maAdapter,
+        tbAdapter: this.tbAdapter,
         lexicons: alpheios_lexicon_client__WEBPACK_IMPORTED_MODULE_3__["Lexicons"],
 
         lemmaTranslations: null,
