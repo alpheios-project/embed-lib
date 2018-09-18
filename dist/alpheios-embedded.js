@@ -93067,7 +93067,7 @@ class Embedded {
     }
     this.maAdapter = new alpheios_morph_client__WEBPACK_IMPORTED_MODULE_2__["AlpheiosTuftsAdapter"]() // Morphological analyzer adapter, with default arguments
     this.tbAdapter = new alpheios_morph_client__WEBPACK_IMPORTED_MODULE_2__["AlpheiosTreebankAdapter"]() // Morphological analyzer adapter, with default arguments
-    let manifest = { version: '1.0', name: 'Alpheios Embedded Library' }
+    let manifest = { version: '1.1', name: 'Alpheios Embedded Library' }
     let template = { html: _template_htmlf__WEBPACK_IMPORTED_MODULE_7___default.a, panelId: 'alpheios-panel-embedded', popupId: 'alpheios-popup-embedded' }
     this.ui = new alpheios_components__WEBPACK_IMPORTED_MODULE_5__["UIController"](this.state, this.options, this.resourceOptions, this.uiOptions, manifest, template)
     this.doc.body.addEventListener('Alpheios_Embedded_Check', event => { this.notifyExtension(event) })

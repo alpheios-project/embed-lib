@@ -45,7 +45,7 @@ class Embedded {
     }
     this.maAdapter = new AlpheiosTuftsAdapter() // Morphological analyzer adapter, with default arguments
     this.tbAdapter = new AlpheiosTreebankAdapter() // Morphological analyzer adapter, with default arguments
-    let manifest = { version: '1.0', name: 'Alpheios Embedded Library' }
+    let manifest = { version: '1.1', name: 'Alpheios Embedded Library' }
     let template = { html: Template, panelId: 'alpheios-panel-embedded', popupId: 'alpheios-popup-embedded' }
     this.ui = new UIController(this.state, this.options, this.resourceOptions, this.uiOptions, manifest, template)
     this.doc.body.addEventListener('Alpheios_Embedded_Check', event => { this.notifyExtension(event) })
