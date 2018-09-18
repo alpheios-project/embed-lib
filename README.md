@@ -25,29 +25,31 @@ Encapsulates Alpheios functionality for use as an embedded library.
 </script>
 ```
 
-> You can configure the Alpheios Embedded instance by passing parameters to the constructor:
+You can configure the Alpheios Embedded instance by passing parameters to the constructor:
 
 ```
   new Alpheios.Embedded(selector_for_anchor_element,document_object,popup_arguments,panel_arguments)
 ```
 
- > e.g
+e.g
 
 ```
   new Alpheios.Embedded("#alpheios-main",document,{top: "30vh", left: "30vw"},{})
 ```
 
- > Currently supported panel and popup configuraiton options are limited to the following:
- >    popup_arguments:
- >      top: coordinates of the top of the Alpheios popup
- >      left: coordinates of the left of the Alpheios popup
+Supported panel and popup configuration options are currently limited to the following, but may be expanded in
+future releases:
+
+    popup_arguments:
+      `top`: coordinates of the top of the Alpheios popup
+      `left`: coordinates of the left of the Alpheios popup
 
 3. Add an anchor element with the id "alpheios-main" to your HTML page to configure the library. This element supports the following
 attributes for configuration of the library:
 
-   data-selector: a CSS selector string for selecting elements on the page which should have Alpheios activated for them
-   data-trigger: the name of the DOM event which triggers the functionality (Currently only 'dblclick' is supported.)
-   data-mobile-redirect-url: a url to which you want to redirect users accessing the page from mobile devices
+   `data-selector`: a CSS selector string for selecting elements on the page which should have Alpheios activated for them
+   `data-trigger`: the name of the DOM event which triggers the functionality (Currently only 'dblclick' is supported.)
+   `data-mobile-redirect-url`: a url to which you want to redirect users accessing the page from mobile devices
 
    e.g.
 
