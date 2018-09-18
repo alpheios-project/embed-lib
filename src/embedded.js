@@ -4,6 +4,7 @@ import ComponentStyles from '../node_modules/alpheios-components/dist/style/styl
 import {Constants} from 'alpheios-data-models'
 import {AlpheiosTuftsAdapter, AlpheiosTreebankAdapter} from 'alpheios-morph-client'
 import {Lexicons} from 'alpheios-lexicon-client'
+import {LemmaTranslations} from 'alpheios-lemma-client'
 import { UIController, HTMLSelector, LexicalQuery, ContentOptionDefaults, LanguageOptionDefaults,
   UIOptionDefaults, Options, LocalStorageArea, MouseDblClick, LongTap, AlignmentSelector } from 'alpheios-components'
 import State from './state'
@@ -130,9 +131,7 @@ class Embedded {
         maAdapter: this.maAdapter,
         tbAdapter: this.tbAdapter,
         lexicons: Lexicons,
-
-        lemmaTranslations: null,
-
+        lemmaTranslations: this.enableLemmaTranslations(textSelector) ? { adapter: LemmaTranslations, locale: this.options.items.locale.currentValue } : null,
         resourceOptions: this.resourceOptions,
         siteOptions: this.siteOptions,
         langOpts: { [Constants.LANG_PERSIAN]: { lookupMorphLast: true } } // TODO this should be externalized
@@ -151,6 +150,16 @@ class Embedded {
       }
     }
     return allSiteOptions
+  }
+
+  /**
+   * Check to see if Lemma Translations should be enabled for a query
+   *  NB this is Prototype functionality
+   */
+  enableLemmaTranslations (textSelector) {
+    return textSelector.languageID === Constants.LANG_LATIN &&
+      this.options.items.enableLemmaTranslations.currentValue &&
+      !this.options.items.locale.currentValue.match(/^en-/)
   }
 }
 
