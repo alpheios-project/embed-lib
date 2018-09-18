@@ -7,10 +7,11 @@ Encapsulates Alpheios functionality for use as an embedded library.
 
 # Usage
 
-1. Add the stylesheet to your HTML page:
+1. Add the stylesheets to your HTML page:
 
 ```
-<link rel="stylesheet" href="dist/styles/style.min.css"/>
+<link rel="stylesheet" href="dist/style/style.min.css"/>
+<link rel="stylesheet" href="dist/style/style-embedded.min.css"/>
 ```
 
 2. Add the script to your HTML page:
@@ -36,26 +37,35 @@ Encapsulates Alpheios functionality for use as an embedded library.
   new Alpheios.Embedded("#alpheios-main",document,{top: "30vh", left: "30vw"},{})
 ```
 
- > Configuration options will be full documented in a future release. For now, its advisable to keep defaults
- > for everything except the top and left properties of the popup, as in the example above.
+ > Currently supported panel and popup configuraiton options are limited to the following:
+ >    popup_arguments:
+ >      top: coordinates of the top of the Alpheios popup
+ >      left: coordinates of the left of the Alpheios popup
 
+3. Add an anchor element with the id "alpheios-main" to your HTML page to configure the library. This element supports the following
+attributes for configuration of the library:
 
-3. Add an anchor element with the id "alpheios-main" to your HTML page to configure the library. This element
-should have 2 data attributes:
    data-selector: a CSS selector string for selecting elements on the page which should have Alpheios activated for them
-   data-trigger: the name of the DOM event which triggers the functionality
+   data-trigger: the name of the DOM event which triggers the functionality (Currently only 'dblclick' is supported.)
+   data-mobile-redirect-url: a url to which you want to redirect users accessing the page from mobile devices
 
    e.g.
 
 ```
-<div id="alpheios-main" data-trigger="dblclick" data-selector=".alpheios-enabled"></div>
+<div id="alpheios-main" data-trigger="dblclick" data-selector=".alpheios-enabled" data-mobile-redirect-url="https://example.org/mobile-entry.html"></div>
 ```
+## Outstanding Issues
+
+Currently the alpheios-embedded.js library does not function well when the page is accessed by a mobile device. Eventually we expect
+this library to support progressive web applications for mobile access. This work is still under development. In the meantime we provide
+the mobile-redirect-url configuration option to facilitate redirection of users of mobile devices to other entry points.
+
 
 # Developer Instructions
 
 ## Prerequisites
 
-  * Node 9.10.1 or higher
+  * Node 10.5.0 or higher
 
 ## Install Dependencies
 
@@ -77,3 +87,4 @@ npm run dev
 ```
 
 runs a local web server on port 8888. Browse to the demo/ folder. Make changes to the code and they'll show up when you reload.
+
