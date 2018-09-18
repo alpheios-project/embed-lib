@@ -93096,7 +93096,9 @@ class Embedded {
     if (!elem) {
       throw new Error(`anchor element ${elem} is missing`)
     }
-    console.log(elem.dataset)
+    if (elem.dataset.mobileRedirectUrl && this.detectMobile()) {
+      document.location = elem.dataset.mobileRedirectUrl
+    }
     let selector = elem.dataset.selector
     let trigger = elem.dataset.trigger.split(/,/)
     if (!selector || !trigger) {
@@ -93109,8 +93111,8 @@ class Embedded {
     for (let t of trigger) {
       if (t === 'dblclick') {
         alpheios_components__WEBPACK_IMPORTED_MODULE_5__["MouseDblClick"].listen(selector, evt => this.handler(evt))
-      } else if (t === 'touchstart') {
-        alpheios_components__WEBPACK_IMPORTED_MODULE_5__["LongTap"].listen(selector, evt => this.handler(evt), 5, 0)
+      } else {
+        throw new Error(`events other than dblclick are not yet supported`)
       }
     }
 
@@ -93182,6 +93184,28 @@ class Embedded {
     return textSelector.languageID === alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["Constants"].LANG_LATIN &&
       this.options.items.enableLemmaTranslations.currentValue &&
       !this.options.items.locale.currentValue.match(/^en-/)
+  }
+
+  /**
+   *  Detect mobile device
+   */
+  detectMobile () {
+    if (window.sessionStorage.desktop) {
+      return false
+    } else if (window.localStorage.mobile) {
+      return true
+    }
+
+    // alternative
+    var mobile = ['iphone', 'ipad', 'android', 'blackberry', 'nokia', 'opera mini', 'windows mobile', 'windows phone', 'iemobile']
+    for (var i in mobile) {
+      if (navigator.userAgent.toLowerCase().indexOf(mobile[i].toLowerCase()) > 0) {
+        return true
+      }
+    }
+
+    // nothing found.. assume desktop
+    return false
   }
 }
 

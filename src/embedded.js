@@ -6,7 +6,7 @@ import {AlpheiosTuftsAdapter, AlpheiosTreebankAdapter} from 'alpheios-morph-clie
 import {Lexicons} from 'alpheios-lexicon-client'
 import {LemmaTranslations} from 'alpheios-lemma-client'
 import { UIController, HTMLSelector, LexicalQuery, ContentOptionDefaults, LanguageOptionDefaults,
-  UIOptionDefaults, Options, LocalStorageArea, MouseDblClick, LongTap, AlignmentSelector } from 'alpheios-components'
+  UIOptionDefaults, Options, LocalStorageArea, MouseDblClick, AlignmentSelector } from 'alpheios-components'
 import State from './state'
 import Template from './template.htmlf'
 import interact from 'interactjs'
@@ -74,7 +74,9 @@ class Embedded {
     if (!elem) {
       throw new Error(`anchor element ${elem} is missing`)
     }
-    console.log(elem.dataset)
+    if (elem.dataset.mobileRedirectUrl && this.detectMobile()) {
+      document.location = elem.dataset.mobileRedirectUrl
+    }
     let selector = elem.dataset.selector
     let trigger = elem.dataset.trigger.split(/,/)
     if (!selector || !trigger) {
@@ -87,8 +89,8 @@ class Embedded {
     for (let t of trigger) {
       if (t === 'dblclick') {
         MouseDblClick.listen(selector, evt => this.handler(evt))
-      } else if (t === 'touchstart') {
-        LongTap.listen(selector, evt => this.handler(evt), 5, 0)
+      } else {
+        throw new Error(`events other than dblclick are not yet supported`)
       }
     }
 
@@ -160,6 +162,28 @@ class Embedded {
     return textSelector.languageID === Constants.LANG_LATIN &&
       this.options.items.enableLemmaTranslations.currentValue &&
       !this.options.items.locale.currentValue.match(/^en-/)
+  }
+
+  /**
+   *  Detect mobile device
+   */
+  detectMobile () {
+    if (window.sessionStorage.desktop) {
+      return false
+    } else if (window.localStorage.mobile) {
+      return true
+    }
+
+    // alternative
+    var mobile = ['iphone', 'ipad', 'android', 'blackberry', 'nokia', 'opera mini', 'windows mobile', 'windows phone', 'iemobile']
+    for (var i in mobile) {
+      if (navigator.userAgent.toLowerCase().indexOf(mobile[i].toLowerCase()) > 0) {
+        return true
+      }
+    }
+
+    // nothing found.. assume desktop
+    return false
   }
 }
 
