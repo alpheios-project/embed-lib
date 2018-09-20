@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Test with Alpheios v1 style Enhanced</title>
+    <link rel="stylesheet" href="../dist/style/style.min.css"/>
+    <link rel="stylesheet" href="../dist/style/style-embedded.min.css"/>
+    <meta name="alpheios-v2-treebank-diagram-url"
+      data-alpheios_tb_src="http://alpheios.net/alpheios-treebanks/DOC.html?chunk=SENTENCE&w=WORD"/>
+</head>
+
+<body>
+    <script src="../dist/alpheios-embedded.js"></script>
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function(event) {
+          new Alpheios.Embedded().activate();
+        });
+    </script>
+    <div id="alpheios-main"
+      data-trigger="dblclick,touchstart"
+      data-selector=".alpheios-enabled"></div>
+    <div class="alpheios-enabled" id="aligned-lat">
+      <span class="w alpheios-word " data-alpheios_align_word="s2" data-alpheios_align_ref="#aligned-eng span[data-alpheios_align_word='s7']" tbref="1-1">In</span>
+      <span class="w alpheios-word " data-alpheios_align_word="s3" data-alpheios_align_ref="#aligned-eng span[data-alpheios_align_word='s9']" data-alpheios_tb_ref="phi0959.phi006.alpheios-text-lat1#1-2">nova</span>
+      <span class="w alpheios-word " data-alpheios_align_word="s4" data-alpheios_align_ref="#aligned-eng span[data-alpheios_align_word='s5'],#aligned-eng span[data-alpheios_align_word='s6']">fert</span>
+      <span class="w alpheios-word " data-alpheios_align_word="s5" data-alpheios_align_ref="#aligned-eng span[data-alpheios_align_word='s2']" data-alpheios_tb_ref="phi0959.phi006.alpheios-text-lat1#1-4">animus</span>
+   </div>
+   <div>
+    "Las Batallas"<br>
+Oye Carlos<br>
+porque tuviste<br>
+que salirte de la escuela esta mañana<br>
+oye carlos<br>
+porque tuviste<br>
+que decirle que la amabas, a mariana<br>
+en la escuela se corrio el rumor<br>
+y en tu clase todo el mundo se entero<br>
+<br>
+Y en tu casa mama te pregunto<br>
+si acaso fue tu hermano quien te indujo<br>
+o peor aun,<br>
+fue mariana si<br>
+fue ella quien te lo propuso<br>
+papa dijo este niño no es normal<br>
+sera mejor llevarlo al hospital<br>
+<br>
+Por alto que este el cielo en el mundo<br>
+por hondo que es el mar profundo<br>
+no habra una barrera en el mundo<br>
+que mi amor profundo no rompa por ti<br>
+   </div>
+   <div class="alpheios-enabled" id="aligned-eng">
+      <span class="w alpheios-word" data-alpheios_align_word="s1">My</span>
+      <span class="w alpheios-word" data-alpheios_align_word="s2" data-alpheios_align_ref="#aligned-lat span[data-alpheios_align_word='s5']">soul</span>
+      <span class="w alpheios-word" data-alpheios_align_word="s3">is</span>
+      <span class="w alpheios-word" data-alpheios_align_word="s4">wrought</span>
+      <span class="w alpheios-word" data-alpheios_align_word="s5" data-alpheios_align_ref="#aligned-lat span[data-alpheios_align_word='s4']">to</span>
+      <span class="w alpheios-word" data-alpheios_align_word="s6" data-alpheios_align_ref="#aligned-lat span[data-alpheios_align_word='s4']">sing</span>
+      <span class="w alpheios-word" data-alpheios_align_word="s7" data-alpheios_align_ref="#aligned-lat span[data-alpheios_align_word='s1']">of</span>
+      <span class="w alpheios-word" data-alpheios_align_word="s8">forms</span>
+      <span class="w alpheios-word" data-alpheios_align_word="s9" data-alpheios_align_ref="#aligned-lat span[data-alpheios_align_word='s3']">transformed</span>.
+   </div>
+</body>
+</html>

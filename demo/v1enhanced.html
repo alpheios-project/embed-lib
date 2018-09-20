@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Test with Alpheios v1 style Enhanced</title>
-    <link rel="stylesheet" href="../dist/style/style.min.css"/>
-    <link rel="stylesheet" href="../dist/style/style-embedded.min.css"/>
+    <link rel="stylesheet" href="../dist/style/style.css"/>
     <meta name="alpheios-v2-treebank-diagram-url"
-      data-alpheios_tb_src="http://alpheios.net/alpheios-treebanks/phi0959.phi006.html?chunk=SENTENCE&w=WORD"/>
+      data-alpheios_tb_src="http://alpheios.net/alpheios-treebanks/DOC.html?chunk=SENTENCE&w=WORD"/>
 </head>
 
 <body>
@@ -20,14 +19,23 @@
       data-trigger="dblclick,touchstart"
       data-selector=".alpheios-enabled"></div>
     <div class="alpheios-enabled" id="aligned-lat">
-      <span class="w alpheios-word " data-alpheios_align_word="s2" data-alpheios_align_ref="#aligned-eng span[data-alpheios_align_word='s1'],#aligned-eng span[data-alpheios_align_word='s2']" tbref="1-1" data-alpheios_tb_ref="1-1">In</span>
-      <span class="w alpheios-word " id="" nrefs="" tbref="1-2" data-alpheios_tb_ref="1-2">nova</span>
-      <span class="w alpheios-word " id="" nrefs="" tbref="1-3">fert</span>
-      <span class="w alpheios-word " id="" nrefs="" tbref="1-4">animus</span>
+      <span class="w alpheios-word " data-alpheios_align_word="s2" data-alpheios_align_ref="#aligned-eng span[data-alpheios_align_word='s7']" tbref="1-1">In</span>
+      <span class="w alpheios-word " data-alpheios_align_word="s3" data-alpheios_align_ref="#aligned-eng span[data-alpheios_align_word='s9']" data-alpheios_tb_ref="phi0959.phi006.alpheios-text-lat1#1-2">nova</span>
+      <span class="w alpheios-word " data-alpheios_align_word="s4" data-alpheios_align_ref="#aligned-eng span[data-alpheios_align_word='s5'],#aligned-eng span[data-alpheios_align_word='s6']">fert</span>
+      <span class="w alpheios-word " data-alpheios_align_word="s5" data-alpheios_align_ref="#aligned-eng span[data-alpheios_align_word='s2']" data-alpheios_tb_ref="phi0959.phi006.alpheios-text-lat1#1-4">animus</span>
    </div>
+   <div>
+
    <div class="alpheios-enabled" id="aligned-eng">
-      <span data-alpheios_align_word="s1" data-alpheios_align_ref="#aligned-lat span[data-alpheios_align_word='s2']">Enter"</span>
-      <span data-alpheios_align_word="s2" data-alpheios_align_ref="#aligned-lat span[data-alpheios_align_word='s2']">Enter"</span>
+      <span class="w alpheios-word" data-alpheios_align_word="s1">My</span>
+      <span class="w alpheios-word" data-alpheios_align_word="s2" data-alpheios_align_ref="#aligned-lat span[data-alpheios_align_word='s5']">soul</span>
+      <span class="w alpheios-word" data-alpheios_align_word="s3">is</span>
+      <span class="w alpheios-word" data-alpheios_align_word="s4">wrought</span>
+      <span class="w alpheios-word" data-alpheios_align_word="s5" data-alpheios_align_ref="#aligned-lat span[data-alpheios_align_word='s4']">to</span>
+      <span class="w alpheios-word" data-alpheios_align_word="s6" data-alpheios_align_ref="#aligned-lat span[data-alpheios_align_word='s4']">sing</span>
+      <span class="w alpheios-word" data-alpheios_align_word="s7" data-alpheios_align_ref="#aligned-lat span[data-alpheios_align_word='s1']">of</span>
+      <span class="w alpheios-word" data-alpheios_align_word="s8">forms</span>
+      <span class="w alpheios-word" data-alpheios_align_word="s9" data-alpheios_align_ref="#aligned-lat span[data-alpheios_align_word='s3']">transformed</span>.
    </div>
 </body>
 </html>

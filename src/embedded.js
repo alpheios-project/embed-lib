@@ -2,14 +2,15 @@
 /* global Event */
 import ComponentStyles from '../node_modules/alpheios-components/dist/style/style.min.css' // eslint-disable-line
 import {Constants} from 'alpheios-data-models'
-import {AlpheiosTuftsAdapter} from 'alpheios-morph-client'
+import {AlpheiosTuftsAdapter, AlpheiosTreebankAdapter} from 'alpheios-morph-client'
 import {Lexicons} from 'alpheios-lexicon-client'
-import { UIController, HTMLSelector, LexicalQuery, DefaultsLoader, ContentOptionDefaults, LanguageOptionDefaults, UIOptionDefaults, Options, LocalStorageArea, MouseDblClick, LongTap } from 'alpheios-components'
+import {LemmaTranslations} from 'alpheios-lemma-client'
+import { UIController, HTMLSelector, LexicalQuery, ContentOptionDefaults, LanguageOptionDefaults,
+  UIOptionDefaults, Options, LocalStorageArea, MouseDblClick, AlignmentSelector } from 'alpheios-components'
 import State from './state'
 import Template from './template.htmlf'
 import interact from 'interactjs'
 
-const ALIGNMENT_HIGHLIGHT_CLASS = 'alpheios-alignment__highlight'
 /**
  * Encapsulation of Alpheios functionality which can be embedded in a webpage
  */
@@ -28,20 +29,23 @@ class Embedded {
     this.anchor = anchor
     this.doc = doc
     this.state = new State()
-    this.options = new Options(DefaultsLoader.fromJSON(ContentOptionDefaults), LocalStorageArea)
-    this.resourceOptions = new Options(DefaultsLoader.fromJSON(LanguageOptionDefaults), LocalStorageArea)
+    this.options = new Options(ContentOptionDefaults, LocalStorageArea)
+    this.resourceOptions = new Options(LanguageOptionDefaults, LocalStorageArea)
+
     if (options.ui) {
-      this.uiOptions = new Options(DefaultsLoader.fromJSON(options.ui), LocalStorageArea)
+      this.uiOptions = new Options(options.ui, LocalStorageArea)
     } else {
-      this.uiOptions = new Options(DefaultsLoader.fromJSON(UIOptionDefaults), LocalStorageArea)
+      this.uiOptions = new Options(UIOptionDefaults, LocalStorageArea)
     }
+
     if (options.site) {
       this.siteOptions = this.loadSiteOptions(options.site)
     } else {
       this.siteOptions = []
     }
     this.maAdapter = new AlpheiosTuftsAdapter() // Morphological analyzer adapter, with default arguments
-    let manifest = { version: '1.0', name: 'Alpheios Embedded Library' }
+    this.tbAdapter = new AlpheiosTreebankAdapter() // Morphological analyzer adapter, with default arguments
+    let manifest = { version: '1.1', name: 'Alpheios Embedded Library' }
     let template = { html: Template, panelId: 'alpheios-panel-embedded', popupId: 'alpheios-popup-embedded' }
     this.ui = new UIController(this.state, this.options, this.resourceOptions, this.uiOptions, manifest, template)
     this.doc.body.addEventListener('Alpheios_Embedded_Check', event => { this.notifyExtension(event) })
@@ -70,7 +74,9 @@ class Embedded {
     if (!elem) {
       throw new Error(`anchor element ${elem} is missing`)
     }
-    console.log(elem.dataset)
+    if (elem.dataset.mobileRedirectUrl && this.detectMobile()) {
+      document.location = elem.dataset.mobileRedirectUrl
+    }
     let selector = elem.dataset.selector
     let trigger = elem.dataset.trigger.split(/,/)
     if (!selector || !trigger) {
@@ -83,15 +89,13 @@ class Embedded {
     for (let t of trigger) {
       if (t === 'dblclick') {
         MouseDblClick.listen(selector, evt => this.handler(evt))
-      } else if (t === 'touchstartx') {
-        LongTap.listen(selector, evt => this.handler(evt), 5, 0)
+      } else {
+        throw new Error(`events other than dblclick are not yet supported`)
       }
     }
-    let alignments = this.doc.querySelectorAll('[data-alpheios_align_ref]')
-    for (let a of alignments) {
-      a.addEventListener('mouseenter', event => { this.enterAlignment(event) })
-      a.addEventListener('mouseleave', event => { this.leaveAlignment(event) })
-    }
+
+    let alignment = new AlignmentSelector(this.doc, {})
+    alignment.activate()
     let alignedTranslation = this.doc.querySelectorAll('.aligned-translation')
     for (let a of alignedTranslation) {
       interact(a).resizable({
@@ -127,10 +131,9 @@ class Embedded {
         htmlSelector: htmlSelector,
         uiController: this.ui,
         maAdapter: this.maAdapter,
+        tbAdapter: this.tbAdapter,
         lexicons: Lexicons,
-
-        lemmaTranslations: null,
-
+        lemmaTranslations: this.enableLemmaTranslations(textSelector) ? { adapter: LemmaTranslations, locale: this.options.items.locale.currentValue } : null,
         resourceOptions: this.resourceOptions,
         siteOptions: this.siteOptions,
         langOpts: { [Constants.LANG_PERSIAN]: { lookupMorphLast: true } } // TODO this should be externalized
@@ -141,7 +144,7 @@ class Embedded {
 
   loadSiteOptions (siteOptions) {
     let allSiteOptions = []
-    let loaded = DefaultsLoader.fromJSON(siteOptions)
+    let loaded = siteOptions
     for (let site of loaded) {
       for (let domain of site.options) {
         let siteOpts = new Options(domain, LocalStorageArea)
@@ -151,84 +154,36 @@ class Embedded {
     return allSiteOptions
   }
 
-  leaveAlignment (event) {
-    this.doc.querySelectorAll(`.${ALIGNMENT_HIGHLIGHT_CLASS}`).forEach(e => e.classList.remove(ALIGNMENT_HIGHLIGHT_CLASS))
+  /**
+   * Check to see if Lemma Translations should be enabled for a query
+   *  NB this is Prototype functionality
+   */
+  enableLemmaTranslations (textSelector) {
+    return textSelector.languageID === Constants.LANG_LATIN &&
+      this.options.items.enableLemmaTranslations.currentValue &&
+      !this.options.items.locale.currentValue.match(/^en-/)
   }
 
-  enterAlignment (event) {
-    let alignedTranslation = this.doc.querySelectorAll('.aligned-translation')
-    let visible = false
-    alignedTranslation.forEach(e => { if (e.classList.contains('visible')) { visible = true } })
-    if (!visible) {
-      return
+  /**
+   *  Detect mobile device
+   */
+  detectMobile () {
+    if (window.sessionStorage.desktop) {
+      return false
+    } else if (window.localStorage.mobile) {
+      return true
     }
-    let ref = event.target.dataset.alpheios_align_ref
-    if (ref) {
-      for (let r of ref.split(/,/)) {
-        let aligned = this.doc.querySelectorAll(r)
-        if (aligned) {
-          event.target.classList.add(ALIGNMENT_HIGHLIGHT_CLASS)
-          for (let a of aligned) {
-            a.classList.add(ALIGNMENT_HIGHLIGHT_CLASS)
-            let aref = a.dataset.alpheios_align_ref
-            if (aref) {
-              for (let ar of aref.split(/,/)) {
-                let reverse = this.doc.querySelectorAll(ar)
-                for (let reverseA of reverse) {
-                  if (reverseA !== event.target) {
-                    reverseA.classList.add(ALIGNMENT_HIGHLIGHT_CLASS)
-                  }
-                }
-              }
-            }
-          }
-          this.scrollToElement(aligned[0])
-        }
+
+    // alternative
+    var mobile = ['iphone', 'ipad', 'android', 'blackberry', 'nokia', 'opera mini', 'windows mobile', 'windows phone', 'iemobile']
+    for (var i in mobile) {
+      if (navigator.userAgent.toLowerCase().indexOf(mobile[i].toLowerCase()) > 0) {
+        return true
       }
     }
-  }
 
-  scrollToElement (elem) {
-    var top = elem.offsetTop
-    var left = elem.offsetLeft
-    var width = elem.offsetWidth
-    var height = elem.offsetHeight
-
-    while (elem.offsetParent) {
-      elem = elem.offsetParent
-      top += elem.offsetTop
-      left += elem.offsetLeft
-    }
-
-    var moveX = 0
-    var moveY = 0
-    if (left < elem.ownerDocument.defaultView.pageXOffset) {
-      moveX = left - elem.ownerDocument.defaultView.pageXOffset
-    } else if ((left + width) >
-               (elem.ownerDocument.defaultView.pageXOffset +
-                elem.ownerDocument.defaultView.innerWidth)
-    ) {
-      moveX = (left + width) -
-               (elem.ownerDocument.defaultView.pageXOffset +
-                elem.ownerDocument.defaultView.innerWidth)
-    }
-
-    if (top < elem.ownerDocument.defaultView.pageYOffset) {
-      moveY = top - elem.ownerDocument.defaultView.pageYOffset
-    } else if ((top >= elem.ownerDocument.defaultView.pageYOffset) &&
-                ((top + height) >
-                 (elem.ownerDocument.defaultView.pageYOffset +
-                  elem.ownerDocument.defaultView.innerHeight)
-                )
-    ) {
-      moveY =
-              (top + height) -
-              (elem.ownerDocument.defaultView.pageYOffset +
-               elem.ownerDocument.defaultView.innerHeight)
-    }
-    if (moveX !== 0 || moveY !== 0) {
-      elem.ownerDocument.defaultView.scrollBy(moveX, moveY)
-    }
+    // nothing found.. assume desktop
+    return false
   }
 }
 
