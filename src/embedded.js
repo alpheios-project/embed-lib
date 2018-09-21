@@ -1,6 +1,7 @@
 /* eslint-env jest */
 /* global Event */
 import ComponentStyles from '../node_modules/alpheios-components/dist/style/style.min.css' // eslint-disable-line
+
 import {Constants} from 'alpheios-data-models'
 import {AlpheiosTuftsAdapter, AlpheiosTreebankAdapter} from 'alpheios-morph-client'
 import {Lexicons} from 'alpheios-lexicon-client'
