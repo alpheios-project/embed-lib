@@ -15,7 +15,7 @@
     v-bind:is="currentGamesComponents"
 
     :data="gamesData"
-    :homonym="homonym"
+    :slim-homonym="slimHomonym"
     :visible="visible"
 
     @close="close"
