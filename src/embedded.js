@@ -49,8 +49,20 @@ class Embedded {
     let template = { html: Template, panelId: 'alpheios-panel-embedded', popupId: 'alpheios-popup-embedded' }
     this.ui = new UIController(this.state, this.options, this.resourceOptions, this.uiOptions, manifest, template)
     this.doc.body.addEventListener('Alpheios_Embedded_Check', event => { this.notifyExtension(event) })
+    this.doc.body.addEventListener('keydown', event => { this.handleEscapeKey(event) })
     Object.assign(this.ui.panel.panelData, panelData)
     Object.assign(this.ui.popup.popupData, popupData)
+  }
+
+  handleEscapeKey (event) {
+    if (event.keyCode === 27) {
+      if (this.state.isPanelOpen()) {
+        this.ui.panel.close()
+      } else if (this.ui.popup.visible) {
+        this.ui.popup.close()
+      }
+    }
+    return true
   }
 
   notifyExtension (event) {
