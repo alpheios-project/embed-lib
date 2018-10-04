@@ -4,20 +4,30 @@
 
 Encapsulates Alpheios functionality for use as an embedded library.
 
+# Including alpheios-embedded
 
-# Usage
+1. Add the stylesheets and script to your HTML page:
 
-1. Add the stylesheets to your HTML page:
-
-```
-<link rel="stylesheet" href="dist/style/style.min.css"/>
-<link rel="stylesheet" href="dist/style/style-embedded.min.css"/>
-```
-
-2. Add the script to your HTML page:
+*Via jsdelivr CDN*:
 
 ```
-<script src="dist/alpheios-embedded.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-embedded/dist/style/style.min.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-embedded/dist/style/style-embedded.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/alpheios-embedded/dist/alpheios-embedded.js"></script>
+```
+
+*Or install from NPM*:
+
+```npm install alpheios-embedded
+```
+
+```
+<link rel="stylesheet" href="path_to_node_modules/alpheios-embedded/dist/style/style.min.css"/>
+<link rel="stylesheet" href="path_to_node_modules/alpheios-embedded/dist/style/style-embedded.min.css"/>
+<script src="path_to_node_modules/alpheios-embedded/dist/alpheios-embedded.js"></script>
+```
+2. Activate Alpheios in your HTML page
+```
 <script type="text/javascript">
   document.addEventListener("DOMContentLoaded", function(event) {
       new Alpheios.Embedded().activate();
@@ -59,7 +69,7 @@ Supported configuration options are currently limited to the following, but may 
   selector_for_anchor_element: css selector for the anchor element which contains the configuration for the library (see below)
   document_object: the DOM Document object for which the library is being activated
   popup_arguments:
-  
+
     top: coordinates of the top of the Alpheios popup
     left: coordinates of the left of the Alpheios popup
 ```
