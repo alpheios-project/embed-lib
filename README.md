@@ -8,7 +8,7 @@ Encapsulates Alpheios functionality for use as an embedded library.
 
 1. Add the stylesheets and script to your HTML page:
 
-*Via jsdelivr CDN*:
+**Via jsdelivr CDN**
 
 ```
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-embedded/dist/style/style.min.css"/>
@@ -16,7 +16,7 @@ Encapsulates Alpheios functionality for use as an embedded library.
 <script src="https://cdn.jsdelivr.net/npm/alpheios-embedded/dist/alpheios-embedded.js"></script>
 ```
 
-*Or install from NPM*:
+**Or install from NPM**
 
 ```
 npm install alpheios-embedded
@@ -50,7 +50,7 @@ npm install alpheios-embedded
 <div id="alpheios-main" data-trigger="dblclick" data-selector=".alpheios-enabled" data-mobile-redirect-url="https://example.org/mobile-entry.html"></div>
 ```
 
-4. Configure activation (option)
+4. Configure activation (optional)
 
 You can also configure the Alpheios Embedded instance by passing parameters to the constructor:
 
