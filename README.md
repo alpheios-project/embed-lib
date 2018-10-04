@@ -18,7 +18,8 @@ Encapsulates Alpheios functionality for use as an embedded library.
 
 *Or install from NPM*:
 
-```npm install alpheios-embedded
+```
+npm install alpheios-embedded
 ```
 
 ```
