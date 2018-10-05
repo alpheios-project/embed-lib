@@ -97,7 +97,10 @@ Supported configuration options are currently limited to the following, but may 
     top: coordinates of the top of the Alpheios popup
     left: coordinates of the left of the Alpheios popup
 ```
-**4. Refine Page Handlers**
+
+## Customizing Alpheios Functionality
+
+**1. Precise Elements to Ignore**
 
 The Alpheios event handler will be activated on all elements matching the data selector in the Alpheios anchor element as well as their children.
 
@@ -115,6 +118,79 @@ However you can instruct Alpheios to deactivate itself for specific elements on 
 
 ```
 
+**2. Connect a Treebank**
+
+**NB: This is experimental functionality. Instructions and syntax for configuration, etc. are currently in flux.**
+
+If your text has been aligned with a treebank annotation, Alpheios can be instructed to display the corresponding treebank data using the [Arethusa Treebank Viewer](https://alpheios.net/pages/tools/#alpheios-treebank-editor) and/or use the treebank data to disambiguate morphological parser results.
+
+Prerequisites:
+
+* Treebank data which:
+    * Has been aligned to your text at the word and sentence level 
+    * Adheres to the [Perseus/Alpheios Treebank Schema](https://raw.githubusercontent.com/alpheios-project/schemas/master/xsd/treebank-1.7.xsd)
+    * Uses one of the [tagsets supported by Arethusa](https://github.com/alpheios-project/arethusa-configs/tree/master/configs) 
+    * For viewing diagrams, is accessible via an instance of Arethusa (for viewing)
+    * For disambiguating morphological parser results, is accessible via a webservice which takes a takes a filename and word identifier as input and returns the treebank annotation data formatted according to the [Alpheios Lexicon Schema](https://github.com/alpheios-project/schemas/blob/master/xsd/lexicon.xsd)
+            * If you want to use your own webservice for this it will currently require a custom build of the alpheios-embedded library to configure the address of the service for the alpheios-morph-client library.
+            * If you are interested in loading your treebank data in the Alpheios-hosted treebank data services, please contact the Alpheios support address.
+
+If the prerequisites are met, you can activate the functionality by adding instructions to the page.
+
+To activate the use of Arethusa, you should:
+
+A. add a `meta` tag to the header which identifies the URL template for the viewer as the value of the `data-alpheios_tb_src` attribute.
+
+The syntax for the URL template is as follows:
+
+```
+http://example.com/{arethusaPath}/{docPathOrParam}DOC{sentencePathParam}SENTENCE{wordPathoOParam}WORD
+```
+
+For example:
+
+```
+<meta name="alpheios-v2-treebank-url" data-alpheios_tb_src="https://alpheios.net/alpheios-treebanks/DOC.html?chunk=SENTENCE&amp;w=WORD"></meta>
+```
+
+B. add a `data-alpheios_tb_ref` attribute to words which should be linked for viewing in Arethusa.
+
+The template syntax for the attribute value is as follows:
+
+
+```
+{documentIdentifier}#{sentenceIdentifier}-{wordIdentifier}
+```
+
+For example:
+
+```
+data-alpheios_tb_ref="1999.02.0066#1-1"
+```
+
+the `documentIdentifier` will be used as the replacement value for the DOC item in the Arethusa URL template. The `sentenceIdentifier` will be used as the replacement value for the SENTENCE item in the Arethusa URL template. The `wordIdentifier` will be used as the replacement value for the WORD item in the Arethusa URL template.
+
+A full example:
+
+```
+<meta name=alpheios-v2-treebank-url" data-alpheios_tb_src="https://alpheios.net/alpheios-treebanks/DOC.html?chunk=SENTENCE&amp;w=WORD"></meta>
+
+<span data-alpheios_tb_ref="1999.02.0066#1-2">prima</span>
+```
+
+Alpheios will convert this to the following URL request to retrieve Arethusa and display the results in the Diagram tab on the Alpheios panel when the user double-clicks on the word `prima`:
+
+```
+https://alpheios.net/alpheios-treebanks/1999.02.0066.html?chunk=1&w=2
+```
+
+The above steps also trigger activation of the use of the treebank data for disamibugating the morphological parser results in the Alpheios popup.  If the `documentIdentifier` is one which is configured as available via webservice for the `AlpheiosTreebankAdapter` in the [alpheios-morph-client](https://github.com/alpheios-project/morph-client) library, then the treebank morphology tag will be used to disambiguate the morphological parser results.
+
+
+
+  
+
+**3. Activate an Aligned Translation**
 
 ## Outstanding Issues/Future Plans
 
