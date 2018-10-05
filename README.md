@@ -187,10 +187,30 @@ https://alpheios.net/alpheios-treebanks/1999.02.0066.html?chunk=1&w=2
 The above steps also trigger activation of the use of the treebank data for disamibugating the morphological parser results in the Alpheios popup.  If the `documentIdentifier` is one which is configured as available via webservice for the `AlpheiosTreebankAdapter` in the [alpheios-morph-client](https://github.com/alpheios-project/morph-client) library, then the treebank morphology tag will be used to disambiguate the morphological parser results.
 
 
+**3. Add an Aligned Translation**
 
-  
+**NB: This is experimental functionality. Instructions and syntax for configuration, etc. are currently in flux.**
 
-**3. Activate an Aligned Translation**
+You can include an aligned translation in your page and have Alpheios activate mouseover highlighting of the aligned words or phrases. Use the `data-alpheios_align_ref` attribute on elements which have been aligned.
+
+The attribute value should be is a space separated list of CSS selectors for the elements within the same page which contain the aligned translation. It can be bi-directional or uni-directional.
+
+In the following example, the Latin word `cupidinibus` in a child of the element with the id `aligned-text-lat` is aligned to the English words `by` and `passion` which are children of the element with the id `aligned-text-eng`. Similarly the English words are reverse-aligned to the Latin.  When Alpheios is active in a page with this data, mousing over the word `cupidnibus` will highight `by` and `passion` and vice-versa.
+
+```
+<div id="aligned-text-lat" lang="lat">
+  ...
+  <span data-alpheios_align_word="s1_w12" data-alpheios_align_ref="#aligned-text-eng *[data-alpheios_align_word=s1_w13],#aligned-text-eng *[data-alpheios_align_word=s1_w15]">cupidinibus</span>
+  ...
+</div>
+<div id="aligned-text-eng" lang="eng">
+  ...
+  <span  data-alpheios_align_word="s1_w13" nrefs="s1_w12" data-alpheios_align_ref="#aligned-text-lat *[data-alpheios_align_word=s1_w12]">by</span>
+  ...
+  <span class="alpheios-aligned-word" data-alpheios_align_word="s1_w15" nrefs="s1_w12" data-alpheios_align_ref="#aligned-text-lat *[data-alpheios_align_word=s1_w12]">passion</span>
+  ...
+</div>
+```
 
 ## Outstanding Issues/Future Plans
 
