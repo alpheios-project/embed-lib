@@ -195,19 +195,28 @@ You can include an aligned translation in your page and have Alpheios activate m
 
 The attribute value should be is a space separated list of CSS selectors for the elements within the same page which contain the aligned translation. It can be bi-directional or uni-directional.
 
-In the following example, the Latin word `cupidinibus` in a child of the element with the id `aligned-text-lat` is aligned to the English words `by` and `passion` which are children of the element with the id `aligned-text-eng`. Similarly the English words are reverse-aligned to the Latin.  When Alpheios is active in a page with this data, mousing over the word `cupidnibus` will highight `by` and `passion` and vice-versa.
+In the following example, the Latin word `cupidinibus` in a child of the element with the id `aligned-text-lat` is aligned to the English words `by` and `passion` which are children of the element with the id `aligned-text-eng`. Similarly the English words are reverse-aligned to the Latin.  When Alpheios is active in a page with this data, mousing over the word `cupidnibus` will highight `by` and `passion` and vice-versa. Clicking on a highlighted word will anchor highlight in place until a second click removes it.
 
 ```
 <div id="aligned-text-lat" lang="lat">
   ...
-  <span data-alpheios_align_word="s1_w12" data-alpheios_align_ref="#aligned-text-eng *[data-alpheios_align_word=s1_w13],#aligned-text-eng *[data-alpheios_align_word=s1_w15]">cupidinibus</span>
+  <span data-alpheios_align_word="s1_w12" 
+    data-alpheios_align_ref="#aligned-text-eng *[data-alpheios_align_word=s1_w13],#aligned-text-eng *[data-alpheios_align_word=s1_w15]">
+    cupidinibus
+  </span>
   ...
 </div>
 <div id="aligned-text-eng" lang="eng">
   ...
-  <span  data-alpheios_align_word="s1_w13" nrefs="s1_w12" data-alpheios_align_ref="#aligned-text-lat *[data-alpheios_align_word=s1_w12]">by</span>
+  <span  data-alpheios_align_word="s1_w13" 
+    data-alpheios_align_ref="#aligned-text-lat *[data-alpheios_align_word=s1_w12]">
+    by
+  </span>
   ...
-  <span class="alpheios-aligned-word" data-alpheios_align_word="s1_w15" nrefs="s1_w12" data-alpheios_align_ref="#aligned-text-lat *[data-alpheios_align_word=s1_w12]">passion</span>
+  <span class="alpheios-aligned-word" data-alpheios_align_word="s1_w15" 
+    data-alpheios_align_ref="#aligned-text-lat *[data-alpheios_align_word=s1_w12]">
+    passion
+  </span>
   ...
 </div>
 ```
