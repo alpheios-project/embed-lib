@@ -10,6 +10,8 @@ The functionality works best in the browser on laptops and desktops. Support for
 
 ## Including alpheios-embedded
 
+See also sample files `sample.html` and `sample-cdn.html` at the root of this repository.
+
 **1. Add the stylesheets and script to your HTML page:**
 
 **Via jsdelivr CDN**
