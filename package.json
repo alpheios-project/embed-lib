@@ -1,6 +1,6 @@
 {
   "name": "alpheios-embedded",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Alpheios Embedded Library",
   "main": "dist/alpheios-embedded.js",
   "directories": {
@@ -18,7 +18,7 @@
     "type": "git",
     "url": "git+https://github.com/alpheios-project/wordsvc.git"
   },
-  "author": "",
+  "author": "The Alpheios Project, Ltd.",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/alpheios-project/wordsvc/issues"
@@ -37,6 +37,7 @@
     "alpheios-res-client": "github:alpheios-project/res-client",
     "coveralls": "^3.0.2",
     "css-loader": "^0.28.11",
+    "eslint-plugin-node": "7.0.1",
     "html-loader": "^0.5.5",
     "html-loader-jest": "^0.2.1",
     "http-server": "^0.11.1",
