@@ -10,6 +10,7 @@ import { UIController, HTMLSelector, LexicalQuery, ContentOptionDefaults, Langua
 import State from './state'
 import Template from './template.htmlf'
 import interact from 'interactjs'
+import Package from '../package.json'
 
 /**
  * Encapsulation of Alpheios functionality which can be embedded in a webpage
@@ -43,9 +44,15 @@ class Embedded {
     } else {
       this.siteOptions = []
     }
+    let pckg
+    try {
+      pckg = Package
+    } catch (e) {
+      throw new Error(`Cannot parse package.json, its format is probably incorrect`)
+    }
     this.maAdapter = new AlpheiosTuftsAdapter() // Morphological analyzer adapter, with default arguments
     this.tbAdapter = new AlpheiosTreebankAdapter() // Morphological analyzer adapter, with default arguments
-    let manifest = { version: '1.1', name: 'Alpheios Embedded Library' }
+    let manifest = { version: pckg.version, name: pckg.description }
     let template = { html: Template, panelId: 'alpheios-panel-embedded', popupId: 'alpheios-popup-embedded' }
     this.ui = new UIController(this.state, this.options, this.resourceOptions, this.uiOptions, manifest, template)
     this.doc.body.addEventListener('Alpheios_Embedded_Check', event => { this.notifyExtension(event) })
