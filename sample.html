@@ -11,7 +11,14 @@
     <script src="https://cdn.jsdelivr.net/npm/alpheios-embedded/dist/alpheios-embedded.js"></script>
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function(event) {
-          new Alpheios.Embedded().activate();
+          new Alpheios.Embedded().activate(
+            {
+//             documentObject:document,
+//              enableSelector:'.alpheios-enabled',
+//              triggerEvents: 'dblclick',
+                mobileRedirectUrl:'https://pwa.alpheios.net'
+            }
+           );
         });
     </script>
 

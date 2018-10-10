@@ -18,18 +18,28 @@ import Package from '../package.json'
 class Embedded {
   /**
    * @constructor
-   * @param {string} anchor - CSS selector for the HTML element containing Alpheios configuration (default is '#alpheios-main')
-   *                          the anchor element should contain the following attributes:
-                              data-selector: a CSS Selector string identifying the page elements for which Alpheios should be activated
-                              data-trigger: the DOM event to which Alpheios functionality should be attached
-   * @param {Document} doc - the parent document
-   * @param {Object} popupData - popup data overrides
-   * @param {Object} panelData - panel data overrides
+   * @param {Object} arguments - object with the following properties:
+   *     documentObject: the parent document
+   *     enableSelector: a CSS Selector string identifying the page elements for which Alpheios should be activated
+   *     disableSelector: a CSS Selector string identifying the page elements for which Alpheios should be deactivated
+   *     eventTriggers: a comma-separated list of DOM events to which Alpheios functionality should be attached
+   *     popupData: popup data overrides
+   *     panelData: panel data overrides
    */
-  constructor (anchor = '#alpheios-main', doc = document, popupData = {}, panelData = {}, options = {}) {
-    this.anchor = anchor
-    this.doc = doc
+  constructor ({ documentObject = document,
+    mobileRedirectUrl = null,
+    enableSelector = '.alpheios-enabled',
+    disableSelector = '',
+    triggerEvents = 'dblclick',
+    options = {},
+    popupData = {},
+    panelData = {} } = {}) {
+    this.doc = documentObject
     this.state = new State()
+    this.mobileRedirectUrl = mobileRedirectUrl
+    this.enableSelector = enableSelector
+    this.disableSelector = disableSelector
+    this.triggerEvents = triggerEvents
     this.options = new Options(ContentOptionDefaults, LocalStorageArea)
     this.resourceOptions = new Options(LanguageOptionDefaults, LocalStorageArea)
 
@@ -89,17 +99,13 @@ class Embedded {
   }
 
   activate () {
-    let elem = this.doc.querySelector(this.anchor)
-    if (!elem) {
-      throw new Error(`anchor element ${elem} is missing`)
+    if (this.mobileRedirectUrl && this.detectMobile()) {
+      document.location = this.mobileRedirectUrl
     }
-    if (elem.dataset.mobileRedirectUrl && this.detectMobile()) {
-      document.location = elem.dataset.mobileRedirectUrl
-    }
-    let selector = elem.dataset.selector
-    let trigger = elem.dataset.trigger.split(/,/)
+    let selector = this.enableSelector
+    let trigger = this.triggerEvents.split(/,/)
     if (!selector || !trigger) {
-      throw new Error(`anchor element ${this.anchor} must define both trigger and selector`)
+      throw new Error('Configuration must define both trigger and selector')
     }
     let activateOn = this.doc.querySelectorAll(selector)
     if (activateOn.length === 0) {
