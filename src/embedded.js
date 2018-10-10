@@ -111,6 +111,12 @@ class Embedded {
     if (activateOn.length === 0) {
       throw new Error(`activation element ${activateOn} is missing`)
     }
+    if (this.disableSelector) {
+      let disableOn = this.doc.querySelectorAll(this.disableSelector)
+      for (let elem of disableOn) {
+        elem.setAttribute('data-alpheios-ignore', 'all')
+      }
+    }
     for (let t of trigger) {
       if (t === 'dblclick') {
         MouseDblClick.listen(selector, evt => this.handler(evt))

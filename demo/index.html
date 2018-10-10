@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <title>Alpheios Embedded Developer Test Page</title>
     <link rel="stylesheet" href="../dist/style/style.css"/>
-    <link rel="stylesheet" href="../dist/style/style-embedded.css"/>
+    <link rel="stylesheet" href="../dist/style/style-embedded.min.css"/>
 </head>
 
 <body>
     <script src="../dist/alpheios-embedded.js"></script>
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function(event) {
-          new Alpheios.Embedded().activate();
+          new Alpheios.Embedded({disableSelector:".customignore"}).activate();
         });
     </script>
     <h4>Greek</h4>
@@ -34,6 +34,7 @@
       <p>a bene placito</p>
       <p>ab ovo usque ad mala</p>
       <p>caeli  beatum</p>
+      <p class="customignore">Ignore This</p>
     </div>
 
     <h4>Arabic</h4>
