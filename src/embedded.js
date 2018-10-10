@@ -20,16 +20,20 @@ class Embedded {
    * @constructor
    * @param {Object} arguments - object with the following properties:
    *     documentObject: the parent document
-   *     enableSelector: a CSS Selector string identifying the page elements for which Alpheios should be activated
-   *     disableSelector: a CSS Selector string identifying the page elements for which Alpheios should be deactivated
+   *     enabledSelector: a CSS Selector string identifying the page elements for which Alpheios should be activated
+   *     disabledSelector: a CSS Selector string identifying the page elements for which Alpheios should be deactivated
+   *     enabledClass: a CSS class to apply to alpheios enabled elements
+   *     disabledClass: a CSS class to apply to alpheios disabled elements
    *     eventTriggers: a comma-separated list of DOM events to which Alpheios functionality should be attached
    *     popupData: popup data overrides
    *     panelData: panel data overrides
    */
   constructor ({ documentObject = document,
     mobileRedirectUrl = null,
-    enableSelector = '.alpheios-enabled',
-    disableSelector = '',
+    enabledSelector = '.alpheios-enabled',
+    disabledSelector = '',
+    enabledClass = '',
+    disabledClass = '',
     triggerEvents = 'dblclick',
     options = {},
     popupData = {},
@@ -37,8 +41,10 @@ class Embedded {
     this.doc = documentObject
     this.state = new State()
     this.mobileRedirectUrl = mobileRedirectUrl
-    this.enableSelector = enableSelector
-    this.disableSelector = disableSelector
+    this.enabledSelector = enabledSelector
+    this.disabledSelector = disabledSelector
+    this.enabledClass = enabledClass
+    this.disabledClass = disabledClass
     this.triggerEvents = triggerEvents
     this.options = new Options(ContentOptionDefaults, LocalStorageArea)
     this.resourceOptions = new Options(LanguageOptionDefaults, LocalStorageArea)
@@ -102,7 +108,7 @@ class Embedded {
     if (this.mobileRedirectUrl && this.detectMobile()) {
       document.location = this.mobileRedirectUrl
     }
-    let selector = this.enableSelector
+    let selector = this.enabledSelector
     let trigger = this.triggerEvents.split(/,/)
     if (!selector || !trigger) {
       throw new Error('Configuration must define both trigger and selector')
@@ -111,10 +117,18 @@ class Embedded {
     if (activateOn.length === 0) {
       throw new Error(`activation element ${activateOn} is missing`)
     }
-    if (this.disableSelector) {
-      let disableOn = this.doc.querySelectorAll(this.disableSelector)
+    if (this.enabledClass) {
+      for (let elem of activateOn) {
+        elem.classList.add(this.enabledClass)
+      }
+    }
+    if (this.disabledSelector) {
+      let disableOn = this.doc.querySelectorAll(this.disabledSelector)
       for (let elem of disableOn) {
         elem.setAttribute('data-alpheios-ignore', 'all')
+        if (this.disabledClass) {
+          elem.classList.add(this.disabledClass)
+        }
       }
     }
     for (let t of trigger) {

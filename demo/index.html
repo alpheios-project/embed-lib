@@ -5,13 +5,27 @@
     <title>Alpheios Embedded Developer Test Page</title>
     <link rel="stylesheet" href="../dist/style/style.css"/>
     <link rel="stylesheet" href="../dist/style/style-embedded.min.css"/>
+    <style>
+      .customenabled {
+        color: green;
+      }
+      .customdisabled {
+        color: red;
+      }
+
+    </style>
 </head>
 
 <body>
     <script src="../dist/alpheios-embedded.js"></script>
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function(event) {
-          new Alpheios.Embedded({disableSelector:".customignore"}).activate();
+          new Alpheios.Embedded(
+            {
+              disabledSelector:".customignore",
+              enabledClass: 'customenabled',
+              disabledClass: 'customdisabled',
+            }).activate();
         });
     </script>
     <h4>Greek</h4>
