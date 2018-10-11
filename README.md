@@ -249,5 +249,5 @@ npm run build
 npm run dev
 ```
 
-runs a local web server on port 8888. Browse to the demo/ folder. Make changes to the code and they'll show up when you reload.
+runs a local web server on port 8888. Load the sample.html file at the root of the directory. Changes made to the code will be dynamically rebuilt.
 
