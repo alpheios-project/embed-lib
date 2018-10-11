@@ -2,11 +2,11 @@
 
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
-The Alpheios Embedded Library encapsulates Alpheios functionality for use as an embedded library, enhancing HTML pages by adding clickable access to dictionary entries, morphological analyses, inflection tables and grammars. Languages supported include Latin, Ancient Greek, Classical Arabic and Persian. 
+The Alpheios Embedded Library is a javascript library that provides complete Alpheios functionality on any page to which it has been added without the need for the user to install the Alpheios browser extensions. It provides clickable access to dictionary entries, morphological analyses, inflection tables and grammars for Latin and Ancient Greek. A subset of these resources are available for Classical Arabic with additional languages and resources currently under development.
 
 The library is fully open source under [ISC License](https://opensource.org/licenses/ISC) and can be easily extended with support for additional languages if web services adhering to Alpheios service APIs are or can be made available.  Documentation on how to do so is forthcoming. In the meantime please contact us (contact info available at https://alpheios.net/) if you are interested in extending the language support.
 
-The functionality works best in the browser on laptops and desktops. Support for mobile devices will be added in future releases.
+The functionality currently works best in the browser on laptops and desktops. Support for mobile devices is under active development.
 
 ## Including alpheios-embedded
 
@@ -70,6 +70,7 @@ The class used to identify which elements to activate for Alpheios, as well as o
                          Default: { top: '10vh', left: '10vw'}
       panelData:         panel data overrides (none currently supported. reserved for future use)
                          Default: {}
+      mobileRedirectUrl  A URL to which requests for the page from mobile devices can be redirected
   }
 
 ```
@@ -218,7 +219,7 @@ In the following example, the Latin word `cupidinibus` in a child of the element
 
 ## Outstanding Issues/Future Plans
 
-**Mobile DeviceSupport**: Currently the alpheios-embedded.js library does not function well when the page is accessed by a mobile device. Eventually we expect this library to support progressive web applications for mobile access. This work is still under development. In the meantime we provide the `data-mobile-redirect-url` configuration option to facilitate redirection of users of mobile devices to other entry points.
+**Mobile DeviceSupport**: Currently the displays and user interface elements provided by the Alpheios Embedded Library are optimized for online use with desktop/laptop screens and keyboards. We are actively working on adding our Progressive Web Application prototype functionality to the library so that Alpheios will seamlessly transition for use on mobile devices. In the meantime, if you want to redirect users to an alternative page for use with mobile devices, you can pass the `mobileRedirectUrl` property to the `activate` function.
 
 See also our open [issues](https://github.com/alpheios-project/embed-lib).
 
