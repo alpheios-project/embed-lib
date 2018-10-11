@@ -59,6 +59,8 @@ class Embedded {
     if (event.keyCode === 27) {
       if (this.state.isPanelOpen()) {
         this.ui.panel.close()
+      } else if (this.ui.games.gamesComponent.visible) {
+        this.ui.games.gamesComponent.close()
       } else if (this.ui.popup.visible) {
         this.ui.popup.close()
       }
