@@ -6,7 +6,7 @@ import {AlpheiosTuftsAdapter, AlpheiosTreebankAdapter} from 'alpheios-morph-clie
 import {Lexicons} from 'alpheios-lexicon-client'
 import {LemmaTranslations} from 'alpheios-lemma-client'
 import { UIController, HTMLSelector, LexicalQuery, ContentOptionDefaults, LanguageOptionDefaults,
-  UIOptionDefaults, Options, LocalStorageArea, MouseDblClick, AlignmentSelector } from 'alpheios-components'
+  UIOptionDefaults, Options, LocalStorageArea, MouseDblClick, LongTap, GenericEvt, AlignmentSelector } from 'alpheios-components'
 import State from './state'
 import Template from './template.htmlf'
 import interact from 'interactjs'
@@ -19,14 +19,25 @@ class Embedded {
   /**
    * @constructor
    * @param {Object} arguments - object with the following properties:
-   *     documentObject: the parent document
+   *     documentObject: the parent document. Default: window.document
    *     enabledSelector: a CSS Selector string identifying the page elements for which Alpheios should be activated
+   *                      Default: ".alpheios-enabled"
    *     disabledSelector: a CSS Selector string identifying the page elements for which Alpheios should be deactivated
+   *                       Default: [data-alpheios-ignore="all"]
    *     enabledClass: a CSS class to apply to alpheios enabled elements
+   *                   Default: ""
    *     disabledClass: a CSS class to apply to alpheios disabled elements
+   *                    Default: ""
    *     eventTriggers: a comma-separated list of DOM events to which Alpheios functionality should be attached
-   *     popupData: popup data overrides
-   *     panelData: panel data overrides
+   *                    Default: "dblclick"
+   *     triggerPreCallback: a callback function which is called when the trigger event handler is invoked, prior to initiating
+   *                         Alpheios functionality. It should return true to proced with lookup or false to abort.
+   *                         Default: no-op, returns true
+   *     popupData: popup data overrides (currently only positioning properties supported, top and left)
+   *                Default: { top: '10vh', left: '10vw'}
+   *     panelData: panel data overrides (none currently supported. reserved for future use)
+   *                Default: {}
+   *     mobileRedirectUrl: a URL to which to direct users if they use a mobile device to access a page which has Alpheios embedded
    */
   constructor ({ documentObject = document,
     mobileRedirectUrl = null,
@@ -35,7 +46,8 @@ class Embedded {
     enabledClass = '',
     disabledClass = '',
     triggerEvents = 'dblclick',
-    options = {},
+    triggerPreCallback = (evt) => { return true },
+    preferences = { ui: null, site: null },
     popupData = {},
     panelData = {} } = {}) {
     this.doc = documentObject
@@ -46,17 +58,18 @@ class Embedded {
     this.enabledClass = enabledClass
     this.disabledClass = disabledClass
     this.triggerEvents = triggerEvents
+    this.triggerPreCallback = triggerPreCallback
     this.options = new Options(ContentOptionDefaults, LocalStorageArea)
     this.resourceOptions = new Options(LanguageOptionDefaults, LocalStorageArea)
 
-    if (options.ui) {
-      this.uiOptions = new Options(options.ui, LocalStorageArea)
+    if (preferences.ui) {
+      this.uiOptions = new Options(preferences.ui, LocalStorageArea)
     } else {
       this.uiOptions = new Options(UIOptionDefaults, LocalStorageArea)
     }
 
-    if (options.site) {
-      this.siteOptions = this.loadSiteOptions(options.site)
+    if (preferences.site) {
+      this.siteOptions = this.loadSiteOptions(preferences.site)
     } else {
       this.siteOptions = []
     }
@@ -133,9 +146,13 @@ class Embedded {
     }
     for (let t of trigger) {
       if (t === 'dblclick') {
-        MouseDblClick.listen(selector, evt => this.handler(evt))
+        MouseDblClick.listen(selector, (evt, domEvt) => this.handler(evt, domEvt))
+      } else if (t === 'touchstart' || t === 'touchend') {
+        LongTap.listen(selector, (evt, domEvt) => this.handler(evt, domEvt))
+        console.warn(`touch events are not yet fully supported`)
       } else {
-        throw new Error(`events other than dblclick are not yet supported`)
+        GenericEvt.listen(selector, (evt, domEvt) => this.handler(evt, domEvt), t)
+        console.warn(`events other than dblclick may not work correctly`)
       }
     }
 
@@ -166,24 +183,26 @@ class Embedded {
     }
   }
 
-  handler (event) {
-    let htmlSelector = new HTMLSelector(event, this.options.items.preferredLanguage.currentValue)
-    let textSelector = htmlSelector.createTextSelector()
+  handler (alpheiosEvent, domEvent) {
+    if (this.triggerPreCallback(domEvent)) {
+      let htmlSelector = new HTMLSelector(alpheiosEvent, this.options.items.preferredLanguage.currentValue)
+      let textSelector = htmlSelector.createTextSelector()
 
-    if (!textSelector.isEmpty()) {
-      this.ui.updateLanguage(textSelector.languageCode)
-      LexicalQuery.create(textSelector, {
-        htmlSelector: htmlSelector,
-        uiController: this.ui,
-        maAdapter: this.maAdapter,
-        tbAdapter: this.tbAdapter,
-        lexicons: Lexicons,
-        lemmaTranslations: this.enableLemmaTranslations(textSelector) ? { adapter: LemmaTranslations, locale: this.options.items.locale.currentValue } : null,
-        resourceOptions: this.resourceOptions,
-        siteOptions: this.siteOptions,
-        langOpts: { [Constants.LANG_PERSIAN]: { lookupMorphLast: true } } // TODO this should be externalized
+      if (!textSelector.isEmpty()) {
+        this.ui.updateLanguage(textSelector.languageCode)
+        LexicalQuery.create(textSelector, {
+          htmlSelector: htmlSelector,
+          uiController: this.ui,
+          maAdapter: this.maAdapter,
+          tbAdapter: this.tbAdapter,
+          lexicons: Lexicons,
+          lemmaTranslations: this.enableLemmaTranslations(textSelector) ? { adapter: LemmaTranslations, locale: this.options.items.locale.currentValue } : null,
+          resourceOptions: this.resourceOptions,
+          siteOptions: this.siteOptions,
+          langOpts: { [Constants.LANG_PERSIAN]: { lookupMorphLast: true } } // TODO this should be externalized
+        }
+        ).getData()
       }
-      ).getData()
     }
   }
 

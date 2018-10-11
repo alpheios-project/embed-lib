@@ -19,9 +19,15 @@
 <body>
     <script src="../dist/alpheios-embedded.js"></script>
     <script type="text/javascript">
+        let cb = function(evt) {
+          evt.stopPropagation()
+          return true
+        }
         document.addEventListener("DOMContentLoaded", function(event) {
           new Alpheios.Embedded(
             {
+              triggerEvents: "click",
+              triggerPreCallback: cb,
               disabledSelector:".customignore",
               enabledClass: 'customenabled',
               disabledClass: 'customdisabled',
