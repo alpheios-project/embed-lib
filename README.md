@@ -19,7 +19,7 @@ See also sample files `sample.html` and `sample-cdn.html` at the root of this re
 ```
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-embedded/dist/style/style.min.css"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-embedded/dist/style/style-embedded.min.css"/>
-<script src="https://cdn.jsdelivr.net/npm/alpheios-embedded/dist/alpheios-embedded.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/alpheios-embedded/dist/alpheios-embedded.min.js"></script>
 ```
 
 **Or install from NPM**
@@ -31,7 +31,7 @@ npm install alpheios-embedded
 ```
 <link rel="stylesheet" href="path_to_node_modules/alpheios-embedded/dist/style/style.min.css"/>
 <link rel="stylesheet" href="path_to_node_modules/alpheios-embedded/dist/style/style-embedded.min.css"/>
-<script src="path_to_node_modules/alpheios-embedded/dist/alpheios-embedded.js"></script>
+<script src="path_to_node_modules/alpheios-embedded/dist/alpheios-embedded.min.js"></script>
 ```
 **2. Activate Alpheios**
 
