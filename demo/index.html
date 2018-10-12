@@ -4,20 +4,36 @@
     <meta charset="UTF-8">
     <title>Alpheios Embedded Developer Test Page</title>
     <link rel="stylesheet" href="../dist/style/style.css"/>
-    <link rel="stylesheet" href="../dist/style/style-embedded.css"/>
+    <link rel="stylesheet" href="../dist/style/style-embedded.min.css"/>
+    <style>
+      .customenabled {
+        color: green;
+      }
+      .customdisabled {
+        color: red;
+      }
+
+    </style>
 </head>
 
 <body>
     <script src="../dist/alpheios-embedded.js"></script>
     <script type="text/javascript">
+        let cb = function(evt) {
+          evt.stopPropagation()
+          return true
+        }
         document.addEventListener("DOMContentLoaded", function(event) {
-          new Alpheios.Embedded().activate();
+          new Alpheios.Embedded(
+            {
+              triggerEvents: "click",
+              triggerPreCallback: cb,
+              disabledSelector:".customignore",
+              enabledClass: 'customenabled',
+              disabledClass: 'customdisabled',
+            }).activate();
         });
     </script>
-    <div id="alpheios-main"
-      data-trigger="dblclick"
-      data-mobile-redirect-url="https://pwa.alpheios.net"
-      data-selector=".alpheios-enabled"></div>
     <h4>Greek</h4>
     <div class="alpheios-enabled" id="block1" xml:lang="grc">
       <p>τά ταῖν ταῖν τοῦ</p>
@@ -38,6 +54,7 @@
       <p>a bene placito</p>
       <p>ab ovo usque ad mala</p>
       <p>caeli  beatum</p>
+      <p class="customignore">Ignore This</p>
     </div>
 
     <h4>Arabic</h4>
