@@ -40,7 +40,7 @@ Add the following Javascript to your page activate Alpheios:
 ```
 <script type="text/javascript">
   document.addEventListener("DOMContentLoaded", function(event) {
-      new Alpheios.Embedded({siteId:"yoursitename"}).activate();
+      new Alpheios.Embedded({clientId:"yourclientname"}).activate();
     });
 </script>
 ```
@@ -52,7 +52,7 @@ other aspects can be customized by additional optional properties in the configu
 
 ```
    {
-     siteId:             a unique identifier string for your site.
+     clientId:           a unique identifier string for the embedding site or client
                          Required.
      documentObject:     the parent document.
                          Optional.
@@ -99,7 +99,7 @@ By default Alpheios will be enabled on all elements (and their children) matchin
   document.addEventListener("DOMContentLoaded", function(event) {
       new Alpheios.Embedded(
          {
-           siteId: "mysiteid",
+           clientId: "myclientid",
            enabledSelector: ".myalpheioselements"
          }
       ).activate();
@@ -116,7 +116,7 @@ By default, Alpheios will deactivate itself for any elements on the page, even i
   document.addEventListener("DOMContentLoaded", function(event) {
       new Alpheios.Embedded(
          {
-           siteId: "mysiteid",
+           clientId: "myclientid",
            disabledSelector: ".mydisabledelements"
          }
       ).activate();
