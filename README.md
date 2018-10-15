@@ -6,6 +6,8 @@ The Alpheios Embedded Library is a javascript library that provides complete Alp
 
 The library is fully open source under [ISC License](https://opensource.org/licenses/ISC) and can be easily extended with support for additional languages if web services adhering to Alpheios service APIs are or can be made available.  Documentation on how to do so is forthcoming. In the meantime please contact us (contact info available at https://alpheios.net/) if you are interested in extending the language support.
 
+Use of this library is governed by the [Alpheios API Terms of Service](http://www.alpheios.net/pages/apiterms/). Please review those terms before using it.
+
 The functionality currently works best in the browser on laptops and desktops. Support for mobile devices is under active development.
 
 ## Including alpheios-embedded
