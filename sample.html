@@ -8,10 +8,10 @@
 </head>
 
 <body>
-    <script src="dist/alpheios-embedded.min.js"></script>
+    <script src="dist/alpheios-embedded.js"></script>
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function(event) {
-          new Alpheios.Embedded().activate();
+          new Alpheios.Embedded({clientId:'alpheios-sample-file'}).activate();
         });
     </script>
 

@@ -19,6 +19,7 @@ class Embedded {
   /**
    * @constructor
    * @param {Object} arguments - object with the following properties:
+   *     clientId: a string identifying the embedding client or site. Required.
    *     documentObject: the parent document. Default: window.document
    *     enabledSelector: a CSS Selector string identifying the page elements for which Alpheios should be activated
    *                      Default: ".alpheios-enabled"
@@ -39,7 +40,9 @@ class Embedded {
    *                Default: {}
    *     mobileRedirectUrl: a URL to which to direct users if they use a mobile device to access a page which has Alpheios embedded
    */
-  constructor ({ documentObject = document,
+  constructor ({
+    clientId = null,
+    documentObject = document,
     mobileRedirectUrl = null,
     enabledSelector = '.alpheios-enabled',
     disabledSelector = '',
@@ -50,6 +53,12 @@ class Embedded {
     preferences = { ui: null, site: null },
     popupData = {},
     panelData = {} } = {}) {
+    this.clientId = clientId
+    if (this.clientId === null) {
+      throw new Error('Please identify the site.')
+    }
+    // TODO at some point in the future we may add authentication of
+    // clientId
     this.doc = documentObject
     this.state = new State()
     this.mobileRedirectUrl = mobileRedirectUrl
@@ -79,8 +88,8 @@ class Embedded {
     } catch (e) {
       throw new Error(`Cannot parse package.json, its format is probably incorrect`)
     }
-    this.maAdapter = new AlpheiosTuftsAdapter() // Morphological analyzer adapter, with default arguments
-    this.tbAdapter = new AlpheiosTreebankAdapter() // Morphological analyzer adapter, with default arguments
+    this.maAdapter = new AlpheiosTuftsAdapter({clientId: this.clientId}) // Morphological analyzer adapter, with default arguments
+    this.tbAdapter = new AlpheiosTreebankAdapter({clientId: this.clientId}) // Morphological analyzer adapter, with default arguments
     let manifest = { version: pckg.version, name: pckg.description }
     let template = { html: Template, panelId: 'alpheios-panel-embedded', popupId: 'alpheios-popup-embedded' }
     this.ui = new UIController(this.state, this.options, this.resourceOptions, this.uiOptions, manifest, template)
