@@ -40,37 +40,51 @@ Add the following Javascript to your page activate Alpheios:
 ```
 <script type="text/javascript">
   document.addEventListener("DOMContentLoaded", function(event) {
-      new Alpheios.Embedded().activate();
+      new Alpheios.Embedded({siteId:"yoursitename"}).activate();
     });
 </script>
 ```
 
 This will activate the Alpheios functionality for any elements on your page (including their child elements) which have the class `alpheios-enabled`.  
 
-The class used to identify which elements to activate for Alpheios, as well as other aspects can be customized by passing an optional configuration object to the `activate` function with the following properties:
+The class used to identify which elements to activate for Alpheios, as well as other aspects can be customized by additional optional properties
+in the configuration object to the `activate` function:
 
 ```
    {
-     documentObject:     the parent document
+     siteId:             a unique identifier string for your site.
+                         Required.
+     documentObject:     the parent document.
+                         Optional.
                          Default: window.document
-     enabledSelector:    a CSS Selector string identifying the page elements for which Alpheios should be activated
+     enabledSelector:    a CSS Selector string identifying the page elements for which Alpheios should be activated.
+                         Optional.
                          Default: ".alpheios-enabled"
      disabledSelector:   a CSS Selector string identifying the page elements for which Alpheios should be deactivated
+                         Optional.
                          Default: "[data-alpheios-ignore=all]"
      enabledClass:       a CSS class to apply to alpheios enabled elements
+                         Optional.
                          Default: ""
      disabledClass:      a CSS class to apply to alpheios disabled elements
+                         Optional.
                          Default: ""
      eventTriggers:      a comma-separated list of DOM events to which Alpheios functionality should be attached
+                         Optional.
                          Default: "dblclick"
      triggerPreCallback: a callback function which is called when the trigger event handler is invoked, prior to initiating
+                         Optional.
                          Alpheios functionality. It should return true to proced with lookup or false to abort.
                          Default: no-op, returns true
       popupData:         popup data overrides (currently only positioning properties supported, top and left)
+                         Optional.
                          Default: { top: '10vh', left: '10vw'}
       panelData:         panel data overrides (none currently supported. reserved for future use)
+                         Optional.
                          Default: {}
       mobileRedirectUrl  A URL to which requests for the page from mobile devices can be redirected
+                         Optional.
+                         Default: null
   }
 
 ```
@@ -78,13 +92,14 @@ The class used to identify which elements to activate for Alpheios, as well as o
 ## Customizing Alpheios Functionality
 
 **1. Precise Elements to Include**
-By default Alpheios will be enabled on all elements (and their children) matching the CSS selector ".alpheios-enabled". You can use a different CSS selector by including the `enabledSelector` property in the `activate` configuration object. 
+By default Alpheios will be enabled on all elements (and their children) matching the CSS selector ".alpheios-enabled". You can use a different CSS selector by including the `enabledSelector` property in the `activate` configuration object.
 
 ```
 <script type="text/javascript">
   document.addEventListener("DOMContentLoaded", function(event) {
       new Alpheios.Embedded(
          {
+           siteId: "mysiteid",
            enabledSelector: ".myalpheioselements"
          }
       ).activate();
@@ -101,6 +116,7 @@ By default, Alpheios will deactivate itself for any elements on the page, even i
   document.addEventListener("DOMContentLoaded", function(event) {
       new Alpheios.Embedded(
          {
+           siteId: "mysiteid",
            disabledSelector: ".mydisabledelements"
          }
       ).activate();
@@ -123,9 +139,9 @@ If your text has been aligned with a treebank annotation, Alpheios can be instru
 Prerequisites:
 
 * Treebank data which:
-    * Has been aligned to your text at the word and sentence level 
+    * Has been aligned to your text at the word and sentence level
     * Adheres to the [Perseus/Alpheios Treebank Schema](https://raw.githubusercontent.com/alpheios-project/schemas/master/xsd/treebank-1.7.xsd)
-    * Uses one of the [tagsets supported by Arethusa](https://github.com/alpheios-project/arethusa-configs/tree/master/configs) 
+    * Uses one of the [tagsets supported by Arethusa](https://github.com/alpheios-project/arethusa-configs/tree/master/configs)
     * For viewing diagrams, is accessible via an instance of Arethusa (for viewing)
     * For disambiguating morphological parser results, is accessible via a webservice which takes a filename and word identifier as input and returns the treebank annotation data formatted according to the [Alpheios Lexicon Schema](https://github.com/alpheios-project/schemas/blob/master/xsd/lexicon.xsd)
             * If you want to use your own webservice for this it will currently require a custom build of the alpheios-embedded library to configure the address of the service for the alpheios-morph-client library.
@@ -196,7 +212,7 @@ In the following example, the Latin word `cupidinibus` in a child of the element
 ```
 <div id="aligned-text-lat" lang="lat">
   ...
-  <span data-alpheios_align_word="s1_w12" 
+  <span data-alpheios_align_word="s1_w12"
     data-alpheios_align_ref="#aligned-text-eng *[data-alpheios_align_word=s1_w13],#aligned-text-eng *[data-alpheios_align_word=s1_w15]">
     cupidinibus
   </span>
@@ -204,12 +220,12 @@ In the following example, the Latin word `cupidinibus` in a child of the element
 </div>
 <div id="aligned-text-eng" lang="eng">
   ...
-  <span  data-alpheios_align_word="s1_w13" 
+  <span  data-alpheios_align_word="s1_w13"
     data-alpheios_align_ref="#aligned-text-lat *[data-alpheios_align_word=s1_w12]">
     by
   </span>
   ...
-  <span class="alpheios-aligned-word" data-alpheios_align_word="s1_w15" 
+  <span class="alpheios-aligned-word" data-alpheios_align_word="s1_w15"
     data-alpheios_align_ref="#aligned-text-lat *[data-alpheios_align_word=s1_w12]">
     passion
   </span>
