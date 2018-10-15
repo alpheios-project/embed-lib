@@ -46,9 +46,9 @@ Add the following Javascript to your page activate Alpheios:
 ```
 
 This will activate the Alpheios functionality for any elements on your page (including their child elements) which have the class `alpheios-enabled`.  
-
-The class used to identify which elements to activate for Alpheios, as well as other aspects can be customized by additional optional properties
-in the configuration object to the `activate` function:
+You must include a string identifier for the embedding site as a property of the configuration object which gets
+passed to the `activate` function. The class used to identify which elements to activate for Alpheios, as well as
+other aspects can be customized by additional optional properties in the configuration object:
 
 ```
    {
