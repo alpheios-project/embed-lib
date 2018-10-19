@@ -2,11 +2,13 @@
 
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
-The Alpheios Embedded Library encapsulates Alpheios functionality for use as an embedded library, enhancing HTML pages by adding clickable access to dictionary entries, morphological analyses, inflection tables and grammars. Languages supported include Latin, Ancient Greek, Classical Arabic and Persian. 
+The Alpheios Embedded Library is a javascript library that provides complete Alpheios functionality on any page to which it has been added without the need for the user to install the Alpheios browser extensions. It provides clickable access to dictionary entries, morphological analyses, inflection tables and grammars for Latin and Ancient Greek. A subset of these resources are available for Classical Arabic with additional languages and resources currently under development.
 
-The library is fully open source under [ISC License](https://opensource.org/licenses/ISC) and can be easily extended with support for additional languages if web services adhering to Alpheios service APIs are or can be made available.  Documentation on how to do so is forthcoming. In th the meantime please contact us (contact info available at https://alpheios.net/) if you are interested in extending the language support.
+The library is fully open source under [ISC License](https://opensource.org/licenses/ISC) and can be easily extended with support for additional languages if web services adhering to Alpheios service APIs are or can be made available.  Documentation on how to do so is forthcoming. In the meantime please contact us (contact info available at https://alpheios.net/) if you are interested in extending the language support.
 
-The functionality works best in the browser on laptops and desktops. Support for mobile devices will be added in future releases.
+Use of this library is governed by the [Alpheios API Terms of Service](http://www.alpheios.net/pages/apiterms/). Please review those terms before using it.
+
+The functionality currently works best in the browser on laptops and desktops. Support for mobile devices is under active development.
 
 ## Including alpheios-embedded
 
@@ -19,7 +21,7 @@ See also sample files `sample.html` and `sample-cdn.html` at the root of this re
 ```
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-embedded/dist/style/style.min.css"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-embedded/dist/style/style-embedded.min.css"/>
-<script src="https://cdn.jsdelivr.net/npm/alpheios-embedded/dist/alpheios-embedded.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/alpheios-embedded/dist/alpheios-embedded.min.js"></script>
 ```
 
 **Or install from NPM**
@@ -31,98 +33,106 @@ npm install alpheios-embedded
 ```
 <link rel="stylesheet" href="path_to_node_modules/alpheios-embedded/dist/style/style.min.css"/>
 <link rel="stylesheet" href="path_to_node_modules/alpheios-embedded/dist/style/style-embedded.min.css"/>
-<script src="path_to_node_modules/alpheios-embedded/dist/alpheios-embedded.js"></script>
+<script src="path_to_node_modules/alpheios-embedded/dist/alpheios-embedded.min.js"></script>
 ```
-**2. Add an anchor element**
-
-An an element with the id "alpheios-main" to your HTML page to configure the library. This element supports the following attributes for configuration of the library:
-
-```
-   data-selector: 
-     
-     a CSS selector string for selecting elements on the page 
-     which should have Alpheios activated for them
-     
-   data-trigger: 
-   
-     the name of the DOM event which triggers the 
-     functionality (Currently only 'dblclick' is supported.)
-     
-   data-mobile-redirect-url: 
-   
-     a url to which you want to redirect users accessing the page from mobile devices
-```
-
-   e.g.
-
-```
-<div id="alpheios-main" data-trigger="dblclick" data-selector=".alpheios-enabled" data-mobile-redirect-url="https://example.org/mobile-entry.html"></div>
-
-```
-
-**3. Activate Alpheios**
+**2. Activate Alpheios**
 
 Add the following Javascript to your page activate Alpheios:
 
 ```
 <script type="text/javascript">
   document.addEventListener("DOMContentLoaded", function(event) {
-      new Alpheios.Embedded().activate();
+      new Alpheios.Embedded({clientId:"yourclientname"}).activate();
     });
 </script>
 ```
 
-You can optionally configure the Alpheios Embedded instance by passing parameters to the constructor:
+This will activate the Alpheios functionality for any elements on your page (including their child elements) which have the class `alpheios-enabled`.  
+You must include a string identifier for the embedding site as a property of the configuration object which gets
+passed to the `activate` function. The class used to identify which elements to activate for Alpheios, as well as
+other aspects can be customized by additional optional properties in the configuration object:
 
 ```
-  new Alpheios.Embedded(selector_for_anchor_element,document_object,popup_arguments,panel_arguments)
-```
+   {
+     clientId:           a unique identifier string for the embedding site or client
+                         Required.
+     documentObject:     the parent document.
+                         Optional.
+                         Default: window.document
+     enabledSelector:    a CSS Selector string identifying the page elements for which Alpheios should be activated.
+                         Optional.
+                         Default: ".alpheios-enabled"
+     disabledSelector:   a CSS Selector string identifying the page elements for which Alpheios should be deactivated
+                         Optional.
+                         Default: "[data-alpheios-ignore=all]"
+     enabledClass:       a CSS class to apply to alpheios enabled elements
+                         Optional.
+                         Default: ""
+     disabledClass:      a CSS class to apply to alpheios disabled elements
+                         Optional.
+                         Default: ""
+     eventTriggers:      a comma-separated list of DOM events to which Alpheios functionality should be attached
+                         Optional.
+                         Default: "dblclick"
+     triggerPreCallback: a callback function which is called when the trigger event handler is invoked, prior to initiating
+                         Optional.
+                         Alpheios functionality. It should return true to proced with lookup or false to abort.
+                         Default: no-op, returns true
+      popupData:         popup data overrides (currently only positioning properties supported, top and left)
+                         Optional.
+                         Default: { top: '10vh', left: '10vw'}
+      panelData:         panel data overrides (none currently supported. reserved for future use)
+                         Optional.
+                         Default: {}
+      mobileRedirectUrl  A URL to which requests for the page from mobile devices can be redirected
+                         Optional.
+                         Default: null
+  }
 
-e.g
-
-```
-  new Alpheios.Embedded("#alpheios-main",document,{top: "30vh", left: "30vw"},{})
-```
-
-Supported configuration options are currently limited to the following, but may be expanded in future releases:
-
-```
-  selector_for_anchor_element: 
-  
-    css selector for the anchor element which contains 
-    the configuration for the library (see below)
-  
-  document_object: 
-  
-  the DOM Document object for which the library is being activated
-  
-  popup_arguments:
-
-    top: coordinates of the top of the Alpheios popup
-    left: coordinates of the left of the Alpheios popup
 ```
 
 ## Customizing Alpheios Functionality
 
-**1. Precise Elements to Ignore**
-
-The Alpheios event handler will be activated on all elements matching the data selector in the Alpheios anchor element as well as their children.
-
-However you can instruct Alpheios to deactivate itself for specific elements on the page by adding the `data-alpheios-ignore="all"` attribute to them.  For example, in the following except, Alpheios is enabled for the parent element with the class `alpheios-enabled` and disabled for selected child elements contained within it:
+**1. Precise Elements to Include**
+By default Alpheios will be enabled on all elements (and their children) matching the CSS selector ".alpheios-enabled". You can use a different CSS selector by including the `enabledSelector` property in the `activate` configuration object.
 
 ```
-<div class="alpheios-enabled" lang="lat">
-    <div data-alpheios-ignore="all" lang="eng">
-      This div contains some instructional text in English     
-      for which you don't want Alpheios enabled. Its siblings
-      contain Latin text for which Alpheios remains enabled.
-    </div>
-    <span>In nova fert animus mutatas dicere formas corpora....</span>
-</div>
-
+<script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function(event) {
+      new Alpheios.Embedded(
+         {
+           clientId: "myclientid",
+           enabledSelector: ".myalpheioselements"
+         }
+      ).activate();
+    });
+</script>
 ```
 
-**2. Connect a Treebank**
+**2. Precise Elements to Ignore**
+
+By default, Alpheios will deactivate itself for any elements on the page, even if they are children of the activated elements, if they have the attribute `data-alpheios-ignore="all"`. You can specifiy additional elements to ignore by including the `disabledSelector` property in the `activate` configuration object:
+
+```
+<script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function(event) {
+      new Alpheios.Embedded(
+         {
+           clientId: "myclientid",
+           disabledSelector: ".mydisabledelements"
+         }
+      ).activate();
+    });
+</script>
+```
+
+**3. Use a different trigger event**
+
+**NB: This is experimental functionality. Instructions and syntax for configuration, etc. are currently in flux.**
+
+By default, the `dblclick` event triggers Alpheios functionality. If this conflicts with your site's features, you can choose a different event by including the `triggerEvents` property in the `activate` configuration object. You may find you need to use this in combination with the `triggerPreCallback` argument which specificies a callback which is executed prior to executing the Alpheios trigger. For example, if you wanted to use a `Ctrl+Click` to activate Alpheios, you would have to have code in a `triggerPreCallback` function which kept track of whether or not the user had pressed the `Ctrl` key prior to clicking.
+
+**4. Connect a Treebank**
 
 **NB: This is experimental functionality. Instructions and syntax for configuration, etc. are currently in flux.**
 
@@ -131,11 +141,11 @@ If your text has been aligned with a treebank annotation, Alpheios can be instru
 Prerequisites:
 
 * Treebank data which:
-    * Has been aligned to your text at the word and sentence level 
+    * Has been aligned to your text at the word and sentence level
     * Adheres to the [Perseus/Alpheios Treebank Schema](https://raw.githubusercontent.com/alpheios-project/schemas/master/xsd/treebank-1.7.xsd)
-    * Uses one of the [tagsets supported by Arethusa](https://github.com/alpheios-project/arethusa-configs/tree/master/configs) 
+    * Uses one of the [tagsets supported by Arethusa](https://github.com/alpheios-project/arethusa-configs/tree/master/configs)
     * For viewing diagrams, is accessible via an instance of Arethusa (for viewing)
-    * For disambiguating morphological parser results, is accessible via a webservice which takes a takes a filename and word identifier as input and returns the treebank annotation data formatted according to the [Alpheios Lexicon Schema](https://github.com/alpheios-project/schemas/blob/master/xsd/lexicon.xsd)
+    * For disambiguating morphological parser results, is accessible via a webservice which takes a filename and word identifier as input and returns the treebank annotation data formatted according to the [Alpheios Lexicon Schema](https://github.com/alpheios-project/schemas/blob/master/xsd/lexicon.xsd)
             * If you want to use your own webservice for this it will currently require a custom build of the alpheios-embedded library to configure the address of the service for the alpheios-morph-client library.
             * If you are interested in loading your treebank data in the Alpheios-hosted treebank data services, please contact the Alpheios support address.
 
@@ -191,7 +201,7 @@ https://alpheios.net/alpheios-treebanks/1999.02.0066.html?chunk=1&w=2
 The above steps also trigger activation of the use of the treebank data for disamibugating the morphological parser results in the Alpheios popup.  If the `documentIdentifier` is one which is configured as available via webservice for the `AlpheiosTreebankAdapter` in the [alpheios-morph-client](https://github.com/alpheios-project/morph-client) library, then the treebank morphology tag will be used to disambiguate the morphological parser results.
 
 
-**3. Add an Aligned Translation**
+**5. Add an Aligned Translation**
 
 **NB: This is experimental functionality. Instructions and syntax for configuration, etc. are currently in flux.**
 
@@ -204,7 +214,7 @@ In the following example, the Latin word `cupidinibus` in a child of the element
 ```
 <div id="aligned-text-lat" lang="lat">
   ...
-  <span data-alpheios_align_word="s1_w12" 
+  <span data-alpheios_align_word="s1_w12"
     data-alpheios_align_ref="#aligned-text-eng *[data-alpheios_align_word=s1_w13],#aligned-text-eng *[data-alpheios_align_word=s1_w15]">
     cupidinibus
   </span>
@@ -212,12 +222,12 @@ In the following example, the Latin word `cupidinibus` in a child of the element
 </div>
 <div id="aligned-text-eng" lang="eng">
   ...
-  <span  data-alpheios_align_word="s1_w13" 
+  <span  data-alpheios_align_word="s1_w13"
     data-alpheios_align_ref="#aligned-text-lat *[data-alpheios_align_word=s1_w12]">
     by
   </span>
   ...
-  <span class="alpheios-aligned-word" data-alpheios_align_word="s1_w15" 
+  <span class="alpheios-aligned-word" data-alpheios_align_word="s1_w15"
     data-alpheios_align_ref="#aligned-text-lat *[data-alpheios_align_word=s1_w12]">
     passion
   </span>
@@ -227,7 +237,7 @@ In the following example, the Latin word `cupidinibus` in a child of the element
 
 ## Outstanding Issues/Future Plans
 
-**Mobile DeviceSupport**: Currently the alpheios-embedded.js library does not function well when the page is accessed by a mobile device. Eventually we expect this library to support progressive web applications for mobile access. This work is still under development. In the meantime we provide the `data-mobile-redirect-url` configuration option to facilitate redirection of users of mobile devices to other entry points.
+**Mobile DeviceSupport**: Currently the displays and user interface elements provided by the Alpheios Embedded Library are optimized for online use with desktop/laptop screens and keyboards. We are actively working on adding our Progressive Web Application prototype functionality to the library so that Alpheios will seamlessly transition for use on mobile devices. In the meantime, if you want to redirect users to an alternative page for use with mobile devices, you can pass the `mobileRedirectUrl` property to the `activate` function.
 
 See also our open [issues](https://github.com/alpheios-project/embed-lib).
 
@@ -257,5 +267,5 @@ npm run build
 npm run dev
 ```
 
-runs a local web server on port 8888. Browse to the demo/ folder. Make changes to the code and they'll show up when you reload.
+runs a local web server on port 8888. Load the sample.html file at the root of the directory. Changes made to the code will be dynamically rebuilt.
 

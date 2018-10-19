@@ -51,9 +51,8 @@ const sass = {
   tasks: [
     { source: `src/style/style.scss`,
       target: `dist/style/style-embedded.css`,
-      target: `dist/style/style-embedded.css`,
       style: 'compressed',
-      sourceMap: false
+      sourceMap: true
     }
   ]
 }

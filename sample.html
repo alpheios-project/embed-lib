@@ -3,24 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title>Alpheios Embedded Sample Page</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-embedded/dist/style/style.min.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-embedded/dist/style/style-embedded.min.css"/>
+    <link rel="stylesheet" href="dist/style/style.min.css"/>
+    <link rel="stylesheet" href="dist/style/style-embedded.min.css"/>
 </head>
 
 <body>
-    <script src="https://cdn.jsdelivr.net/npm/alpheios-embedded/dist/alpheios-embedded.js"></script>
+    <script src="dist/alpheios-embedded.js"></script>
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function(event) {
-          new Alpheios.Embedded().activate();
+          new Alpheios.Embedded({clientId:'alpheios-sample-file'}).activate();
         });
     </script>
 
     <p>This is a sample file which shows how to use the alpheios-embedded library. Code is the latest release from the jsdelivr CDN service.</p>
-
-    <div id="alpheios-main"
-      data-trigger="dblclick"
-      data-mobile-redirect-url="https://pwa.alpheios.net"
-      data-selector=".alpheios-enabled"></div>
 
     <div class="alpheios-enabled">
       <h4 lang="eng" data-alpheios-ignore="all">Greek</h4>

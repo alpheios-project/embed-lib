@@ -7,10 +7,11 @@ import {AlpheiosTuftsAdapter, AlpheiosTreebankAdapter} from 'alpheios-morph-clie
 import {Lexicons} from 'alpheios-lexicon-client'
 import {LemmaTranslations} from 'alpheios-lemma-client'
 import { UIController, HTMLSelector, LexicalQuery, ContentOptionDefaults, LanguageOptionDefaults,
-  UIOptionDefaults, Options, LocalStorageArea, MouseDblClick, AlignmentSelector } from 'alpheios-components'
+  UIOptionDefaults, Options, LocalStorageArea, MouseDblClick, LongTap, GenericEvt, AlignmentSelector } from 'alpheios-components'
 import State from './state'
 import Template from './template.htmlf'
 import interact from 'interactjs'
+import Package from '../package.json'
 
 /**
  * Encapsulation of Alpheios functionality which can be embedded in a webpage
@@ -18,35 +19,79 @@ import interact from 'interactjs'
 class Embedded {
   /**
    * @constructor
-   * @param {string} anchor - CSS selector for the HTML element containing Alpheios configuration (default is '#alpheios-main')
-   *                          the anchor element should contain the following attributes:
-                              data-selector: a CSS Selector string identifying the page elements for which Alpheios should be activated
-                              data-trigger: the DOM event to which Alpheios functionality should be attached
-   * @param {Document} doc - the parent document
-   * @param {Object} popupData - popup data overrides
-   * @param {Object} panelData - panel data overrides
+   * @param {Object} arguments - object with the following properties:
+   *     clientId: a string identifying the embedding client or site. Required.
+   *     documentObject: the parent document. Default: window.document
+   *     enabledSelector: a CSS Selector string identifying the page elements for which Alpheios should be activated
+   *                      Default: ".alpheios-enabled"
+   *     disabledSelector: a CSS Selector string identifying the page elements for which Alpheios should be deactivated
+   *                       Default: [data-alpheios-ignore="all"]
+   *     enabledClass: a CSS class to apply to alpheios enabled elements
+   *                   Default: ""
+   *     disabledClass: a CSS class to apply to alpheios disabled elements
+   *                    Default: ""
+   *     eventTriggers: a comma-separated list of DOM events to which Alpheios functionality should be attached
+   *                    Default: "dblclick"
+   *     triggerPreCallback: a callback function which is called when the trigger event handler is invoked, prior to initiating
+   *                         Alpheios functionality. It should return true to proced with lookup or false to abort.
+   *                         Default: no-op, returns true
+   *     popupData: popup data overrides (currently only positioning properties supported, top and left)
+   *                Default: { top: '10vh', left: '10vw'}
+   *     panelData: panel data overrides (none currently supported. reserved for future use)
+   *                Default: {}
+   *     mobileRedirectUrl: a URL to which to direct users if they use a mobile device to access a page which has Alpheios embedded
    */
-  constructor (anchor = '#alpheios-main', doc = document, popupData = {}, panelData = {}, options = {}) {
-    this.anchor = anchor
-    this.doc = doc
+  constructor ({
+    clientId = null,
+    documentObject = document,
+    mobileRedirectUrl = null,
+    enabledSelector = '.alpheios-enabled',
+    disabledSelector = '',
+    enabledClass = '',
+    disabledClass = '',
+    triggerEvents = 'dblclick',
+    triggerPreCallback = (evt) => { return true },
+    preferences = { ui: null, site: null },
+    popupData = {},
+    panelData = {} } = {}) {
+    this.clientId = clientId
+    if (this.clientId === null) {
+      throw new Error('Please identify the site.')
+    }
+    // TODO at some point in the future we may add authentication of
+    // clientId
+    this.doc = documentObject
     this.state = new State()
+    this.mobileRedirectUrl = mobileRedirectUrl
+    this.enabledSelector = enabledSelector
+    this.disabledSelector = disabledSelector
+    this.enabledClass = enabledClass
+    this.disabledClass = disabledClass
+    this.triggerEvents = triggerEvents
+    this.triggerPreCallback = triggerPreCallback
     this.options = new Options(ContentOptionDefaults, LocalStorageArea)
     this.resourceOptions = new Options(LanguageOptionDefaults, LocalStorageArea)
 
-    if (options.ui) {
-      this.uiOptions = new Options(options.ui, LocalStorageArea)
+    if (preferences.ui) {
+      this.uiOptions = new Options(preferences.ui, LocalStorageArea)
     } else {
       this.uiOptions = new Options(UIOptionDefaults, LocalStorageArea)
     }
 
-    if (options.site) {
-      this.siteOptions = this.loadSiteOptions(options.site)
+    if (preferences.site) {
+      this.siteOptions = this.loadSiteOptions(preferences.site)
     } else {
       this.siteOptions = []
     }
-    this.maAdapter = new AlpheiosTuftsAdapter() // Morphological analyzer adapter, with default arguments
-    this.tbAdapter = new AlpheiosTreebankAdapter() // Morphological analyzer adapter, with default arguments
-    let manifest = { version: '1.1', name: 'Alpheios Embedded Library' }
+    let pckg
+    try {
+      pckg = Package
+    } catch (e) {
+      throw new Error(`Cannot parse package.json, its format is probably incorrect`)
+    }
+    this.maAdapter = new AlpheiosTuftsAdapter({clientId: this.clientId}) // Morphological analyzer adapter, with default arguments
+    this.tbAdapter = new AlpheiosTreebankAdapter({clientId: this.clientId}) // Morphological analyzer adapter, with default arguments
+    let manifest = { version: pckg.version, name: pckg.description }
     let template = { html: Template, panelId: 'alpheios-panel-embedded', popupId: 'alpheios-popup-embedded' }
     this.ui = new UIController(this.state, this.options, this.resourceOptions, this.uiOptions, manifest, template)
     this.doc.body.addEventListener('Alpheios_Embedded_Check', event => { this.notifyExtension(event) })
@@ -85,27 +130,41 @@ class Embedded {
   }
 
   activate () {
-    let elem = this.doc.querySelector(this.anchor)
-    if (!elem) {
-      throw new Error(`anchor element ${elem} is missing`)
+    if (this.mobileRedirectUrl && this.detectMobile()) {
+      document.location = this.mobileRedirectUrl
     }
-    if (elem.dataset.mobileRedirectUrl && this.detectMobile()) {
-      document.location = elem.dataset.mobileRedirectUrl
-    }
-    let selector = elem.dataset.selector
-    let trigger = elem.dataset.trigger.split(/,/)
+    let selector = this.enabledSelector
+    let trigger = this.triggerEvents.split(/,/)
     if (!selector || !trigger) {
-      throw new Error(`anchor element ${this.anchor} must define both trigger and selector`)
+      throw new Error('Configuration must define both trigger and selector')
     }
     let activateOn = this.doc.querySelectorAll(selector)
     if (activateOn.length === 0) {
       throw new Error(`activation element ${activateOn} is missing`)
     }
+    if (this.enabledClass) {
+      for (let elem of activateOn) {
+        elem.classList.add(this.enabledClass)
+      }
+    }
+    if (this.disabledSelector) {
+      let disableOn = this.doc.querySelectorAll(this.disabledSelector)
+      for (let elem of disableOn) {
+        elem.setAttribute('data-alpheios-ignore', 'all')
+        if (this.disabledClass) {
+          elem.classList.add(this.disabledClass)
+        }
+      }
+    }
     for (let t of trigger) {
       if (t === 'dblclick') {
-        MouseDblClick.listen(selector, evt => this.handler(evt))
+        MouseDblClick.listen(selector, (evt, domEvt) => this.handler(evt, domEvt))
+      } else if (t === 'touchstart' || t === 'touchend') {
+        LongTap.listen(selector, (evt, domEvt) => this.handler(evt, domEvt))
+        console.warn(`touch events are not yet fully supported`)
       } else {
-        throw new Error(`events other than dblclick are not yet supported`)
+        GenericEvt.listen(selector, (evt, domEvt) => this.handler(evt, domEvt), t)
+        console.warn(`events other than dblclick may not work correctly`)
       }
     }
 
@@ -136,24 +195,26 @@ class Embedded {
     }
   }
 
-  handler (event) {
-    let htmlSelector = new HTMLSelector(event, this.options.items.preferredLanguage.currentValue)
-    let textSelector = htmlSelector.createTextSelector()
+  handler (alpheiosEvent, domEvent) {
+    if (this.triggerPreCallback(domEvent)) {
+      let htmlSelector = new HTMLSelector(alpheiosEvent, this.options.items.preferredLanguage.currentValue)
+      let textSelector = htmlSelector.createTextSelector()
 
-    if (!textSelector.isEmpty()) {
-      this.ui.updateLanguage(textSelector.languageCode)
-      LexicalQuery.create(textSelector, {
-        htmlSelector: htmlSelector,
-        uiController: this.ui,
-        maAdapter: this.maAdapter,
-        tbAdapter: this.tbAdapter,
-        lexicons: Lexicons,
-        lemmaTranslations: this.enableLemmaTranslations(textSelector) ? { adapter: LemmaTranslations, locale: this.options.items.locale.currentValue } : null,
-        resourceOptions: this.resourceOptions,
-        siteOptions: this.siteOptions,
-        langOpts: { [Constants.LANG_PERSIAN]: { lookupMorphLast: true } } // TODO this should be externalized
+      if (!textSelector.isEmpty()) {
+        this.ui.updateLanguage(textSelector.languageCode)
+        LexicalQuery.create(textSelector, {
+          htmlSelector: htmlSelector,
+          uiController: this.ui,
+          maAdapter: this.maAdapter,
+          tbAdapter: this.tbAdapter,
+          lexicons: Lexicons,
+          lemmaTranslations: this.enableLemmaTranslations(textSelector) ? { adapter: LemmaTranslations, locale: this.options.items.locale.currentValue } : null,
+          resourceOptions: this.resourceOptions,
+          siteOptions: this.siteOptions,
+          langOpts: { [Constants.LANG_PERSIAN]: { lookupMorphLast: true } } // TODO this should be externalized
+        }
+        ).getData()
       }
-      ).getData()
     }
   }
 
