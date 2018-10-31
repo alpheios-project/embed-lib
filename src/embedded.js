@@ -1,12 +1,12 @@
 /* eslint-env jest */
 /* global Event */
 import ComponentStyles from '../node_modules/alpheios-components/dist/style/style.min.css' // eslint-disable-line
-import {Constants} from 'alpheios-data-models'
-import {AlpheiosTuftsAdapter, AlpheiosTreebankAdapter} from 'alpheios-morph-client'
-import {Lexicons} from 'alpheios-lexicon-client'
-import {LemmaTranslations} from 'alpheios-lemma-client'
+import { Constants } from 'alpheios-data-models'
+import { AlpheiosTuftsAdapter, AlpheiosTreebankAdapter } from 'alpheios-morph-client'
+import { Lexicons } from 'alpheios-lexicon-client'
+import { LemmaTranslations } from 'alpheios-lemma-client'
 import { UIController, HTMLSelector, LexicalQuery, ContentOptionDefaults, LanguageOptionDefaults,
-  UIOptionDefaults, Options, LocalStorageArea, MouseDblClick, LongTap, GenericEvt, AlignmentSelector } from 'alpheios-components'
+  Options, LocalStorageArea, MouseDblClick, LongTap, GenericEvt, AlignmentSelector } from 'alpheios-components'
 import State from './state'
 import Template from './template.htmlf'
 import interact from 'interactjs'
@@ -54,6 +54,8 @@ class Embedded {
     popupData = {},
     panelData = {} } = {}) {
     this.clientId = clientId
+    this.popupData = popupData
+    this.panelData = panelData
     if (this.clientId === null) {
       throw new Error('Please identify the site.')
     }
@@ -71,12 +73,6 @@ class Embedded {
     this.options = new Options(ContentOptionDefaults, LocalStorageArea)
     this.resourceOptions = new Options(LanguageOptionDefaults, LocalStorageArea)
 
-    if (preferences.ui) {
-      this.uiOptions = new Options(preferences.ui, LocalStorageArea)
-    } else {
-      this.uiOptions = new Options(UIOptionDefaults, LocalStorageArea)
-    }
-
     if (preferences.site) {
       this.siteOptions = this.loadSiteOptions(preferences.site)
     } else {
@@ -88,15 +84,14 @@ class Embedded {
     } catch (e) {
       throw new Error(`Cannot parse package.json, its format is probably incorrect`)
     }
-    this.maAdapter = new AlpheiosTuftsAdapter({clientId: this.clientId}) // Morphological analyzer adapter, with default arguments
-    this.tbAdapter = new AlpheiosTreebankAdapter({clientId: this.clientId}) // Morphological analyzer adapter, with default arguments
-    let manifest = { version: pckg.version, name: pckg.description }
-    let template = { html: Template, panelId: 'alpheios-panel-embedded', popupId: 'alpheios-popup-embedded' }
-    this.ui = new UIController(this.state, this.options, this.resourceOptions, this.uiOptions, manifest, template)
-    this.doc.body.addEventListener('Alpheios_Embedded_Check', event => { this.notifyExtension(event) })
-    this.doc.body.addEventListener('keydown', event => { this.handleEscapeKey(event) })
-    Object.assign(this.ui.panel.panelData, panelData)
-    Object.assign(this.ui.popup.popupData, popupData)
+    this.maAdapter = new AlpheiosTuftsAdapter({ clientId: this.clientId }) // Morphological analyzer adapter, with default arguments
+    this.tbAdapter = new AlpheiosTreebankAdapter({ clientId: this.clientId }) // Morphological analyzer adapter, with default arguments
+    this.ui = new UIController(this.state, LocalStorageArea, {
+      app: { version: pckg.version, name: pckg.description },
+      template: { html: Template, panelId: 'alpheios-panel-embedded', popupId: 'alpheios-popup-embedded' }
+    })
+    // TODO: This is a temporary fix. Later we should pass necessary preferences via a UIController's options object
+    if (preferences.ui) { this.ui.uiOptions = new Options(preferences.ui, LocalStorageArea) }
   }
 
   handleEscapeKey (event) {
@@ -126,7 +121,21 @@ class Embedded {
     })
   }
 
-  activate () {
+  async activate () {
+    try {
+      await this.ui.init()
+      await this.ui.activate()
+
+      console.log('UIController has been activated')
+      this.doc.body.addEventListener('Alpheios_Embedded_Check', event => { this.notifyExtension(event) })
+      this.doc.body.addEventListener('keydown', event => { this.handleEscapeKey(event) })
+      Object.assign(this.ui.panel.panelData, this.panelData)
+      Object.assign(this.ui.popup.popupData, this.popupData)
+    } catch (error) {
+      console.error(`Cannot activate a UI controller: ${error}`)
+      return
+    }
+
     if (this.mobileRedirectUrl && this.detectMobile()) {
       document.location = this.mobileRedirectUrl
     }
@@ -260,4 +269,4 @@ class Embedded {
   }
 }
 
-export {Embedded}
+export { Embedded }

@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import {Embedded} from '../src/embedded'
+import { Embedded } from '../src/embedded'
 
 describe('WordSvc object', () => {
   beforeAll(() => {

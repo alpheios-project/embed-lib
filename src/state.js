@@ -25,6 +25,12 @@ export default class State {
 
   static get statuses () {
     return {
+      embedLib: {
+        PENDING: Symbol.for('Alpheios_Status_Pending'), // Has not been fully initialized yet
+        ACTIVE: Symbol.for('Alpheios_Status_Active'), // Is loaded and active
+        DEACTIVATED: Symbol.for('Alpheios_Status_Deactivated'), // Has been loaded, but is deactivated
+        DISABLED: Symbol.for('Alpheios_Status_Disabled') // Has been loaded, but it is disabled
+      },
       panel: {
         OPEN: Symbol.for('Alpheios_Status_PanelOpen'), // Panel is open
         CLOSED: Symbol.for('Alpheios_Status_PanelClosed') // Panel is closed
@@ -85,6 +91,38 @@ export default class State {
 
   activateUI () {
     this.setItem('uiActive', true)
+    return this
+  }
+
+  // TODO: A temporary solution for compatibility with TabScript.
+  isActive () {
+    return this.status === State.statuses.embedLib.ACTIVE
+  }
+
+  isDeactivated () {
+    return this.status === State.statuses.embedLib.DEACTIVATED
+  }
+
+  isDisabled () {
+    return this.status === State.statuses.embedLib.DISABLED
+  }
+
+  uiIsActive () {
+    return this.uiActive
+  }
+
+  activate () {
+    this.status = State.statuses.embedLib.ACTIVE
+    return this
+  }
+
+  deactivate () {
+    this.status = State.statuses.embedLib.DEACTIVATED
+    return this
+  }
+
+  disable () {
+    this.status = State.statuses.embedLib.DISABLED
     return this
   }
 }
