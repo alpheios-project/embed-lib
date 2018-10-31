@@ -86,7 +86,8 @@ class Embedded {
     }
     this.maAdapter = new AlpheiosTuftsAdapter({ clientId: this.clientId }) // Morphological analyzer adapter, with default arguments
     this.tbAdapter = new AlpheiosTreebankAdapter({ clientId: this.clientId }) // Morphological analyzer adapter, with default arguments
-    this.ui = new UIController(this.state, LocalStorageArea, {
+    this.ui = new UIController(this.state, {
+      storageAdapter: LocalStorageArea,
       app: { version: pckg.version, name: pckg.description },
       template: { html: Template, panelId: 'alpheios-panel-embedded', popupId: 'alpheios-popup-embedded' }
     })
