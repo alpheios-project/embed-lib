@@ -143,6 +143,7 @@ class Embedded {
       document.location = this.mobileRedirectUrl
     }
     let selector = this.enabledSelector
+
     let trigger = this.triggerEvents.split(/,/)
     if (!selector || !trigger) {
       throw new Error('Configuration must define both trigger and selector')
@@ -165,6 +166,7 @@ class Embedded {
         }
       }
     }
+
     for (let t of trigger) {
       if (t === 'dblclick') {
         MouseDblClick.listen(selector, (evt, domEvt) => this.handler(evt, domEvt))
