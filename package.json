@@ -42,8 +42,8 @@
     "interactjs": "^1.3.4",
     "intl-messageformat": "^2.2.0",
     "jest": "^23.6.0",
-    "jest-fetch-mock": "1.6.6",
-    "onchange": "^5.0.2",
+    "jest-fetch-mock": "2.0.1",
+    "onchange": "^5.1.3",
     "raw-loader": "^0.5.1",
     "sass-loader": "^7.1.0",
     "source-map-loader": "^0.2.4",
@@ -87,6 +87,6 @@
     ]
   },
   "dependencies": {
-    "node-sass": "^4.9.4"
+    "node-sass": "^4.10.0"
   }
 }

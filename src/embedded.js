@@ -128,6 +128,8 @@ class Embedded {
       await this.ui.activate()
 
       console.log('UIController has been activated')
+      // Set a body attribute so the content scrip will know if embeded library is active on a page
+      this.doc.body.setAttribute('alpheios-embed-lib-status', 'active')
       this.doc.body.addEventListener('Alpheios_Embedded_Check', event => { this.notifyExtension(event) })
       this.doc.body.addEventListener('keydown', event => { this.handleEscapeKey(event) })
       Object.assign(this.ui.panel.panelData, this.panelData)
