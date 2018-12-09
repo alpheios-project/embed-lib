@@ -86,6 +86,11 @@ class Embedded {
     }
     this.maAdapter = new AlpheiosTuftsAdapter({ clientId: this.clientId }) // Morphological analyzer adapter, with default arguments
     this.tbAdapter = new AlpheiosTreebankAdapter({ clientId: this.clientId }) // Morphological analyzer adapter, with default arguments
+
+    // Set an initial UI Controller state for activation
+    this.state.setPanelClosed() // A default state of the panel is CLOSED
+    this.state.tab = 'info' // A default tab is "info"
+
     this.ui = new UIController(this.state, {
       storageAdapter: LocalStorageArea,
       app: { version: pckg.version, name: pckg.description },
