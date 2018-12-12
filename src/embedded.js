@@ -2,9 +2,6 @@
 /* global Event */
 import ComponentStyles from '../node_modules/alpheios-components/dist/style/style.min.css' // eslint-disable-line
 import { Constants } from 'alpheios-data-models'
-import { AlpheiosTuftsAdapter, AlpheiosTreebankAdapter } from 'alpheios-morph-client'
-import { Lexicons } from 'alpheios-lexicon-client'
-import { LemmaTranslations } from 'alpheios-lemma-client'
 import { UIController, HTMLSelector, LexicalQuery, ContentOptionDefaults, LanguageOptionDefaults,
   Options, LocalStorageArea, MouseDblClick, LongTap, GenericEvt, AlignmentSelector } from 'alpheios-components'
 import State from './state'
@@ -84,9 +81,7 @@ class Embedded {
     } catch (e) {
       throw new Error(`Cannot parse package.json, its format is probably incorrect`)
     }
-    this.maAdapter = new AlpheiosTuftsAdapter({ clientId: this.clientId }) // Morphological analyzer adapter, with default arguments
-    this.tbAdapter = new AlpheiosTreebankAdapter({ clientId: this.clientId }) // Morphological analyzer adapter, with default arguments
-    this.ui = new UIController(this.state, {
+    this.ui = UIController.create(this.state, {
       storageAdapter: LocalStorageArea,
       app: { version: pckg.version, name: pckg.description },
       template: { html: Template, panelId: 'alpheios-panel-embedded', popupId: 'alpheios-popup-embedded' }
@@ -212,19 +207,22 @@ class Embedded {
       let textSelector = htmlSelector.createTextSelector()
 
       if (!textSelector.isEmpty()) {
-        this.ui.updateLanguage(textSelector.languageCode)
-        LexicalQuery.create(textSelector, {
+        let lexQuery = LexicalQuery.create(textSelector, {
           htmlSelector: htmlSelector,
-          uiController: this.ui,
-          maAdapter: this.maAdapter,
-          tbAdapter: this.tbAdapter,
-          lexicons: Lexicons,
-          lemmaTranslations: this.enableLemmaTranslations(textSelector) ? { adapter: LemmaTranslations, locale: this.options.items.locale.currentValue } : null,
           resourceOptions: this.resourceOptions,
           siteOptions: this.siteOptions,
+          lemmaTranslations: this.enableLemmaTranslations(textSelector) ? { locale: this.contentOptions.items.locale.currentValue } : null,
           langOpts: { [Constants.LANG_PERSIAN]: { lookupMorphLast: true } } // TODO this should be externalized
-        }
-        ).getData()
+        })
+
+        this.ui.setTargetRect(htmlSelector.targetRect)
+        this.ui.newLexicalRequest(textSelector.languageID)
+        this.ui.message(this.ui.l10n.messages.TEXT_NOTICE_DATA_RETRIEVAL_IN_PROGRESS)
+        this.ui.showStatusInfo(textSelector.normalizedText, textSelector.languageID)
+        this.ui.updateLanguage(textSelector.languageID)
+        this.ui.updateWordAnnotationData(textSelector.data)
+
+        lexQuery.getData()
       }
     }
   }
