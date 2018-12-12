@@ -129,6 +129,15 @@ class Embedded {
 
   async activate () {
     try {
+      /**
+       * Notify extension that an embedded lib is present.
+       * We need to do this right after an activation.
+       * If webextension is loaded sooner than the embedded library
+       * than the extension will have no information about
+       * the embedded library presence unless explicitly notified by us.
+       */
+      this.notifyExtension()
+
       await this.ui.init()
       await this.ui.activate()
 
@@ -189,7 +198,7 @@ class Embedded {
     let alignedTranslation = this.doc.querySelectorAll('.aligned-translation')
     for (let a of alignedTranslation) {
       interact(a).resizable({
-        // resize from all edges and corners
+      // resize from all edges and corners
         edges: { left: true, right: true, bottom: false, top: false },
 
         // minimum size
