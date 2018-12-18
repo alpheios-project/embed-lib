@@ -86,7 +86,7 @@ class Embedded {
     this.state.setPanelClosed() // A default state of the panel is CLOSED
     this.state.tab = 'info' // A default tab is "info"
 
-    this.ui = new UIController(this.state, {
+    this.ui = UIController.create(this.state, {
       storageAdapter: LocalStorageArea,
       app: { version: pckg.version, name: pckg.description },
       template: { html: Template, panelId: 'alpheios-panel-embedded', popupId: 'alpheios-popup-embedded' }
