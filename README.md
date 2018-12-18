@@ -126,13 +126,24 @@ By default, Alpheios will deactivate itself for any elements on the page, even i
 </script>
 ```
 
-**3. Use a different trigger event**
+**3. Specifying Language**
+
+Indicate to Alpheios which language text is by using the `lang` attribute on a parent or ancestor element of the text. The attribute value should be the ISO 639-2 3-character language code:
+
+```
+<div lang="grc">Ὅμηρος, ὁ ποιητὴς</div>
+<div lang="lat>Tunc fletibus eius adsuspirans anus sic incipit</div>
+<div lang="ara" dir="rtl">هوأبوالفرجعليبنالحسین</div>
+<div lang="per" dir="rtl">به نام خداوند جان و خرد</div>
+```
+
+**4. Use a different trigger event**
 
 **NB: This is experimental functionality. Instructions and syntax for configuration, etc. are currently in flux.**
 
 By default, the `dblclick` event triggers Alpheios functionality. If this conflicts with your site's features, you can choose a different event by including the `triggerEvents` property in the `activate` configuration object. You may find you need to use this in combination with the `triggerPreCallback` argument which specificies a callback which is executed prior to executing the Alpheios trigger. For example, if you wanted to use a `Ctrl+Click` to activate Alpheios, you would have to have code in a `triggerPreCallback` function which kept track of whether or not the user had pressed the `Ctrl` key prior to clicking.
 
-**4. Connect a Treebank**
+**5. Connect a Treebank**
 
 **NB: This is experimental functionality. Instructions and syntax for configuration, etc. are currently in flux.**
 
@@ -201,7 +212,7 @@ https://alpheios.net/alpheios-treebanks/1999.02.0066.html?chunk=1&w=2
 The above steps also trigger activation of the use of the treebank data for disamibugating the morphological parser results in the Alpheios popup.  If the `documentIdentifier` is one which is configured as available via webservice for the `AlpheiosTreebankAdapter` in the [alpheios-morph-client](https://github.com/alpheios-project/morph-client) library, then the treebank morphology tag will be used to disambiguate the morphological parser results.
 
 
-**5. Add an Aligned Translation**
+**6. Add an Aligned Translation**
 
 **NB: This is experimental functionality. Instructions and syntax for configuration, etc. are currently in flux.**
 

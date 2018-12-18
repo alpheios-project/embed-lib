@@ -33,7 +33,11 @@ export default class State {
       },
       panel: {
         OPEN: Symbol.for('Alpheios_Status_PanelOpen'), // Panel is open
-        CLOSED: Symbol.for('Alpheios_Status_PanelClosed') // Panel is closed
+        CLOSED: Symbol.for('Alpheios_Status_PanelClosed'), // Panel is closed
+        DEFAULT: Symbol.for('Alpheios_Status_PanelDefault') // Panel should set its state according to default values
+      },
+      tab: {
+        DEFAULT: 'default' // A tab should be set according to default values
       }
     }
   }
@@ -74,6 +78,17 @@ export default class State {
     return this.panelStatus === State.statuses.panel.CLOSED
   }
 
+  isPanelStateDefault () {
+    return this.panelStatus === State.statuses.panel.DEFAULT
+  }
+
+  isPanelStateValid () {
+    return (
+      this.panelStatus === State.statuses.panel.OPEN ||
+      this.panelStatus === State.statuses.panel.CLOSED
+    )
+  }
+
   setPanelOpen () {
     this.setItem('panelStatus', State.statuses.panel.OPEN)
     return this
@@ -105,6 +120,10 @@ export default class State {
 
   isDisabled () {
     return this.status === State.statuses.embedLib.DISABLED
+  }
+
+  isTabStateDefault () {
+    return this.tab === State.statuses.tab.DEFAULT
   }
 
   uiIsActive () {
