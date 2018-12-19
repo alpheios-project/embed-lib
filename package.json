@@ -32,6 +32,7 @@
     "alpheios-inflection-tables": "git://github.com/alpheios-project/inflection-tables.git",
     "alpheios-node-build": "github:alpheios-project/node-build",
     "alpheios-res-client": "github:alpheios-project/res-client",
+    "alpheios-wordlist": "github:alpheios-project/wordlist",
     "coveralls": "^3.0.2",
     "css-loader": "^1.0.1",
     "eslint": "^5.9.0",
