@@ -1,2 +1,5 @@
 node_modules
 coverage
+
+## sensitive environment information
+/dist/env-embedded.js

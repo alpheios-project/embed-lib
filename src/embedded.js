@@ -1,5 +1,5 @@
 /* eslint-env jest */
-/* global Event */
+/* global Event, Auth0Lock */
 import ComponentStyles from '../node_modules/alpheios-components/dist/style/style.min.css' // eslint-disable-line
 import { Constants } from 'alpheios-data-models'
 import { UIController, HTMLSelector, LexicalQuery, ContentOptionDefaults, LanguageOptionDefaults,
@@ -81,6 +81,10 @@ class Embedded {
     } catch (e) {
       throw new Error(`Cannot parse package.json, its format is probably incorrect`)
     }
+
+    // An Auth0 Lock widget instance. Will be initialized lazily
+    this.auth0Lock = null
+    this._auth0profile = null // A user profile from Auth0
 
     // Set an initial UI Controller state for activation
     this.state.setPanelClosed() // A default state of the panel is CLOSED
@@ -283,6 +287,106 @@ class Embedded {
 
     // nothing found.. assume desktop
     return false
+  }
+
+  initLock () {
+    if (!this.auth0Lock) {
+      if (!auth0Env) {
+        console.error(`Unable to find Auth0 configuration. Auth0 functionality will be disabled`)
+        return
+      }
+      this.auth0env = auth0Env
+
+      // initialize auth0 lock
+      this.auth0Lock = new Auth0Lock(this.auth0env.CLIENT_ID, this.auth0env.DOMAIN, { // eslint-disable-line no-undef
+        auth: {
+          params: {
+            scope: 'openid email'
+          },
+          responseType: 'token id_token'
+        }
+      })
+
+      // Handle login
+      this.auth0Lock.on('authenticated', (authResult) => {
+        console.log(authResult)
+        this.auth0Lock.getUserInfo(authResult.accessToken, (error, profile) => {
+          if (error) {
+            // Handle error
+            return
+          }
+
+          document.getElementById('nick').textContent = profile.nickname
+
+          localStorage.setItem('accessToken', authResult.accessToken)
+          localStorage.setItem('id_token', authResult.idToken)
+          localStorage.setItem('profile', JSON.stringify(profile))
+
+          this.updateAuth0UI()
+        })
+      })
+    }
+  }
+
+  logIn () {
+    if (!this.auth0Lock) { this.initLock() }
+    console.log(`Logging in`)
+    this.auth0Lock.show()
+  }
+
+  logOut () {
+    console.log(`Logging out`)
+    localStorage.removeItem('id_token')
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('profile')
+  }
+
+  get isLoggedIn () {
+    return Boolean(localStorage.getItem('id_token'))
+  }
+
+  getUserData () {
+    // Call private API with JWT in header
+    const token = localStorage.getItem('id_token')
+    /*
+     // block request from happening if no JWT token present
+     if (!token) {
+      document.getElementById('message').textContent = ''
+      document.getElementById('message').textContent =
+       'You must login to call this protected endpoint!'
+      return false
+    } */
+    // Do request to private endpoint
+    let auth = `Bearer ${token}`
+    console.log(`Auth:`, auth);
+    fetch(this.auth0env.ENDPOINT, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+      .then(response => response.json())
+      .then((data) => {
+        console.log('Token:', data)
+      })
+      .catch((e) => {
+        console.log('error', e)
+      })
+  }
+
+  get profile () {
+    if (!this._auth0profile) { this._auth0profile = JSON.parse(localStorage.getItem('profile')) }
+    return this._auth0profile
+  }
+
+  updateAuth0UI () {
+    if (this.isLoggedIn) {
+      // swap buttons
+      document.getElementById('btn-login').style.display = 'none'
+      document.getElementById('btn-logout').style.display = 'inline'
+      // show username
+      document.getElementById('nick').textContent = this.profile.email
+    }
   }
 }
 
