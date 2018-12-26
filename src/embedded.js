@@ -309,7 +309,6 @@ class Embedded {
 
       // Handle login
       this.auth0Lock.on('authenticated', (authResult) => {
-        console.log(authResult)
         this.auth0Lock.getUserInfo(authResult.accessToken, (error, profile) => {
           if (error) {
             // Handle error
@@ -330,12 +329,10 @@ class Embedded {
 
   logIn () {
     if (!this.auth0Lock) { this.initLock() }
-    console.log(`Logging in`)
     this.auth0Lock.show()
   }
 
   logOut () {
-    console.log(`Logging out`)
     localStorage.removeItem('id_token')
     localStorage.removeItem('access_token')
     localStorage.removeItem('profile')
@@ -348,17 +345,13 @@ class Embedded {
   getUserData () {
     // Call private API with JWT in header
     const token = localStorage.getItem('id_token')
-    /*
+
      // block request from happening if no JWT token present
      if (!token) {
-      document.getElementById('message').textContent = ''
-      document.getElementById('message').textContent =
-       'You must login to call this protected endpoint!'
-      return false
-    } */
+       console.error('You must login to call this protected endpoint!')
+      return
+    }
     // Do request to private endpoint
-    let auth = `Bearer ${token}`
-    console.log(`Auth:`, auth);
     fetch(this.auth0env.ENDPOINT, {
       method: 'POST',
       headers: {
@@ -370,7 +363,7 @@ class Embedded {
         console.log('Token:', data)
       })
       .catch((e) => {
-        console.log('error', e)
+        console.error('error', e)
       })
   }
 

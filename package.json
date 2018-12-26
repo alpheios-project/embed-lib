@@ -34,8 +34,8 @@
     "alpheios-node-build": "github:alpheios-project/node-build",
     "alpheios-res-client": "github:alpheios-project/res-client",
     "coveralls": "^3.0.2",
-    "css-loader": "^2.0.2",
-    "eslint": "^5.9.0",
+    "css-loader": "^2.1.0",
+    "eslint": "^5.11.0",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-node": "^8.0.0",
@@ -54,11 +54,11 @@
     "sass-loader": "^7.1.0",
     "source-map-loader": "^0.2.4",
     "style-loader": "^0.23.1",
-    "url-loader": "^1.1.1",
+    "url-loader": "^1.1.2",
     "vue-loader": "^15.4.2",
     "vue-style-loader": "^4.1.2",
     "vue-svg-loader": "^0.11.0",
-    "webpack-dev-server": "^3.1.10"
+    "webpack-dev-server": "^3.1.14"
   },
   "engines": {
     "node": ">= 9.10.1",
