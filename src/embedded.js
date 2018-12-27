@@ -324,6 +324,18 @@ class Embedded {
           this.updateAuth0UI()
         })
       })
+
+      // Unrecoverable error handler
+      this.auth0Lock.on('unrecoverable_error', (error) => {
+        console.error(`Auth0 Lock unrecoverable error: `, error)
+      })
+
+      // An authorization error
+      this.auth0Lock.on('authorization_error', (error) => {
+        console.error(`Auth0 Lock authorization error: `, error)
+      })
+
+      // TODO: Handle a situation when `authenticated` event is never fired (is that ever possible)
     }
   }
 
