@@ -17,6 +17,7 @@
       document.addEventListener("DOMContentLoaded", function(event) {
         alpheiosEmbedded = new Alpheios.Embedded({clientId:'alpheios-sample-file'})
         alpheiosEmbedded.activate().then(() => {
+          alpheiosEmbedded.initLock()
           alpheiosEmbedded.updateAuth0UI()
 
           // Handle login
@@ -49,14 +50,8 @@
     <h3>Auth0 Example</h3>
     <h2>Welcome <span id="nick" class="nickname"></span></h2>
     <div class='user-actions'>
-        <a id="btn-login" class="btn">
-            Log in
-        </a>
-        <button id="btn-logout" class="btn" style="display:none">
-            Logout
-        </button>
-    </div>
-    <div class='api-actions'>
+        <button id="btn-login" class="btn">Log in</button>
+        <button id="btn-logout" class="btn" style="display:none">Logout</button>
         <button id="btn-private" class="btn">Call Protected API</button>
     </div>
 </div>

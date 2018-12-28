@@ -50,21 +50,22 @@ h3 {
   color: #666;
 }
 
-.api-actions, .user-actions {
+.user-actions {
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 30px;
 }
-.api-actions button:last-of-type, .user-actions button:last-of-type {
+
+.user-actions button:last-of-type {
   margin-left: 20px;
 }
 
 @media (max-width: 768px) {
-  .api-actions, .user-actions {
+  .user-actions {
     flex-direction: column;
   }
-  .api-actions button:last-of-type, .user-actions button:last-of-type {
+  .user-actions button:last-of-type {
     margin-left: 0px;
     margin-top: 20px;
   }

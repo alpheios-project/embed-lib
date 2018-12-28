@@ -298,8 +298,9 @@ class Embedded {
       this.auth0env = auth0Env
 
       // initialize auth0 lock
-      this.auth0Lock = new Auth0Lock(this.auth0env.CLIENT_ID, this.auth0env.DOMAIN, { // eslint-disable-line no-undef
+      this.auth0Lock = new Auth0Lock(this.auth0env.CLIENT_ID, this.auth0env.DOMAIN, {
         auth: {
+          redirect: false,
           params: {
             scope: 'openid email'
           },
@@ -340,7 +341,6 @@ class Embedded {
   }
 
   logIn () {
-    if (!this.auth0Lock) { this.initLock() }
     this.auth0Lock.show()
   }
 
