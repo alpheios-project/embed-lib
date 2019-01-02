@@ -83,7 +83,7 @@ class Embedded {
     }
 
     // Set an initial UI Controller state for activation
-    this.state.setPanelClosed() // A default state of the panel is CLOSED
+    // this.state.setPanelClosed() // A default state of the panel is CLOSED
     this.state.tab = 'info' // A default tab is "info"
 
     this.ui = UIController.create(this.state, {
@@ -93,6 +93,7 @@ class Embedded {
     })
     // TODO: This is a temporary fix. Later we should pass necessary preferences via a UIController's options object
     if (preferences.ui) { this.ui.uiOptions = new Options(preferences.ui, LocalStorageArea) }
+
   }
 
   handleEscapeKey (event) {
