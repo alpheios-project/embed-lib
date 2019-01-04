@@ -93,7 +93,6 @@ class Embedded {
     })
     // TODO: This is a temporary fix. Later we should pass necessary preferences via a UIController's options object
     if (preferences.ui) { this.ui.uiOptions = new Options(preferences.ui, LocalStorageArea) }
-
   }
 
   handleEscapeKey (event) {
@@ -135,8 +134,9 @@ class Embedded {
       this.notifyExtension()
 
       await this.ui.init()
-      await this.ui.activate()
-
+      await this.ui.activate()      
+      await this.options.load()
+      
       console.log('UIController has been activated')
       // Set a body attribute so the content scrip will know if embeded library is active on a page
       this.doc.body.setAttribute('alpheios-embed-lib-status', 'active')
@@ -226,7 +226,7 @@ class Embedded {
           htmlSelector: htmlSelector,
           resourceOptions: this.resourceOptions,
           siteOptions: this.siteOptions,
-          lemmaTranslations: this.enableLemmaTranslations(textSelector) ? { locale: this.contentOptions.items.locale.currentValue } : null,
+          lemmaTranslations: this.enableLemmaTranslations(textSelector) ? { locale: this.options.items.locale.currentValue } : null,
           langOpts: { [Constants.LANG_PERSIAN]: { lookupMorphLast: true } } // TODO this should be externalized
         })
 
