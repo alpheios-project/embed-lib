@@ -219,7 +219,9 @@ class Embedded {
   handler (alpheiosEvent, domEvent) {
     if (this.triggerPreCallback(domEvent)) {
       let htmlSelector = new HTMLSelector(alpheiosEvent, this.options.items.preferredLanguage.currentValue)
+      console.info('*****************handler htmlSelector', htmlSelector)
       let textSelector = htmlSelector.createTextSelector()
+      console.info('*****************handler textSelector', textSelector)
 
       if (!textSelector.isEmpty()) {
         let lexQuery = LexicalQuery.create(textSelector, {
