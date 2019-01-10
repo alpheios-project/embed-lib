@@ -91,6 +91,8 @@ class Embedded {
 
     this.ui = UIController.create(this.state, {
       storageAdapter: LocalStorageArea,
+      textQueryTrigger: this.triggerEvents,
+      textQuerySelector: this.enabledSelector,
       app: { version: pckg.version, name: pckg.description },
       template: { html: Template, panelId: 'alpheios-panel-embedded', popupId: 'alpheios-popup-embedded' }
     })
@@ -177,18 +179,6 @@ class Embedded {
         if (this.disabledClass) {
           elem.classList.add(this.disabledClass)
         }
-      }
-    }
-
-    for (let t of trigger) {
-      if (t === 'dblclick') {
-        MouseDblClick.listen(selector, (evt, domEvt) => this.handler(evt, domEvt))
-      } else if (t === 'touchstart' || t === 'touchend') {
-        LongTap.listen(selector, (evt, domEvt) => this.handler(evt, domEvt))
-        console.warn(`touch events are not yet fully supported`)
-      } else {
-        GenericEvt.listen(selector, (evt, domEvt) => this.handler(evt, domEvt), t)
-        console.warn(`events other than dblclick may not work correctly`)
       }
     }
 
