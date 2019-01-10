@@ -29,6 +29,15 @@ export default class AppAuthenticator {
         this.auth0env = auth0Env
         // initialize auth0 lock
         this.auth0Lock = new Auth0Lock(this.auth0env.CLIENT_ID, this.auth0env.DOMAIN, {
+          theme: {
+            logo: 'https://alpheios.net/logos/alpheios_32.png',
+            labeledSubmitButton: false,
+            primaryColor: '#436476'
+          },
+          languageDictionary: {
+            title: "Login",
+            signUpTerms: "By signing up, you agree to our terms of service and <a href=\"https://alpheios.net/pages/privacy-policy\">privacy policy</a>."
+          },
           auth: {
             redirect: false,
             params: {
