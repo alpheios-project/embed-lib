@@ -17,6 +17,8 @@ export default class AppAuthenticator {
    * @return {Promise}
    */
   authenticate () {
+    // TODO we should check to see if we already have a valid idToken before
+    // initiating authentication
     return new Promise((resolve, reject) => {
       if (!this.auth0Lock) {
         if (!auth0Env) {
@@ -40,6 +42,7 @@ export default class AppAuthenticator {
       }
       // Handle login
       this.auth0Lock.on('authenticated', (authResult) => {
+        this.auth0Lock.hide()
         localStorage.setItem('access_token', authResult.accessToken)
         localStorage.setItem('id_token', authResult.idToken)
         //localStorage.setItem('profile', JSON.stringify(profile))
@@ -59,6 +62,7 @@ export default class AppAuthenticator {
       })
       this.auth0Lock.show()
       // TODO: Handle a situation when `authenticated` event is never fired (is that ever possible)
+      // maybe via a Timeout?
     })
   }
 
@@ -119,10 +123,9 @@ export default class AppAuthenticator {
     localStorage.removeItem('id_token')
     localStorage.removeItem('access_token')
     localStorage.removeItem('profile')
+    this.auth0Lock.logout({
+      returnTo: this.auth0env.LOGOUT_URL
+    })
   }
 
 }
-// Defaults
-AppAuthenticator.DEFAULT_MSG_TIMEOUT = 10000
-// During authentication we should provide enough time for the user to enter his or her credentials
-AppAuthenticator.AUTH_TIMEOUT = 600000
