@@ -146,7 +146,7 @@ class Embedded {
       this.doc.body.addEventListener('Alpheios_Embedded_Check', event => { this.notifyExtension(event) })
       this.doc.body.addEventListener('keydown', event => { this.handleEscapeKey(event) })
       Object.assign(this.ui.panel.panelData, this.panelData)
-      Object.assign(this.ui.popup.popupData, this.popupData)
+      Object.assign(this.ui.popup.vi.popupData, this.popupData)
     } catch (error) {
       console.error(`Cannot activate a UI controller: ${error}`)
       return
