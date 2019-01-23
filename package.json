@@ -26,9 +26,9 @@
   },
   "homepage": "https://github.com/alpheios-project/wordsvc#readme",
   "devDependencies": {
-    "alpheios-client-adapters": "github:alpheios-project/client-adapters#feat-4-concordance",
-    "alpheios-components": "github:alpheios-project/components#feat-4-concordance",
-    "alpheios-data-models": "github:alpheios-project/data-models#feat-4-concordance",
+    "alpheios-client-adapters": "github:alpheios-project/client-adapter",
+    "alpheios-components": "github:alpheios-project/components",
+    "alpheios-data-models": "github:alpheios-project/data-models",
     "alpheios-experience": "github:alpheios-project/experience",
     "alpheios-inflection-tables": "git://github.com/alpheios-project/inflection-tables.git",
     "alpheios-node-build": "github:alpheios-project/node-build",
