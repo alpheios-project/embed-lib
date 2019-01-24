@@ -2,12 +2,73 @@
 /* global Event, Auth0Lock */
 import ComponentStyles from '../node_modules/alpheios-components/dist/style/style.min.css' // eslint-disable-line
 import { Constants } from 'alpheios-data-models'
-import { UIController, HTMLSelector, LexicalQuery, ContentOptionDefaults, LanguageOptionDefaults,
-  Options, LocalStorageArea, MouseDblClick, LongTap, GenericEvt, AlignmentSelector } from 'alpheios-components'
+import { UIController, UIEventController, HTMLSelector, LexicalQuery, ResourceQuery, AnnotationQuery,
+  ContentOptionDefaults, LanguageOptionDefaults, Options, LocalStorageArea,
+  MouseDblClick, LongTap, GenericEvt, AlignmentSelector,
+   L10nModule, PanelModule, PopupModule, Locales } from 'alpheios-components'
 import State from './state'
 import Template from './template.htmlf'
 import interact from 'interactjs'
 import Package from '../package.json'
+
+
+UIController.createEmbed = (state, options) => {
+  let uiController = new UIController(state, options)
+
+  // Register data modules
+  uiController.registerDataModule(L10nModule, Locales.en_US, Locales.bundleArr())
+
+  // Register UI modules
+  uiController.registerUiModule(PanelModule, {
+    mountPoint: '#alpheios-panel-embedded',
+    tabs: uiController.tabState, // TODO: should be accessed via a public API, not via a direct link. This is a temporary solutions
+    uiController: uiController // Some child UI components require direct link to a uiController. TODO: remove during refactoring
+  })
+  uiController.registerUiModule(PopupModule, {
+    mountPoint: '#alpheios-popup-embedded',
+    uiController: uiController // Some child UI components require direct link to a uiController. TODO: remove during refactoring
+  })
+
+  // Creates on configures an event listener
+  let eventController = new UIEventController()
+  /*switch (uiController.options.textQueryTrigger) {
+    case 'dblClick':
+      eventController.registerListener('GetSelectedText', uiController.options.textQuerySelector, uiController.getSelectedText.bind(uiController), MouseDblClick)
+      break
+    case 'longTap':
+      eventController.registerListener('GetSelectedText', uiController.options.textQuerySelector, uiController.getSelectedText.bind(uiController), LongTap)
+      break
+    default:
+      eventController.registerListener(
+        'GetSelectedText', uiController.options.textQuerySelector, uiController.getSelectedText.bind(uiController), GenericEvt, uiController.options.textQueryTrigger
+      )
+  }*/
+
+  eventController.registerListener('HandleEscapeKey', document, uiController.handleEscapeKey.bind(uiController), GenericEvt, 'keydown')
+  eventController.registerListener('AlpheiosPageLoad', 'body', uiController.updateAnnotations.bind(uiController), GenericEvt, 'Alpheios_Page_Load')
+
+  // Attaches an event controller to a UIController instance
+  uiController.evc = eventController
+
+  // Subscribe to LexicalQuery events
+  LexicalQuery.evt.LEXICAL_QUERY_COMPLETE.sub(uiController.onLexicalQueryComplete.bind(uiController))
+  LexicalQuery.evt.MORPH_DATA_READY.sub(uiController.onMorphDataReady.bind(uiController))
+  LexicalQuery.evt.MORPH_DATA_NOTAVAILABLE.sub(uiController.onMorphDataNotFound.bind(uiController))
+  LexicalQuery.evt.HOMONYM_READY.sub(uiController.onHomonymReady.bind(uiController))
+  LexicalQuery.evt.LEMMA_TRANSL_READY.sub(uiController.onLemmaTranslationsReady.bind(uiController))
+  LexicalQuery.evt.DEFS_READY.sub(uiController.onDefinitionsReady.bind(uiController))
+  LexicalQuery.evt.DEFS_NOT_FOUND.sub(uiController.onDefinitionsNotFound.bind(uiController))
+
+  // Subscribe to ResourceQuery events
+  ResourceQuery.evt.RESOURCE_QUERY_COMPLETE.sub(uiController.onResourceQueryComplete.bind(uiController))
+  ResourceQuery.evt.GRAMMAR_AVAILABLE.sub(uiController.onGrammarAvailable.bind(uiController))
+  ResourceQuery.evt.GRAMMAR_NOT_FOUND.sub(uiController.onGrammarNotFound.bind(uiController))
+
+  // Subscribe to AnnotationQuery events
+  AnnotationQuery.evt.ANNOTATIONS_AVAILABLE.sub(uiController.onAnnotationsAvailable.bind(uiController))
+
+  return uiController
+}
 
 /**
  * Encapsulation of Alpheios functionality which can be embedded in a webpage
@@ -90,16 +151,17 @@ class Embedded {
     this.state.setPanelClosed() // A default state of the panel is CLOSED
     this.state.tab = 'info' // A default tab is "info"
 
-    this.ui = UIController.create(this.state, {
+    this.ui = UIController.createEmbed(this.state, {
       storageAdapter: LocalStorageArea,
       app: { version: pckg.version, name: pckg.description },
-      template: { html: Template, panelId: 'alpheios-panel-embedded', popupId: 'alpheios-popup-embedded' }
+      template: { html: Template }
     })
     // TODO: This is a temporary fix. Later we should pass necessary preferences via a UIController's options object
     if (preferences.ui) { this.ui.uiOptions = new Options(preferences.ui, LocalStorageArea) }
   }
 
-  handleEscapeKey (event) {
+  // We probably don't need this because it seems to implement the same functionality as the existing `handleEscapeKey()` in a UI Controller
+  /*handleEscapeKey (event) {
     if (event.keyCode === 27) {
       if (this.state.isPanelOpen()) {
         this.ui.panel.close()
@@ -108,7 +170,7 @@ class Embedded {
       }
     }
     return true
-  }
+  }*/
 
   notifyExtension (event) {
     this.doc.body.dispatchEvent(new Event('Alpheios_Embedded_Response'))
@@ -137,16 +199,17 @@ class Embedded {
        */
       this.notifyExtension()
 
-      await this.ui.init()
+      // await this.ui.init() // Activate will call `init()` if has not been initialized previously
       await this.ui.activate()
 
       console.log('UIController has been activated')
-      // Set a body attribute so the content scrip will know if embeded library is active on a page
+      // Set a body attribute so the content scrip will know if embedded library is active on a page
       this.doc.body.setAttribute('alpheios-embed-lib-status', 'active')
       this.doc.body.addEventListener('Alpheios_Embedded_Check', event => { this.notifyExtension(event) })
-      this.doc.body.addEventListener('keydown', event => { this.handleEscapeKey(event) })
-      Object.assign(this.ui.panel.panelData, this.panelData)
-      Object.assign(this.ui.popup.vi.popupData, this.popupData)
+      // this.doc.body.addEventListener('keydown', event => { this.handleEscapeKey(event) }) // This is done in UI controller's `activate()`
+      // The following two seems to not be used currently. The better way to do it is through options of panel and popup modules.
+      // Object.assign(this.ui.panel.vi.panelData, this.panelData)
+      // Object.assign(this.ui.popup.vi.popupData, this.popupData)
     } catch (error) {
       console.error(`Cannot activate a UI controller: ${error}`)
       return
@@ -235,7 +298,7 @@ class Embedded {
 
         this.ui.setTargetRect(htmlSelector.targetRect)
         this.ui.newLexicalRequest(textSelector.languageID)
-        this.ui.message(this.ui.l10n.messages.TEXT_NOTICE_DATA_RETRIEVAL_IN_PROGRESS)
+        this.ui.message(this.ui.api.l10n.getMsg('TEXT_NOTICE_DATA_RETRIEVAL_IN_PROGRESS'))
         this.ui.showStatusInfo(textSelector.normalizedText, textSelector.languageID)
         this.ui.updateLanguage(textSelector.languageID)
         this.ui.updateWordAnnotationData(textSelector.data)
