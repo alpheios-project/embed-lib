@@ -87,7 +87,7 @@ class Embedded {
     this._auth0profile = null // A user profile from Auth0
 
     // Set an initial UI Controller state for activation
-    this.state.setPanelClosed() // A default state of the panel is CLOSED
+    // this.state.setPanelClosed() // A default state of the panel is CLOSED
     this.state.tab = 'info' // A default tab is "info"
 
     this.ui = UIController.create(this.state, {
@@ -139,14 +139,15 @@ class Embedded {
 
       await this.ui.init()
       await this.ui.activate()
+      await this.options.load()
 
       console.log('UIController has been activated')
       // Set a body attribute so the content scrip will know if embeded library is active on a page
       this.doc.body.setAttribute('alpheios-embed-lib-status', 'active')
       this.doc.body.addEventListener('Alpheios_Embedded_Check', event => { this.notifyExtension(event) })
       this.doc.body.addEventListener('keydown', event => { this.handleEscapeKey(event) })
-      Object.assign(this.ui.panel.panelData, this.panelData)
-      Object.assign(this.ui.popup.vi.popupData, this.popupData)
+      // Object.assign(this.ui.panel.panelData, this.panelData)
+      // Object.assign(this.ui.popup.popupData, this.popupData)
     } catch (error) {
       console.error(`Cannot activate a UI controller: ${error}`)
       return
@@ -182,7 +183,7 @@ class Embedded {
 
     for (let t of trigger) {
       if (t === 'dblclick') {
-        MouseDblClick.listen(selector, (evt, domEvt) => this.handler(evt, domEvt))
+        MouseDblClick.listen(selector, async (evt, domEvt) => await this.handler(evt, domEvt))
       } else if (t === 'touchstart' || t === 'touchend') {
         LongTap.listen(selector, (evt, domEvt) => this.handler(evt, domEvt))
         console.warn(`touch events are not yet fully supported`)
@@ -219,17 +220,20 @@ class Embedded {
     }
   }
 
-  handler (alpheiosEvent, domEvent) {
+  async handler (alpheiosEvent, domEvent) {
     if (this.triggerPreCallback(domEvent)) {
       let htmlSelector = new HTMLSelector(alpheiosEvent, this.options.items.preferredLanguage.currentValue)
       let textSelector = htmlSelector.createTextSelector()
 
       if (!textSelector.isEmpty()) {
+        await this.options.load()
+        
         let lexQuery = LexicalQuery.create(textSelector, {
           htmlSelector: htmlSelector,
           resourceOptions: this.resourceOptions,
           siteOptions: this.siteOptions,
-          lemmaTranslations: this.enableLemmaTranslations(textSelector) ? { locale: this.contentOptions.items.locale.currentValue } : null,
+          lemmaTranslations: this.enableLemmaTranslations(textSelector) ? { locale: this.options.items.locale.currentValue } : null,
+          wordUsageExamples: this.enableWordUsageExamples(textSelector) ? { paginationMax: this.options.items.wordUsageExamplesMax.currentValue } : null,
           langOpts: { [Constants.LANG_PERSIAN]: { lookupMorphLast: true } } // TODO this should be externalized
         })
 
@@ -265,6 +269,11 @@ class Embedded {
     return textSelector.languageID === Constants.LANG_LATIN &&
       this.options.items.enableLemmaTranslations.currentValue &&
       !this.options.items.locale.currentValue.match(/^en-/)
+  }
+
+  enableWordUsageExamples (textSelector) {
+    return textSelector.languageID === Constants.LANG_LATIN &&
+      this.options.items.enableWordUsageExamples.currentValue
   }
 
   /**
