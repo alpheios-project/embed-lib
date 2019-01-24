@@ -11,7 +11,17 @@ import Template from './template.htmlf'
 import interact from 'interactjs'
 import Package from '../package.json'
 
-
+/**
+ * This is a custom `create` function that creates an instance of a UI controller
+ * that is configured to be used by an embedded lib.
+ * If any customization of a UI controller needs to be made,
+ * it has to be made here.
+ * @param {TabScript} state - A state object that will be passed to a UI controller.
+ * @param options - An options object that will be passed to a UI controller. It is phasing out
+ *        as the preferred way to configure a UI controller is via a custom `create()` function.
+ *        It is kept for compatibility only. Please do not use it.
+ * @return {UIController} A newly created instance of a UI controller.
+ */
 UIController.createEmbed = (state, options) => {
   let uiController = new UIController(state, options)
 
@@ -92,10 +102,6 @@ class Embedded {
    *     triggerPreCallback: a callback function which is called when the trigger event handler is invoked, prior to initiating
    *                         Alpheios functionality. It should return true to proced with lookup or false to abort.
    *                         Default: no-op, returns true
-   *     popupData: popup data overrides (currently only positioning properties supported, top and left)
-   *                Default: { top: '10vh', left: '10vw'}
-   *     panelData: panel data overrides (none currently supported. reserved for future use)
-   *                Default: {}
    *     mobileRedirectUrl: a URL to which to direct users if they use a mobile device to access a page which has Alpheios embedded
    */
   constructor ({
@@ -108,12 +114,10 @@ class Embedded {
     disabledClass = '',
     triggerEvents = 'dblclick',
     triggerPreCallback = (evt) => { return true },
-    preferences = { ui: null, site: null },
-    popupData = {},
-    panelData = {} } = {}) {
+    preferences = { ui: null, site: null }
+    } = {}) {
     this.clientId = clientId
-    this.popupData = popupData
-    this.panelData = panelData
+
     if (this.clientId === null) {
       throw new Error('Please identify the site.')
     }
@@ -128,7 +132,7 @@ class Embedded {
     this.disabledClass = disabledClass
     this.triggerEvents = triggerEvents
     this.triggerPreCallback = triggerPreCallback
-    this.options = new Options(ContentOptionDefaults, LocalStorageArea)
+    this.contentOptions = new Options(ContentOptionDefaults, LocalStorageArea)
     this.resourceOptions = new Options(LanguageOptionDefaults, LocalStorageArea)
 
     if (preferences.site) {
@@ -160,32 +164,8 @@ class Embedded {
     if (preferences.ui) { this.ui.uiOptions = new Options(preferences.ui, LocalStorageArea) }
   }
 
-  // We probably don't need this because it seems to implement the same functionality as the existing `handleEscapeKey()` in a UI Controller
-  /*handleEscapeKey (event) {
-    if (event.keyCode === 27) {
-      if (this.state.isPanelOpen()) {
-        this.ui.panel.close()
-      } else if (this.ui.popup.visible) {
-        this.ui.popup.close()
-      }
-    }
-    return true
-  }*/
-
-  notifyExtension (event) {
+  notifyExtension () {
     this.doc.body.dispatchEvent(new Event('Alpheios_Embedded_Response'))
-  }
-
-  optionSaver () {
-    return new Promise((resolve, reject) => {
-      reject(new Error('save not implemented'))
-    })
-  }
-
-  optionLoader () {
-    return new Promise((resolve, reject) => {
-      reject(new Error('load not implemented'))
-    })
   }
 
   async activate () {
@@ -206,10 +186,7 @@ class Embedded {
       // Set a body attribute so the content scrip will know if embedded library is active on a page
       this.doc.body.setAttribute('alpheios-embed-lib-status', 'active')
       this.doc.body.addEventListener('Alpheios_Embedded_Check', event => { this.notifyExtension(event) })
-      // this.doc.body.addEventListener('keydown', event => { this.handleEscapeKey(event) }) // This is done in UI controller's `activate()`
-      // The following two seems to not be used currently. The better way to do it is through options of panel and popup modules.
-      // Object.assign(this.ui.panel.vi.panelData, this.panelData)
-      // Object.assign(this.ui.popup.vi.popupData, this.popupData)
+
     } catch (error) {
       console.error(`Cannot activate a UI controller: ${error}`)
       return
@@ -284,7 +261,7 @@ class Embedded {
 
   handler (alpheiosEvent, domEvent) {
     if (this.triggerPreCallback(domEvent)) {
-      let htmlSelector = new HTMLSelector(alpheiosEvent, this.options.items.preferredLanguage.currentValue)
+      let htmlSelector = new HTMLSelector(alpheiosEvent, this.contentOptions.items.preferredLanguage.currentValue)
       let textSelector = htmlSelector.createTextSelector()
 
       if (!textSelector.isEmpty()) {
@@ -312,7 +289,7 @@ class Embedded {
     let allSiteOptions = []
     let loaded = siteOptions
     for (let site of loaded) {
-      for (let domain of site.options) {
+      for (let domain of site.contentOptions) {
         let siteOpts = new Options(domain, LocalStorageArea)
         allSiteOptions.push({ uriMatch: site.uriMatch, resourceOptions: siteOpts })
       }
@@ -326,8 +303,8 @@ class Embedded {
    */
   enableLemmaTranslations (textSelector) {
     return textSelector.languageID === Constants.LANG_LATIN &&
-      this.options.items.enableLemmaTranslations.currentValue &&
-      !this.options.items.locale.currentValue.match(/^en-/)
+      this.contentOptions.items.enableLemmaTranslations.currentValue &&
+      !this.contentOptions.items.locale.currentValue.match(/^en-/)
   }
 
   /**
