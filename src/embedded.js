@@ -25,6 +25,10 @@ import Package from '../package.json'
 UIController.createEmbed = (state, options) => {
   let uiController = new UIController(state, options)
 
+  // Set defaults for UI controller's options objects
+  // uiController.uiOptionsDefaults = preferences.ui
+  uiController.siteOptionsDefaults = []
+
   // Register data modules
   uiController.registerDataModule(L10nModule, Locales.en_US, Locales.bundleArr())
 
@@ -113,8 +117,8 @@ class Embedded {
     enabledClass = '',
     disabledClass = '',
     triggerEvents = 'dblclick',
-    triggerPreCallback = (evt) => { return true },
-    preferences = { ui: null, site: null }
+    triggerPreCallback = (evt) => { return true }// ,
+    // preferences = { ui: null, site: null }
     } = {}) {
     this.clientId = clientId
 
@@ -132,14 +136,14 @@ class Embedded {
     this.disabledClass = disabledClass
     this.triggerEvents = triggerEvents
     this.triggerPreCallback = triggerPreCallback
-    this.contentOptions = new Options(ContentOptionDefaults, LocalStorageArea)
-    this.resourceOptions = new Options(LanguageOptionDefaults, LocalStorageArea)
+    // this.contentOptions = new Options(ContentOptionDefaults, LocalStorageArea)
+    // this.resourceOptions = new Options(LanguageOptionDefaults, LocalStorageArea)
 
-    if (preferences.site) {
+    /*if (preferences.site) {
       this.siteOptions = this.loadSiteOptions(preferences.site)
     } else {
       this.siteOptions = []
-    }
+    }*/
     let pckg
     try {
       pckg = Package
@@ -161,7 +165,7 @@ class Embedded {
       template: { html: Template }
     })
     // TODO: This is a temporary fix. Later we should pass necessary preferences via a UIController's options object
-    if (preferences.ui) { this.ui.uiOptions = new Options(preferences.ui, LocalStorageArea) }
+    // if (preferences.ui) { this.ui.uiOptions = new Options(preferences.ui, LocalStorageArea) }
   }
 
   notifyExtension () {
@@ -261,15 +265,15 @@ class Embedded {
 
   handler (alpheiosEvent, domEvent) {
     if (this.triggerPreCallback(domEvent)) {
-      let htmlSelector = new HTMLSelector(alpheiosEvent, this.contentOptions.items.preferredLanguage.currentValue)
+      let htmlSelector = new HTMLSelector(alpheiosEvent, this.ui.contentOptions.items.preferredLanguage.currentValue)
       let textSelector = htmlSelector.createTextSelector()
 
       if (!textSelector.isEmpty()) {
         let lexQuery = LexicalQuery.create(textSelector, {
           htmlSelector: htmlSelector,
-          resourceOptions: this.resourceOptions,
-          siteOptions: this.siteOptions,
-          lemmaTranslations: this.enableLemmaTranslations(textSelector) ? { locale: this.contentOptions.items.locale.currentValue } : null,
+          resourceOptions: this.ui.resourceOptions,
+          siteOptions: this.ui.siteOptions,
+          lemmaTranslations: this.ui.enableLemmaTranslations(textSelector) ? { locale: this.ui.contentOptions.items.locale.currentValue } : null,
           langOpts: { [Constants.LANG_PERSIAN]: { lookupMorphLast: true } } // TODO this should be externalized
         })
 
@@ -285,7 +289,7 @@ class Embedded {
     }
   }
 
-  loadSiteOptions (siteOptions) {
+  /*loadSiteOptions (siteOptions) {
     let allSiteOptions = []
     let loaded = siteOptions
     for (let site of loaded) {
@@ -295,17 +299,17 @@ class Embedded {
       }
     }
     return allSiteOptions
-  }
+  }*/
 
   /**
    * Check to see if Lemma Translations should be enabled for a query
    *  NB this is Prototype functionality
    */
-  enableLemmaTranslations (textSelector) {
+  /*enableLemmaTranslations (textSelector) {
     return textSelector.languageID === Constants.LANG_LATIN &&
       this.contentOptions.items.enableLemmaTranslations.currentValue &&
       !this.contentOptions.items.locale.currentValue.match(/^en-/)
-  }
+  }*/
 
   /**
    *  Detect mobile device
