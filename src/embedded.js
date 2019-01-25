@@ -93,7 +93,7 @@ class Embedded {
    *     eventTriggers: a comma-separated list of DOM events to which Alpheios functionality should be attached
    *                    Default: "dblclick"
    *     triggerPreCallback: a callback function which is called when the trigger event handler is invoked, prior to initiating
-   *                         Alpheios functionality. It should return true to proced with lookup or false to abort.
+   *                         Alpheios functionality. It should return true to proceed with lookup or false to abort.
    *                         Default: no-op, returns true
    *     mobileRedirectUrl: a URL to which to direct users if they use a mobile device to access a page which has Alpheios embedded
    */
@@ -106,8 +106,7 @@ class Embedded {
     enabledClass = '',
     disabledClass = '',
     triggerEvents = 'dblclick',
-    triggerPreCallback = (evt) => { return true }// ,
-    // preferences = { ui: null, site: null }
+    triggerPreCallback = (evt) => { return true } // Not used at the moment but can be set as a filter for `this.ui.getSelectedText()` calls
     } = {}) {
     this.clientId = clientId
 
@@ -146,8 +145,6 @@ class Embedded {
       app: { version: pckg.version, name: pckg.description },
       template: { html: Template }
     })
-    // TODO: This is a temporary fix. Later we should pass necessary preferences via a UIController's options object
-    // if (preferences.ui) { this.ui.uiOptions = new Options(preferences.ui, LocalStorageArea) }
   }
 
   notifyExtension () {
@@ -208,12 +205,13 @@ class Embedded {
 
     for (let t of trigger) {
       if (t === 'dblclick') {
-        MouseDblClick.listen(selector, (evt, domEvt) => this.handler(evt, domEvt))
+        MouseDblClick.listen(selector, this.ui.getSelectedText.bind(this.ui))
+        this.ui.evc.registerListener('GetSelectedText', this.ui.options.textQuerySelector, this.ui.getSelectedText.bind(this.ui), MouseDblClick)
       } else if (t === 'touchstart' || t === 'touchend') {
-        LongTap.listen(selector, (evt, domEvt) => this.handler(evt, domEvt))
+        LongTap.listen(selector, this.ui.getSelectedText.bind(this.ui))
         console.warn(`touch events are not yet fully supported`)
       } else {
-        GenericEvt.listen(selector, (evt, domEvt) => this.handler(evt, domEvt), t)
+        GenericEvt.listen(selector, this.ui.getSelectedText.bind(this.ui), t)
         console.warn(`events other than dblclick may not work correctly`)
       }
     }
@@ -242,33 +240,6 @@ class Embedded {
         // update the element's style
         target.style.width = `${event.rect.width}px`
       })
-    }
-  }
-
-  handler (alpheiosEvent, domEvent) {
-    if (this.triggerPreCallback(domEvent)) {
-      let htmlSelector = new HTMLSelector(alpheiosEvent, this.ui.contentOptions.items.preferredLanguage.currentValue)
-      let textSelector = htmlSelector.createTextSelector()
-
-      if (!textSelector.isEmpty()) {
-        let lexQuery = LexicalQuery.create(textSelector, {
-          htmlSelector: htmlSelector,
-          resourceOptions: this.ui.resourceOptions,
-          siteOptions: this.ui.siteOptions,
-          lemmaTranslations: this.ui.enableLemmaTranslations(textSelector) ? { locale: this.ui.contentOptions.items.locale.currentValue } : null,
-          wordUsageExamples: this.ui.enableWordUsageExamples(textSelector) ? { paginationMax: this.ui.contentOptions.items.wordUsageExamplesMax.currentValue } : null,
-          langOpts: { [Constants.LANG_PERSIAN]: { lookupMorphLast: true } } // TODO this should be externalized
-        })
-
-        this.ui.setTargetRect(htmlSelector.targetRect)
-        this.ui.newLexicalRequest(textSelector.languageID)
-        this.ui.message(this.ui.api.l10n.getMsg('TEXT_NOTICE_DATA_RETRIEVAL_IN_PROGRESS'))
-        this.ui.showStatusInfo(textSelector.normalizedText, textSelector.languageID)
-        this.ui.updateLanguage(textSelector.languageID)
-        this.ui.updateWordAnnotationData(textSelector.data)
-
-        lexQuery.getData()
-      }
     }
   }
 
