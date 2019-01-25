@@ -45,18 +45,6 @@ UIController.createEmbed = (state, options) => {
 
   // Creates on configures an event listener
   let eventController = new UIEventController()
-  /*switch (uiController.options.textQueryTrigger) {
-    case 'dblClick':
-      eventController.registerListener('GetSelectedText', uiController.options.textQuerySelector, uiController.getSelectedText.bind(uiController), MouseDblClick)
-      break
-    case 'longTap':
-      eventController.registerListener('GetSelectedText', uiController.options.textQuerySelector, uiController.getSelectedText.bind(uiController), LongTap)
-      break
-    default:
-      eventController.registerListener(
-        'GetSelectedText', uiController.options.textQuerySelector, uiController.getSelectedText.bind(uiController), GenericEvt, uiController.options.textQueryTrigger
-      )
-  }*/
 
   eventController.registerListener('HandleEscapeKey', document, uiController.handleEscapeKey.bind(uiController), GenericEvt, 'keydown')
   eventController.registerListener('AlpheiosPageLoad', 'body', uiController.updateAnnotations.bind(uiController), GenericEvt, 'Alpheios_Page_Load')
@@ -70,6 +58,7 @@ UIController.createEmbed = (state, options) => {
   LexicalQuery.evt.MORPH_DATA_NOTAVAILABLE.sub(uiController.onMorphDataNotFound.bind(uiController))
   LexicalQuery.evt.HOMONYM_READY.sub(uiController.onHomonymReady.bind(uiController))
   LexicalQuery.evt.LEMMA_TRANSL_READY.sub(uiController.updateTranslations.bind(uiController))
+  LexicalQuery.evt.WORD_USAGE_EXAMPLES_READY.sub(uiController.onWordUsageExamplesReady.bind(uiController))
   LexicalQuery.evt.DEFS_READY.sub(uiController.onDefinitionsReady.bind(uiController))
   LexicalQuery.evt.DEFS_NOT_FOUND.sub(uiController.onDefinitionsNotFound.bind(uiController))
 
@@ -136,14 +125,7 @@ class Embedded {
     this.disabledClass = disabledClass
     this.triggerEvents = triggerEvents
     this.triggerPreCallback = triggerPreCallback
-    // this.contentOptions = new Options(ContentOptionDefaults, LocalStorageArea)
-    // this.resourceOptions = new Options(LanguageOptionDefaults, LocalStorageArea)
 
-    /*if (preferences.site) {
-      this.siteOptions = this.loadSiteOptions(preferences.site)
-    } else {
-      this.siteOptions = []
-    }*/
     let pckg
     try {
       pckg = Package
@@ -289,28 +271,6 @@ class Embedded {
       }
     }
   }
-
-  /*loadSiteOptions (siteOptions) {
-    let allSiteOptions = []
-    let loaded = siteOptions
-    for (let site of loaded) {
-      for (let domain of site.contentOptions) {
-        let siteOpts = new Options(domain, LocalStorageArea)
-        allSiteOptions.push({ uriMatch: site.uriMatch, resourceOptions: siteOpts })
-      }
-    }
-    return allSiteOptions
-  }*/
-
-  /**
-   * Check to see if Lemma Translations should be enabled for a query
-   *  NB this is Prototype functionality
-   */
-  /*enableLemmaTranslations (textSelector) {
-    return textSelector.languageID === Constants.LANG_LATIN &&
-      this.contentOptions.items.enableLemmaTranslations.currentValue &&
-      !this.contentOptions.items.locale.currentValue.match(/^en-/)
-  }*/
 
   /**
    *  Detect mobile device
