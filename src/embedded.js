@@ -256,7 +256,7 @@ class Embedded {
           resourceOptions: this.ui.resourceOptions,
           siteOptions: this.ui.siteOptions,
           lemmaTranslations: this.ui.enableLemmaTranslations(textSelector) ? { locale: this.ui.contentOptions.items.locale.currentValue } : null,
-          wordUsageExamples: this.ui.enableWordUsageExamples(textSelector) ? { paginationMax: this.options.items.wordUsageExamplesMax.currentValue } : null,
+          wordUsageExamples: this.ui.enableWordUsageExamples(textSelector) ? { paginationMax: this.ui.contentOptions.items.wordUsageExamplesMax.currentValue } : null,
           langOpts: { [Constants.LANG_PERSIAN]: { lookupMorphLast: true } } // TODO this should be externalized
         })
 
