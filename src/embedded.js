@@ -156,7 +156,7 @@ class Embedded {
     this._auth0profile = null // A user profile from Auth0
 
     // Set an initial UI Controller state for activation
-    this.state.setPanelClosed() // A default state of the panel is CLOSED
+    // this.state.setPanelClosed() // A default state of the panel is CLOSED
     this.state.tab = 'info' // A default tab is "info"
 
     this.ui = UIController.createEmbed(this.state, {
@@ -274,6 +274,7 @@ class Embedded {
           resourceOptions: this.ui.resourceOptions,
           siteOptions: this.ui.siteOptions,
           lemmaTranslations: this.ui.enableLemmaTranslations(textSelector) ? { locale: this.ui.contentOptions.items.locale.currentValue } : null,
+          wordUsageExamples: this.ui.enableWordUsageExamples(textSelector) ? { paginationMax: this.options.items.wordUsageExamplesMax.currentValue } : null,
           langOpts: { [Constants.LANG_PERSIAN]: { lookupMorphLast: true } } // TODO this should be externalized
         })
 
