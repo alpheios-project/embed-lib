@@ -69,7 +69,7 @@ UIController.createEmbed = (state, options) => {
   LexicalQuery.evt.MORPH_DATA_READY.sub(uiController.onMorphDataReady.bind(uiController))
   LexicalQuery.evt.MORPH_DATA_NOTAVAILABLE.sub(uiController.onMorphDataNotFound.bind(uiController))
   LexicalQuery.evt.HOMONYM_READY.sub(uiController.onHomonymReady.bind(uiController))
-  LexicalQuery.evt.LEMMA_TRANSL_READY.sub(uiController.onLemmaTranslationsReady.bind(uiController))
+  LexicalQuery.evt.LEMMA_TRANSL_READY.sub(uiController.updateTranslations.bind(uiController))
   LexicalQuery.evt.DEFS_READY.sub(uiController.onDefinitionsReady.bind(uiController))
   LexicalQuery.evt.DEFS_NOT_FOUND.sub(uiController.onDefinitionsNotFound.bind(uiController))
 
