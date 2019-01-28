@@ -1,5 +1,5 @@
 /* eslint-env jest */
-/* global Event, Auth0Lock */
+/* global Event */
 import ComponentStyles from '../node_modules/alpheios-components/dist/style/style.min.css' // eslint-disable-line
 import { Constants } from 'alpheios-data-models'
 import { UIController, HTMLSelector, LexicalQuery, ContentOptionDefaults, LanguageOptionDefaults,
@@ -8,6 +8,7 @@ import State from './state'
 import Template from './template.htmlf'
 import interact from 'interactjs'
 import Package from '../package.json'
+import AppAuthenticator from './lib/app-authenticator'
 
 /**
  * Encapsulation of Alpheios functionality which can be embedded in a webpage
@@ -82,9 +83,7 @@ class Embedded {
       throw new Error(`Cannot parse package.json, its format is probably incorrect`)
     }
 
-    // An Auth0 Lock widget instance. Will be initialized lazily
-    this.auth0Lock = null
-    this._auth0profile = null // A user profile from Auth0
+    this.auth = new AppAuthenticator()
 
     // Set an initial UI Controller state for activation
     // this.state.setPanelClosed() // A default state of the panel is CLOSED
@@ -92,9 +91,12 @@ class Embedded {
 
     this.ui = UIController.create(this.state, {
       storageAdapter: LocalStorageArea,
+      textQueryTrigger: this.triggerEvents,
+      textQuerySelector: this.enabledSelector,
       app: { version: pckg.version, name: pckg.description },
       template: { html: Template, panelId: 'alpheios-panel-embedded', popupId: 'alpheios-popup-embedded' }
     })
+    this.ui.auth = new AppAuthenticator()
     // TODO: This is a temporary fix. Later we should pass necessary preferences via a UIController's options object
     if (preferences.ui) { this.ui.uiOptions = new Options(preferences.ui, LocalStorageArea) }
   }
@@ -181,18 +183,6 @@ class Embedded {
       }
     }
 
-    for (let t of trigger) {
-      if (t === 'dblclick') {
-        MouseDblClick.listen(selector, async (evt, domEvt) => await this.handler(evt, domEvt))
-      } else if (t === 'touchstart' || t === 'touchend') {
-        LongTap.listen(selector, (evt, domEvt) => this.handler(evt, domEvt))
-        console.warn(`touch events are not yet fully supported`)
-      } else {
-        GenericEvt.listen(selector, (evt, domEvt) => this.handler(evt, domEvt), t)
-        console.warn(`events other than dblclick may not work correctly`)
-      }
-    }
-
     let alignment = new AlignmentSelector(this.doc, {})
     alignment.activate()
     let alignedTranslation = this.doc.querySelectorAll('.aligned-translation')
@@ -227,7 +217,7 @@ class Embedded {
 
       if (!textSelector.isEmpty()) {
         await this.options.load()
-        
+
         let lexQuery = LexicalQuery.create(textSelector, {
           htmlSelector: htmlSelector,
           resourceOptions: this.resourceOptions,
@@ -296,111 +286,6 @@ class Embedded {
 
     // nothing found.. assume desktop
     return false
-  }
-
-  initLock () {
-    if (!this.auth0Lock) {
-      if (!auth0Env) {
-        console.error(`Unable to find Auth0 configuration. Auth0 functionality will be disabled`)
-        return
-      }
-      this.auth0env = auth0Env
-
-      // initialize auth0 lock
-      this.auth0Lock = new Auth0Lock(this.auth0env.CLIENT_ID, this.auth0env.DOMAIN, {
-        auth: {
-          redirect: false,
-          params: {
-            scope: 'openid email'
-          },
-          responseType: 'token id_token'
-        }
-      })
-
-      // Handle login
-      this.auth0Lock.on('authenticated', (authResult) => {
-        this.auth0Lock.getUserInfo(authResult.accessToken, (error, profile) => {
-          if (error) {
-            // Handle error
-            return
-          }
-
-          document.getElementById('nick').textContent = profile.nickname
-
-          localStorage.setItem('accessToken', authResult.accessToken)
-          localStorage.setItem('id_token', authResult.idToken)
-          localStorage.setItem('profile', JSON.stringify(profile))
-
-          this.updateAuth0UI()
-        })
-      })
-
-      // Unrecoverable error handler
-      this.auth0Lock.on('unrecoverable_error', (error) => {
-        console.error(`Auth0 Lock unrecoverable error: `, error)
-      })
-
-      // An authorization error
-      this.auth0Lock.on('authorization_error', (error) => {
-        console.error(`Auth0 Lock authorization error: `, error)
-      })
-
-      // TODO: Handle a situation when `authenticated` event is never fired (is that ever possible)
-    }
-  }
-
-  logIn () {
-    this.auth0Lock.show()
-  }
-
-  logOut () {
-    localStorage.removeItem('id_token')
-    localStorage.removeItem('access_token')
-    localStorage.removeItem('profile')
-  }
-
-  get isLoggedIn () {
-    return Boolean(localStorage.getItem('id_token'))
-  }
-
-  getUserData () {
-    // Call private API with JWT in header
-    const token = localStorage.getItem('id_token')
-
-     // block request from happening if no JWT token present
-     if (!token) {
-       console.error('You must login to call this protected endpoint!')
-      return
-    }
-    // Do request to private endpoint
-    fetch(this.auth0env.ENDPOINT, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-      .then(response => response.json())
-      .then((data) => {
-        console.log('Token:', data)
-      })
-      .catch((e) => {
-        console.error('error', e)
-      })
-  }
-
-  get profile () {
-    if (!this._auth0profile) { this._auth0profile = JSON.parse(localStorage.getItem('profile')) }
-    return this._auth0profile
-  }
-
-  updateAuth0UI () {
-    if (this.isLoggedIn) {
-      // swap buttons
-      document.getElementById('btn-login').style.display = 'none'
-      document.getElementById('btn-logout').style.display = 'inline'
-      // show username
-      document.getElementById('nick').textContent = this.profile.email
-    }
   }
 }
 
