@@ -35,13 +35,13 @@
     "alpheios-res-client": "github:alpheios-project/res-client",
     "coveralls": "^3.0.2",
     "css-loader": "^2.1.0",
-    "eslint": "^5.11.0",
+    "eslint": "^5.12.0",
     "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-node": "^8.0.0",
+    "eslint-plugin-import": "^2.15.0",
+    "eslint-plugin-node": "^8.0.1",
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
-    "eslint-plugin-vue": "^5.0.0",
+    "eslint-plugin-vue": "^5.1.0",
     "html-loader": "^0.5.5",
     "html-loader-jest": "^0.2.1",
     "http-server": "^0.11.1",
@@ -55,7 +55,7 @@
     "source-map-loader": "^0.2.4",
     "style-loader": "^0.23.1",
     "url-loader": "^1.1.2",
-    "vue-loader": "^15.4.2",
+    "vue-loader": "^15.5.1",
     "vue-style-loader": "^4.1.2",
     "vue-svg-loader": "^0.11.0",
     "webpack-dev-server": "^3.1.14"
@@ -66,7 +66,6 @@
   },
   "jest": {
     "verbose": true,
-    "testEnvironment": "jest-environment-jsdom-11.0.0",
     "transform": {
       "^.+\\.htmlf$": "html-loader-jest",
       "^.+\\.jsx?$": "babel-jest"
@@ -81,7 +80,7 @@
       "node": true
     },
     "parserOptions": {
-      "ecmaVersion": 2017,
+      "ecmaVersion": 2018,
       "sourceType": "module"
     }
   },
