@@ -46,6 +46,18 @@ UIController.createEmbed = (state, options) => {
 
   // Creates on configures an event listener
   let eventController = new UIEventController()
+  switch (uiController.options.textQueryTrigger) {
+    case 'dblClick':
+      eventController.registerListener('GetSelectedText', uiController.options.textQuerySelector, uiController.getSelectedText.bind(uiController), MouseDblClick)
+      break
+    case 'longTap':
+      eventController.registerListener('GetSelectedText', uiController.options.textQuerySelector, uiController.getSelectedText.bind(uiController), LongTap)
+      break
+    default:
+      eventController.registerListener(
+        'GetSelectedText', uiController.options.textQuerySelector, uiController.getSelectedText.bind(uiController), GenericEvt, uiController.options.textQueryTrigger
+      )
+  }
 
   eventController.registerListener('HandleEscapeKey', document, uiController.handleEscapeKey.bind(uiController), GenericEvt, 'keydown')
   eventController.registerListener('AlpheiosPageLoad', 'body', uiController.updateAnnotations.bind(uiController), GenericEvt, 'Alpheios_Page_Load')
