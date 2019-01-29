@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <script src="https://cdn.auth0.com/js/lock/11.4.0/lock.min.js"></script>
+    <script src="https://cdn.auth0.com/js/lock/11.12.1/lock.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="../dist/style/style.min.css"/>
     <link rel="stylesheet" href="../dist/style/style-embedded.min.css"/>
@@ -16,45 +16,9 @@
     let alpheiosEmbedded = null
       document.addEventListener("DOMContentLoaded", function(event) {
         alpheiosEmbedded = new Alpheios.Embedded({clientId:'alpheios-sample-file'})
-        alpheiosEmbedded.activate().then(() => {
-          alpheiosEmbedded.initLock()
-          alpheiosEmbedded.updateAuth0UI()
-
-          // Handle login
-          document.getElementById('btn-login').addEventListener('click', () => {
-            if (alpheiosEmbedded) { alpheiosEmbedded.logIn() }
-          })
-
-          // Handle logout
-          document.getElementById('btn-logout').addEventListener('click', () => {
-            if (alpheiosEmbedded) { alpheiosEmbedded.logOut() }
-            document.getElementById('btn-login').style.display = 'flex'
-            document.getElementById('btn-logout').style.display = 'none'
-            document.getElementById('nick').textContent = ''
-          })
-
-          // Get user data
-          document.getElementById('btn-private').addEventListener('click', () => {
-            if (alpheiosEmbedded) { alpheiosEmbedded.getUserData() }
-          });
-
-          alpheiosEmbedded.updateAuth0UI()
-        })
+        alpheiosEmbedded.activate().then(() => { })
       });
 </script>
-
-<div class="container alpheios_auth0-controls">
-    <div id='logo'>
-        <img src="https://i.cloudup.com/StzWWrY34s.png"/>
-    </div>
-    <h3>Auth0 Example</h3>
-    <h2>Welcome <span id="nick" class="nickname"></span></h2>
-    <div class='user-actions'>
-        <button id="btn-login" class="btn">Log in</button>
-        <button id="btn-logout" class="btn" style="display:none">Logout</button>
-        <button id="btn-private" class="btn">Call Protected API</button>
-    </div>
-</div>
 
 <div class="alpheios-enabled">
     <h4 lang="eng" data-alpheios-ignore="all">Greek</h4>
