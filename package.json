@@ -12,6 +12,7 @@
     "build-prod": "eslint --fix src/**/*.js && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all production vue",
     "build-dev": "eslint --fix src/**/*.js && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all development vue",
     "auth0-env-update": "node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0 --t=dist/auth0 --f=env-embed.js",
+    "auth0-env-dev-update": "node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0 --t=dist/auth0 --f=env-embed-dev.js",
     "lint": "eslint --fix src/**/*.js",
     "dev": "npm run build-dev && http-server -c-1 -p 8888 & onchange src -- npm run build-dev"
   },
