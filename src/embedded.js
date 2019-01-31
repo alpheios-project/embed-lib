@@ -1,13 +1,96 @@
 /* eslint-env jest */
 /* global Event */
 import ComponentStyles from '../node_modules/alpheios-components/dist/style/style.min.css' // eslint-disable-line
-import { Constants } from 'alpheios-data-models'
-import { UIController, HTMLSelector, LexicalQuery, ContentOptionDefaults, LanguageOptionDefaults,
-  Options, LocalStorageArea, MouseDblClick, LongTap, GenericEvt, AlignmentSelector } from 'alpheios-components'
+import { Constants, LanguageModelFactory } from 'alpheios-data-models'
+import { UIController, UIEventController, HTMLSelector, LexicalQuery, ResourceQuery, AnnotationQuery,
+  ContentOptionDefaults, LanguageOptionDefaults, Options, LocalStorageArea,
+  MouseDblClick, LongTap, GenericEvt, AlignmentSelector,
+   L10nModule, PanelModule, PopupModule, Locales } from 'alpheios-components'
 import State from './state'
 import Template from './template.htmlf'
 import interact from 'interactjs'
 import Package from '../package.json'
+import AppAuthenticator from './lib/app-authenticator'
+
+import { WordlistController } from 'alpheios-wordlist'
+
+/**
+ * This is a custom `create` function that creates an instance of a UI controller
+ * that is configured to be used by an embedded lib.
+ * If any customization of a UI controller needs to be made,
+ * it has to be made here.
+ * @param {TabScript} state - A state object that will be passed to a UI controller.
+ * @param options - An options object that will be passed to a UI controller. It is phasing out
+ *        as the preferred way to configure a UI controller is via a custom `create()` function.
+ *        It is kept for compatibility only. Please do not use it.
+ * @return {UIController} A newly created instance of a UI controller.
+ */
+UIController.createEmbed = (state, options) => {
+  let uiController = new UIController(state, options)
+
+  // Set defaults for UI controller's options objects
+  // uiController.uiOptionsDefaults = preferences.ui
+  uiController.siteOptionsDefaults = []
+
+  // Register data modules
+  uiController.registerDataModule(L10nModule, Locales.en_US, Locales.bundleArr())
+
+  // Register UI modules
+  uiController.registerUiModule(PanelModule, {
+    mountPoint: '#alpheios-panel-embedded',
+    tabs: uiController.tabState, // TODO: should be accessed via a public API, not via a direct link. This is a temporary solutions
+    uiController: uiController // Some child UI components require direct link to a uiController. TODO: remove during refactoring
+  })
+  uiController.registerUiModule(PopupModule, {
+    mountPoint: '#alpheios-popup-embedded',
+    uiController: uiController // Some child UI components require direct link to a uiController. TODO: remove during refactoring
+  })
+
+  // Creates on configures an event listener
+  let eventController = new UIEventController()
+  switch (uiController.options.textQueryTrigger) {
+    case 'dblClick':
+      eventController.registerListener('GetSelectedText', uiController.options.textQuerySelector, uiController.getSelectedText.bind(uiController), MouseDblClick)
+      break
+    case 'longTap':
+      eventController.registerListener('GetSelectedText', uiController.options.textQuerySelector, uiController.getSelectedText.bind(uiController), LongTap)
+      break
+    default:
+      eventController.registerListener(
+        'GetSelectedText', uiController.options.textQuerySelector, uiController.getSelectedText.bind(uiController), GenericEvt, uiController.options.textQueryTrigger
+      )
+  }
+
+  eventController.registerListener('HandleEscapeKey', document, uiController.handleEscapeKey.bind(uiController), GenericEvt, 'keydown')
+  eventController.registerListener('AlpheiosPageLoad', 'body', uiController.updateAnnotations.bind(uiController), GenericEvt, 'Alpheios_Page_Load')
+
+  // Attaches an event controller to a UIController instance
+  uiController.evc = eventController
+
+  // Subscribe to LexicalQuery events
+  LexicalQuery.evt.LEXICAL_QUERY_COMPLETE.sub(uiController.onLexicalQueryComplete.bind(uiController))
+  LexicalQuery.evt.MORPH_DATA_READY.sub(uiController.onMorphDataReady.bind(uiController))
+  LexicalQuery.evt.MORPH_DATA_NOTAVAILABLE.sub(uiController.onMorphDataNotFound.bind(uiController))
+  LexicalQuery.evt.HOMONYM_READY.sub(uiController.onHomonymReady.bind(uiController))
+  LexicalQuery.evt.LEMMA_TRANSL_READY.sub(uiController.updateTranslations.bind(uiController))
+  LexicalQuery.evt.WORD_USAGE_EXAMPLES_READY.sub(uiController.onWordUsageExamplesReady.bind(uiController))
+  LexicalQuery.evt.DEFS_READY.sub(uiController.onDefinitionsReady.bind(uiController))
+  LexicalQuery.evt.DEFS_NOT_FOUND.sub(uiController.onDefinitionsNotFound.bind(uiController))
+
+  // Subscribe to ResourceQuery events
+  ResourceQuery.evt.RESOURCE_QUERY_COMPLETE.sub(uiController.onResourceQueryComplete.bind(uiController))
+  ResourceQuery.evt.GRAMMAR_AVAILABLE.sub(uiController.onGrammarAvailable.bind(uiController))
+  ResourceQuery.evt.GRAMMAR_NOT_FOUND.sub(uiController.onGrammarNotFound.bind(uiController))
+
+  // Subscribe to AnnotationQuery events
+  AnnotationQuery.evt.ANNOTATIONS_AVAILABLE.sub(uiController.onAnnotationsAvailable.bind(uiController))
+
+  uiController.wordlistC = new WordlistController(LanguageModelFactory.availableLanguages(), LexicalQuery.evt)
+  WordlistController.evt.WORDLIST_UPDATED.sub(uiController.onWordListUpdated.bind(uiController))
+  WordlistController.evt.WORDITEM_SELECTED.sub(uiController.onWordItemSelected.bind(uiController))
+
+  return uiController
+}
 
 /**
  * Encapsulation of Alpheios functionality which can be embedded in a webpage
@@ -29,12 +112,8 @@ class Embedded {
    *     eventTriggers: a comma-separated list of DOM events to which Alpheios functionality should be attached
    *                    Default: "dblclick"
    *     triggerPreCallback: a callback function which is called when the trigger event handler is invoked, prior to initiating
-   *                         Alpheios functionality. It should return true to proced with lookup or false to abort.
+   *                         Alpheios functionality. It should return true to proceed with lookup or false to abort.
    *                         Default: no-op, returns true
-   *     popupData: popup data overrides (currently only positioning properties supported, top and left)
-   *                Default: { top: '10vh', left: '10vw'}
-   *     panelData: panel data overrides (none currently supported. reserved for future use)
-   *                Default: {}
    *     mobileRedirectUrl: a URL to which to direct users if they use a mobile device to access a page which has Alpheios embedded
    */
   constructor ({
@@ -46,13 +125,10 @@ class Embedded {
     enabledClass = '',
     disabledClass = '',
     triggerEvents = 'dblclick',
-    triggerPreCallback = (evt) => { return true },
-    preferences = { ui: null, site: null },
-    popupData = {},
-    panelData = {} } = {}) {
+    triggerPreCallback = (evt) => { return true } // Not used at the moment but can be set as a filter for `this.ui.getSelectedText()` calls
+    } = {}) {
     this.clientId = clientId
-    this.popupData = popupData
-    this.panelData = panelData
+
     if (this.clientId === null) {
       throw new Error('Please identify the site.')
     }
@@ -67,14 +143,7 @@ class Embedded {
     this.disabledClass = disabledClass
     this.triggerEvents = triggerEvents
     this.triggerPreCallback = triggerPreCallback
-    this.options = new Options(ContentOptionDefaults, LocalStorageArea)
-    this.resourceOptions = new Options(LanguageOptionDefaults, LocalStorageArea)
 
-    if (preferences.site) {
-      this.siteOptions = this.loadSiteOptions(preferences.site)
-    } else {
-      this.siteOptions = []
-    }
     let pckg
     try {
       pckg = Package
@@ -82,44 +151,23 @@ class Embedded {
       throw new Error(`Cannot parse package.json, its format is probably incorrect`)
     }
 
+    this.auth = new AppAuthenticator()
+
     // Set an initial UI Controller state for activation
     // this.state.setPanelClosed() // A default state of the panel is CLOSED
     this.state.tab = 'info' // A default tab is "info"
 
-    this.ui = UIController.create(this.state, {
+    this.ui = UIController.createEmbed(this.state, {
       storageAdapter: LocalStorageArea,
+      textQueryTrigger: this.triggerEvents,
+      textQuerySelector: this.enabledSelector,
       app: { version: pckg.version, name: pckg.description },
-      template: { html: Template, panelId: 'alpheios-panel-embedded', popupId: 'alpheios-popup-embedded' }
+      template: { html: Template }
     })
-    // TODO: This is a temporary fix. Later we should pass necessary preferences via a UIController's options object
-    if (preferences.ui) { this.ui.uiOptions = new Options(preferences.ui, LocalStorageArea) }
   }
 
-  handleEscapeKey (event) {
-    if (event.keyCode === 27) {
-      if (this.state.isPanelOpen()) {
-        this.ui.panel.close()
-      } else if (this.ui.popup.visible) {
-        this.ui.popup.close()
-      }
-    }
-    return true
-  }
-
-  notifyExtension (event) {
+  notifyExtension () {
     this.doc.body.dispatchEvent(new Event('Alpheios_Embedded_Response'))
-  }
-
-  optionSaver () {
-    return new Promise((resolve, reject) => {
-      reject(new Error('save not implemented'))
-    })
-  }
-
-  optionLoader () {
-    return new Promise((resolve, reject) => {
-      reject(new Error('load not implemented'))
-    })
   }
 
   async activate () {
@@ -133,17 +181,14 @@ class Embedded {
        */
       this.notifyExtension()
 
-      await this.ui.init()
-      await this.ui.activate()      
-      await this.options.load()
-      
+      // await this.ui.init() // Activate will call `init()` if has not been initialized previously
+      await this.ui.activate()
+
       console.log('UIController has been activated')
-      // Set a body attribute so the content scrip will know if embeded library is active on a page
+      // Set a body attribute so the content scrip will know if embedded library is active on a page
       this.doc.body.setAttribute('alpheios-embed-lib-status', 'active')
       this.doc.body.addEventListener('Alpheios_Embedded_Check', event => { this.notifyExtension(event) })
-      this.doc.body.addEventListener('keydown', event => { this.handleEscapeKey(event) })
-      Object.assign(this.ui.panel.panelData, this.panelData)
-      Object.assign(this.ui.popup.popupData, this.popupData)
+
     } catch (error) {
       console.error(`Cannot activate a UI controller: ${error}`)
       return
@@ -177,18 +222,6 @@ class Embedded {
       }
     }
 
-    for (let t of trigger) {
-      if (t === 'dblclick') {
-        MouseDblClick.listen(selector, (evt, domEvt) => this.handler(evt, domEvt))
-      } else if (t === 'touchstart' || t === 'touchend') {
-        LongTap.listen(selector, (evt, domEvt) => this.handler(evt, domEvt))
-        console.warn(`touch events are not yet fully supported`)
-      } else {
-        GenericEvt.listen(selector, (evt, domEvt) => this.handler(evt, domEvt), t)
-        console.warn(`events other than dblclick may not work correctly`)
-      }
-    }
-
     let alignment = new AlignmentSelector(this.doc, {})
     alignment.activate()
     let alignedTranslation = this.doc.querySelectorAll('.aligned-translation')
@@ -216,19 +249,20 @@ class Embedded {
     }
   }
 
-  handler (alpheiosEvent, domEvent) {
+  async handler (alpheiosEvent, domEvent) {
     if (this.triggerPreCallback(domEvent)) {
       let htmlSelector = new HTMLSelector(alpheiosEvent, this.options.items.preferredLanguage.currentValue)
-      console.info('*****************handler htmlSelector', htmlSelector)
       let textSelector = htmlSelector.createTextSelector()
-      console.info('*****************handler textSelector', textSelector)
 
       if (!textSelector.isEmpty()) {
+        await this.options.load()
+
         let lexQuery = LexicalQuery.create(textSelector, {
           htmlSelector: htmlSelector,
           resourceOptions: this.resourceOptions,
           siteOptions: this.siteOptions,
           lemmaTranslations: this.enableLemmaTranslations(textSelector) ? { locale: this.options.items.locale.currentValue } : null,
+          wordUsageExamples: this.enableWordUsageExamples(textSelector) ? { paginationMax: this.options.items.wordUsageExamplesMax.currentValue } : null,
           langOpts: { [Constants.LANG_PERSIAN]: { lookupMorphLast: true } } // TODO this should be externalized
         })
 
@@ -264,6 +298,11 @@ class Embedded {
     return textSelector.languageID === Constants.LANG_LATIN &&
       this.options.items.enableLemmaTranslations.currentValue &&
       !this.options.items.locale.currentValue.match(/^en-/)
+  }
+
+  enableWordUsageExamples (textSelector) {
+    return textSelector.languageID === Constants.LANG_LATIN &&
+      this.options.items.enableWordUsageExamples.currentValue
   }
 
   /**

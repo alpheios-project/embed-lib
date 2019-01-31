@@ -252,6 +252,18 @@ In the following example, the Latin word `cupidinibus` in a child of the element
 
 See also our open [issues](https://github.com/alpheios-project/embed-lib).
 
+# Pre-release Features
+
+## Protected User Data Retrieval
+
+Embedded lib can pull user information from remote protected storage. This require user to be authenticated with Auth0.
+Embedded lib includes functions for logging in, out, and for making user info retrieval. Use `auth.html` located in `demo`
+directory for testing and as an example of code to handle such functionality.
+
+**Attention:** Protected user data retrieval requires `env-embed.js` configuration file to be installed into
+`dist\auth0` directory. In a development environment you can use `npm run auth0-env-update` command to copy
+or update this file to `dist\auth0`.
+
 
 # Developer Instructions
 
