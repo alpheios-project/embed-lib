@@ -5,39 +5,32 @@ import { Constants } from 'alpheios-data-models'
 import { UIController, UIEventController, HTMLSelector, LexicalQuery, ResourceQuery, AnnotationQuery,
   ContentOptionDefaults, LanguageOptionDefaults, Options, LocalStorageArea,
   MouseDblClick, LongTap, GenericEvt, AlignmentSelector,
-   L10nModule, PanelModule, PopupModule, Locales } from 'alpheios-components'
+   L10nModule, AuthModule, PanelModule, PopupModule, Locales } from 'alpheios-components'
 import State from './state'
 import Template from './template.htmlf'
 import interact from 'interactjs'
 import Package from '../package.json'
 import AppAuthenticator from './lib/app-authenticator'
 
-/**
- * This is a custom `create` function that creates an instance of a UI controller
- * that is configured to be used by an embedded lib.
- * If any customization of a UI controller needs to be made,
- * it has to be made here.
- * @param {TabScript} state - A state object that will be passed to a UI controller.
- * @param options - An options object that will be passed to a UI controller. It is phasing out
- *        as the preferred way to configure a UI controller is via a custom `create()` function.
- *        It is kept for compatibility only. Please do not use it.
- * @return {UIController} A newly created instance of a UI controller.
+/*
+A UI controller's builder function customized for webextension
  */
-UIController.createEmbed = (state, options) => {
+const createUiController = (state, options) => {
   let uiController = new UIController(state, options)
 
-  // Set defaults for UI controller's options objects
-  // uiController.uiOptionsDefaults = preferences.ui
   uiController.siteOptionsDefaults = []
 
   // Register data modules
   uiController.registerDataModule(L10nModule, Locales.en_US, Locales.bundleArr())
+  if (typeof auth0Env !== 'undefined') {
+    // Register an authentication module only with authentication environment is loaded
+    uiController.registerDataModule(AuthModule, new AppAuthenticator())
+  }
 
   // Register UI modules
   uiController.registerUiModule(PanelModule, {
     mountPoint: '#alpheios-panel-embedded',
-    tabs: uiController.tabState, // TODO: should be accessed via a public API, not via a direct link. This is a temporary solutions
-    uiController: uiController // Some child UI components require direct link to a uiController. TODO: remove during refactoring
+    tabs: uiController.tabState // TODO: should be accessed via a public API, not via a direct link. This is a temporary solutions
   })
   uiController.registerUiModule(PopupModule, {
     mountPoint: '#alpheios-popup-embedded',
@@ -145,20 +138,17 @@ class Embedded {
       throw new Error(`Cannot parse package.json, its format is probably incorrect`)
     }
 
-    this.auth = new AppAuthenticator()
-
     // Set an initial UI Controller state for activation
     // this.state.setPanelClosed() // A default state of the panel is CLOSED
     this.state.tab = 'info' // A default tab is "info"
 
-    this.ui = UIController.createEmbed(this.state, {
+    this.ui = createUiController(this.state, {
       storageAdapter: LocalStorageArea,
       textQueryTrigger: this.triggerEvents,
       textQuerySelector: this.enabledSelector,
       app: { version: pckg.version, name: pckg.description },
       template: { html: Template }
     })
-    this.ui.auth = this.auth
   }
 
   notifyExtension () {
