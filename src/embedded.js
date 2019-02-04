@@ -164,6 +164,7 @@ class Embedded {
       app: { version: pckg.version, name: pckg.description },
       template: { html: Template }
     })
+    this.ui.auth = this.auth
   }
 
   notifyExtension () {
