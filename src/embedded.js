@@ -1,7 +1,7 @@
 /* eslint-env jest */
 /* global Event */
 import ComponentStyles from '../node_modules/alpheios-components/dist/style/style.min.css' // eslint-disable-line
-import { Constants } from 'alpheios-data-models'
+import { Constants, LanguageModelFactory } from 'alpheios-data-models'
 import { UIController, UIEventController, HTMLSelector, LexicalQuery, ResourceQuery, AnnotationQuery,
   ContentOptionDefaults, LanguageOptionDefaults, Options, LocalStorageArea,
   MouseDblClick, LongTap, GenericEvt, AlignmentSelector,
@@ -11,6 +11,8 @@ import Template from './template.htmlf'
 import interact from 'interactjs'
 import Package from '../package.json'
 import AppAuthenticator from './lib/app-authenticator'
+
+import { WordlistController } from 'alpheios-wordlist'
 
 /**
  * This is a custom `create` function that creates an instance of a UI controller
@@ -82,6 +84,10 @@ UIController.createEmbed = (state, options) => {
 
   // Subscribe to AnnotationQuery events
   AnnotationQuery.evt.ANNOTATIONS_AVAILABLE.sub(uiController.onAnnotationsAvailable.bind(uiController))
+
+  uiController.wordlistC = new WordlistController(LanguageModelFactory.availableLanguages(), LexicalQuery.evt)
+  WordlistController.evt.WORDLIST_UPDATED.sub(uiController.onWordListUpdated.bind(uiController))
+  WordlistController.evt.WORDITEM_SELECTED.sub(uiController.onWordItemSelected.bind(uiController))
 
   return uiController
 }
