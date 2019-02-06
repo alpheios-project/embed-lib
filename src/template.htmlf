@@ -6,6 +6,5 @@
     </component>
 </div>
 <div id="alpheios-panel-embedded">
-    <component v-bind:is="currentPanelComponent" :data="panelData" @closenotifications="clearNotifications" :classes-changed="classesChanged"
-               @setposition="setPositionTo"></component>
+    <component v-bind:is="currentPanelComponent" :data="panelData" @closenotifications="clearNotifications"></component>
 </div>
