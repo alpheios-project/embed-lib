@@ -29,12 +29,10 @@ const createUiController = (state, options) => {
 
   // Register UI modules
   uiController.registerUiModule(PanelModule, {
-    mountPoint: '#alpheios-panel-embedded',
-    tabs: uiController.tabState // TODO: should be accessed via a public API, not via a direct link. This is a temporary solutions
+    mountPoint: '#alpheios-panel-embedded'
   })
   uiController.registerUiModule(PopupModule, {
-    mountPoint: '#alpheios-popup-embedded',
-    uiController: uiController // Some child UI components require direct link to a uiController. TODO: remove during refactoring
+    mountPoint: '#alpheios-popup-embedded'
   })
 
   // Creates on configures an event listener
@@ -232,62 +230,6 @@ class Embedded {
         target.style.width = `${event.rect.width}px`
       })
     }
-  }
-
-  async handler (alpheiosEvent, domEvent) {
-    if (this.triggerPreCallback(domEvent)) {
-      let htmlSelector = new HTMLSelector(alpheiosEvent, this.options.items.preferredLanguage.currentValue)
-      let textSelector = htmlSelector.createTextSelector()
-
-      if (!textSelector.isEmpty()) {
-        await this.options.load()
-
-        let lexQuery = LexicalQuery.create(textSelector, {
-          htmlSelector: htmlSelector,
-          resourceOptions: this.resourceOptions,
-          siteOptions: this.siteOptions,
-          lemmaTranslations: this.enableLemmaTranslations(textSelector) ? { locale: this.options.items.locale.currentValue } : null,
-          wordUsageExamples: this.enableWordUsageExamples(textSelector) ? { paginationMax: this.options.items.wordUsageExamplesMax.currentValue } : null,
-          langOpts: { [Constants.LANG_PERSIAN]: { lookupMorphLast: true } } // TODO this should be externalized
-        })
-
-        this.ui.setTargetRect(htmlSelector.targetRect)
-        this.ui.newLexicalRequest(textSelector.languageID)
-        this.ui.message(this.ui.l10n.messages.TEXT_NOTICE_DATA_RETRIEVAL_IN_PROGRESS)
-        this.ui.showStatusInfo(textSelector.normalizedText, textSelector.languageID)
-        this.ui.updateLanguage(textSelector.languageID)
-        this.ui.updateWordAnnotationData(textSelector.data)
-
-        lexQuery.getData()
-      }
-    }
-  }
-
-  loadSiteOptions (siteOptions) {
-    let allSiteOptions = []
-    let loaded = siteOptions
-    for (let site of loaded) {
-      for (let domain of site.options) {
-        let siteOpts = new Options(domain, LocalStorageArea)
-        allSiteOptions.push({ uriMatch: site.uriMatch, resourceOptions: siteOpts })
-      }
-    }
-    return allSiteOptions
-  }
-
-  /**
-   * Check to see if Lemma Translations should be enabled for a query
-   *  NB this is Prototype functionality
-   */
-  enableLemmaTranslations (textSelector) {
-    return textSelector.languageID === Constants.LANG_LATIN &&
-      this.options.items.enableLemmaTranslations.currentValue &&
-      !this.options.items.locale.currentValue.match(/^en-/)
-  }
-
-  enableWordUsageExamples (textSelector) {
-    return textSelector.languageID === Constants.LANG_LATIN &&
-      this.options.items.enableWordUsageExamples.currentValue
   }
 
   /**
