@@ -3,7 +3,7 @@
 import ComponentStyles from '../node_modules/alpheios-components/dist/style/style.min.css' // eslint-disable-line
 import { Constants } from 'alpheios-data-models'
 import { UIController, LocalStorageArea, AlignmentSelector,
-  AuthModule, PanelModule, PopupModule } from 'alpheios-components'
+  AuthModule, PanelModule, PopupModule, NavModule } from 'alpheios-components'
 import State from './state'
 import Template from './template.htmlf'
 import interact from 'interactjs'
@@ -83,15 +83,16 @@ class Embedded {
     // Environment-specific initializations
     if (typeof auth0Env !== 'undefined') {
       // Register an authentication module only with authentication environment is loaded
-      this.ui.registerDataModule(AuthModule, new AppAuthenticator())
+      this.ui.registerModule(AuthModule, { auth: new AppAuthenticator() })
     }
     // Register UI modules
-    this.ui.registerUiModule(PanelModule, {
+    this.ui.registerModule(PanelModule, {
       mountPoint: '#alpheios-panel-embedded'
     })
-    this.ui.registerUiModule(PopupModule, {
+    this.ui.registerModule(PopupModule, {
       mountPoint: '#alpheios-popup-embedded'
     })
+    this.ui.registerModule(NavModule, {})
   }
 
   notifyExtension () {

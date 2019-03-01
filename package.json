@@ -1,6 +1,6 @@
 {
   "name": "alpheios-embedded",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Alpheios Embedded Library",
   "main": "dist/alpheios-embedded.js",
   "directories": {
@@ -35,15 +35,15 @@
     "alpheios-node-build": "github:alpheios-project/node-build",
     "alpheios-res-client": "github:alpheios-project/res-client",
     "alpheios-wordlist": "github:alpheios-project/wordlist",
-    "coveralls": "^3.0.2",
+    "coveralls": "^3.0.3",
     "css-loader": "^2.1.0",
-    "eslint": "^5.13.0",
+    "eslint": "^5.14.1",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-node": "^8.0.1",
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
-    "eslint-plugin-vue": "^5.1.0",
+    "eslint-plugin-vue": "^5.2.2",
     "html-loader": "^0.5.5",
     "html-loader-jest": "^0.2.1",
     "http-server": "^0.11.1",
@@ -57,10 +57,10 @@
     "source-map-loader": "^0.2.4",
     "style-loader": "^0.23.1",
     "url-loader": "^1.1.2",
-    "vue-loader": "^15.6.2",
+    "vue-loader": "^15.6.4",
     "vue-style-loader": "^4.1.2",
     "vue-svg-loader": "^0.12.0",
-    "webpack-dev-server": "^3.1.14"
+    "webpack-dev-server": "^3.2.1"
   },
   "engines": {
     "node": ">= 9.10.1",
