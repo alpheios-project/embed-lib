@@ -246,6 +246,17 @@ In the following example, the Latin word `cupidinibus` in a child of the element
 </div>
 ```
 
+## Authentication
+
+For tasks related to authentication and authorization, embedded lib relies on an Auth0 Lock widget. Its script must
+be loaded by the page that integrates the embedded lib, before the script of an embedded lib itself. 
+It can be loaded from an Auth0 CDN:
+`<script src="https://cdn.auth0.com/js/lock/xx.yy.z/lock.js"></script>`
+Here xx, yy, and z are major, minor, and patch versions correspondingly. see more details in 
+[Lock v11 for Web](https://auth0.com/docs/libraries/lock/v11).
+
+Authentication module also requires an Auth0 configuration file to be loaded before the embedded library script.
+
 ## Outstanding Issues/Future Plans
 
 **Mobile DeviceSupport**: Currently the displays and user interface elements provided by the Alpheios Embedded Library are optimized for online use with desktop/laptop screens and keyboards. We are actively working on adding our Progressive Web Application prototype functionality to the library so that Alpheios will seamlessly transition for use on mobile devices. In the meantime, if you want to redirect users to an alternative page for use with mobile devices, you can pass the `mobileRedirectUrl` property to the `activate` function.
@@ -290,5 +301,13 @@ npm run build
 npm run dev
 ```
 
-runs a local web server on port 8888. Load the sample.html file at the root of the directory. Changes made to the code will be dynamically rebuilt.
+runs a local web server on port 8888. Load the sample.html file at the root of the directory. Changes made to the 
+code will be dynamically rebuilt.
 
+## Testing authentication on a local host
+
+As localhost is not a verifiable first-party, Auth0 will require a user's approval for an app to access user
+information (a user consent). As a workaround for this, to simplify testing, a `hosts` file can be modified as below:
+`127.0.0.1    appname.example`
+
+An app should be accessed then trough `appname.example`, not `localhost`.
