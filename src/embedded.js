@@ -23,7 +23,7 @@ class Embedded {
    *                      Default: ".alpheios-enabled"
    *     disabledSelector: a CSS Selector string identifying the page elements for which Alpheios should be deactivated
    *                       Default: [data-alpheios-ignore="all"]
-   *     enabledClass: a CSS class to apply to alpheios enabled elements
+   *     enabledClass: a CSS class to apply to alpheios/staten enabled elements
    *                   Default: ""
    *     disabledClass: a CSS class to apply to alpheios disabled elements
    *                    Default: ""
@@ -70,7 +70,7 @@ class Embedded {
     }
 
     // Set an initial UI Controller state for activation
-    // this.state.setPanelClosed() // A default state of the panel is CLOSED
+    this.state.setPanelClosed() // A default state of the panel is CLOSED
     this.state.tab = 'info' // A default tab is "info"
 
     this.ui = UIController.create(this.state, {
