@@ -125,20 +125,9 @@ export default class AppAuthenticator {
       // block request from happening if no JWT token present
       if (!token) {
        console.error('You must login to call this protected endpoint!')
-       reject('Login required')
+       reject('Not Authenticated')
       }
-      // Do request to private endpoint
-      fetch(this.auth0env.ENDPOINT, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      .then(response => resolve(response.json()))
-      .catch((e) => {
-        console.error('error', e)
-        reject("Unable to retrieve data")
-      })
+      resolve(token)
     })
   }
 
