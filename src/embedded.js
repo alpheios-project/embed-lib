@@ -77,7 +77,7 @@ class Embedded {
       storageAdapter: LocalStorageArea,
       textQueryTrigger: this.triggerEvents,
       textQuerySelector: this.enabledSelector,
-      app: { version: pckg.version, name: pckg.description },
+      app: { version:`${pckg.version}.${pckg.build}`, name: pckg.description },
       template: { html: Template }
     })
     // Environment-specific initializations
