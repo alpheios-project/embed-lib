@@ -97,7 +97,8 @@ export default class AppAuthenticator {
       if (localStorage.getItem('is_test_user')) {
           let testProfile =  {
             name: 'Alpheios Test User',
-            nickname: 'testuser'
+            nickname: 'testuser',
+            sub: 'testuser'
           }
           localStorage.setItem('profile', JSON.stringify(testProfile))
           resolve(testProfile)
