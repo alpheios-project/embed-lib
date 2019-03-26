@@ -29,8 +29,8 @@
   "homepage": "https://github.com/alpheios-project/wordsvc#readme",
   "devDependencies": {
     "alpheios-client-adapters": "github:alpheios-project/client-adapters",
-    "alpheios-components": "github:alpheios-project/components#feat-307-filtering",
-    "alpheios-data-models": "github:alpheios-project/data-models#feat-307-sorting",
+    "alpheios-components": "github:alpheios-project/components",
+    "alpheios-data-models": "github:alpheios-project/data-models",
     "alpheios-experience": "github:alpheios-project/experience",
     "alpheios-inflection-tables": "git://github.com/alpheios-project/inflection-tables.git",
     "alpheios-node-build": "github:alpheios-project/node-build",
