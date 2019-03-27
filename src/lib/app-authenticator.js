@@ -13,6 +13,14 @@ export default class AppAuthenticator {
   }
 
   /**
+   * Whether or not this authentication module supports login
+   * @return {Boolean} true for client side auth
+   */
+  enableLogin() {
+    return true
+  }
+
+  /**
    * Authenticates user with an Auth0.
    * @return {Promise}
    */
@@ -130,6 +138,14 @@ export default class AppAuthenticator {
       }
       resolve(token)
     })
+  }
+
+  /**
+   * Retrieves the list of configured endpoints for the environment
+   * @return {Object}
+   */
+  getEndPoints () {
+    return this.auth0env.ENDPOINTS
   }
 
   /**

@@ -2,16 +2,35 @@
 /**
  * Encapsulates Authentication Functionality For a Client Side Application
  */
-export default class Sessionuthenticator {
+export default class SessionAuthenticator {
   /**
    * @constructor
    */
-  constructor (sessionUrl) {
-      this.sessionUrl = sessionUrl
+  constructor (env) {
+      this.sessionUrl = serverEnv.SESSION_URL
+      this.tokenUrl = serverEnv.TOKEN_URL
+      this.endpoints = serverEnv.ENDPOINTS
   }
 
+  /**
+   * Whether or not this authentication module supports login
+   * @return {Boolean} false for server side auth
+   */
+  enableLogin() {
+    return false
+  }
+
+
   session () {
-    return window.fetch(sessionUrl)
+    return new Promise((resolve,reject) => {
+      window.fetch(this.sessionUrl).then((resp) => {
+        if (! resp.ok) {
+          reject(resp.code)
+        } else {
+          resolve(resp.json())
+        }
+      })
+    })
   }
 
   authenticate () {
@@ -23,9 +42,23 @@ export default class Sessionuthenticator {
   }
 
   getUserData () {
-    return new Promise((resolve, reject) => {
-      resolve("alpheios:session")
+    return new Promise((resolve,reject) => {
+      window.fetch(this.tokenUrl).then((resp) => {
+        if (! resp.ok) {
+          reject(resp.code)
+        } else {
+          resolve(resp.json())
+        }
+      })
     })
+  }
+
+  /**
+   * Retrieves the list of configured endpoints for the environment
+   * @return {Object}
+   */
+  getEndPoints () {
+    return this.endpoints
   }
 
   /**
