@@ -21,6 +21,15 @@ export default class AppAuthenticator {
   }
 
   /**
+   * session request unimplemented for app auth
+   */
+   session () {
+     return new Promise((resolve,reject) => {
+       reject(new Error("Session request not supported"))
+    })
+   }
+
+  /**
    * Authenticates user with an Auth0.
    * @return {Promise}
    */

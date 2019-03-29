@@ -29,6 +29,8 @@ export default class SessionAuthenticator {
         } else {
           resolve(resp.json())
         }
+      }).catch((error) => {
+        reject(`Session request failed ${error}`)
       })
     })
   }
@@ -49,6 +51,8 @@ export default class SessionAuthenticator {
         } else {
           resolve(resp.json())
         }
+      }).catch((error) => {
+        reject(`token request failed ${error}`)
       })
     })
   }
