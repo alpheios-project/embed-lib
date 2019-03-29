@@ -9,6 +9,7 @@ import Template from './template.htmlf'
 import interact from 'interactjs'
 import Package from '../package.json'
 import AppAuthenticator from './lib/app-authenticator'
+import SessionAuthenticator from './lib/session-authenticator'
 
 /**
  * Encapsulation of Alpheios functionality which can be embedded in a webpage
@@ -84,6 +85,8 @@ class Embedded {
     if (typeof auth0Env !== 'undefined') {
       // Register an authentication module only with authentication environment is loaded
       this.ui.registerModule(AuthModule, { auth: new AppAuthenticator() })
+    } else if (typeof serverEnv !== 'undefined') {
+      this.ui.registerModule(AuthModule, { auth: new SessionAuthenticator(serverEnv.sessionUrl) })
     } else {
       this.ui.registerModule(AuthModule, { auth: null })
     }
