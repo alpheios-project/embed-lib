@@ -9,6 +9,7 @@ import Template from './template.htmlf'
 import interact from 'interactjs'
 import Package from '../package.json'
 import AppAuthenticator from './lib/app-authenticator'
+import SessionAuthenticator from './lib/session-authenticator'
 
 /**
  * Encapsulation of Alpheios functionality which can be embedded in a webpage
@@ -23,7 +24,7 @@ class Embedded {
    *                      Default: ".alpheios-enabled"
    *     disabledSelector: a CSS Selector string identifying the page elements for which Alpheios should be deactivated
    *                       Default: [data-alpheios-ignore="all"]
-   *     enabledClass: a CSS class to apply to alpheios enabled elements
+   *     enabledClass: a CSS class to apply to alpheios/staten enabled elements
    *                   Default: ""
    *     disabledClass: a CSS class to apply to alpheios disabled elements
    *                    Default: ""
@@ -70,20 +71,24 @@ class Embedded {
     }
 
     // Set an initial UI Controller state for activation
-    // this.state.setPanelClosed() // A default state of the panel is CLOSED
+    this.state.setPanelClosed() // A default state of the panel is CLOSED
     this.state.tab = 'info' // A default tab is "info"
 
     this.ui = UIController.create(this.state, {
       storageAdapter: LocalStorageArea,
       textQueryTrigger: this.triggerEvents,
       textQuerySelector: this.enabledSelector,
-      app: { version: pckg.version, name: pckg.description },
+      app: { version:`${pckg.version}.${pckg.build}`, name: pckg.description },
       template: { html: Template }
     })
     // Environment-specific initializations
     if (typeof auth0Env !== 'undefined') {
       // Register an authentication module only with authentication environment is loaded
       this.ui.registerModule(AuthModule, { auth: new AppAuthenticator() })
+    } else if (typeof serverEnv !== 'undefined') {
+      this.ui.registerModule(AuthModule, { auth: new SessionAuthenticator(serverEnv.sessionUrl) })
+    } else {
+      this.ui.registerModule(AuthModule, { auth: null })
     }
     // Register UI modules
     this.ui.registerModule(PanelModule, {

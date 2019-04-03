@@ -1,6 +1,7 @@
 {
   "name": "alpheios-embedded",
-  "version": "0.8.0",
+  "version": "1.0.0",
+  "build": "2",
   "description": "Alpheios Embedded Library",
   "main": "dist/alpheios-embedded.js",
   "directories": {
@@ -37,7 +38,7 @@
     "alpheios-wordlist": "github:alpheios-project/wordlist",
     "coveralls": "^3.0.3",
     "css-loader": "^2.1.1",
-    "eslint": "^5.15.1",
+    "eslint": "^5.15.3",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-node": "^8.0.1",

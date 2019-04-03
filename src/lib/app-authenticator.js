@@ -13,6 +13,23 @@ export default class AppAuthenticator {
   }
 
   /**
+   * Whether or not this authentication module supports login
+   * @return {Boolean} true for client side auth
+   */
+  enableLogin() {
+    return true
+  }
+
+  /**
+   * session request unimplemented for app auth
+   */
+   session () {
+     return new Promise((resolve,reject) => {
+       reject(new Error("Session request not supported"))
+    })
+   }
+
+  /**
    * Authenticates user with an Auth0.
    * @return {Promise}
    */
@@ -97,7 +114,8 @@ export default class AppAuthenticator {
       if (localStorage.getItem('is_test_user')) {
           let testProfile =  {
             name: 'Alpheios Test User',
-            nickname: 'testuser'
+            nickname: 'testuser',
+            sub: 'testuser'
           }
           localStorage.setItem('profile', JSON.stringify(testProfile))
           resolve(testProfile)
@@ -125,21 +143,18 @@ export default class AppAuthenticator {
       // block request from happening if no JWT token present
       if (!token) {
        console.error('You must login to call this protected endpoint!')
-       reject('Login required')
+       reject('Not Authenticated')
       }
-      // Do request to private endpoint
-      fetch(this.auth0env.ENDPOINT, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      .then(response => resolve(response.json()))
-      .catch((e) => {
-        console.error('error', e)
-        reject("Unable to retrieve data")
-      })
+      resolve(token)
     })
+  }
+
+  /**
+   * Retrieves the list of configured endpoints for the environment
+   * @return {Object}
+   */
+  getEndPoints () {
+    return this.auth0env.ENDPOINTS
   }
 
   /**
