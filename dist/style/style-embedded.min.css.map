@@ -1,10 +1,1 @@
-{
-	"version": 3,
-	"file": "style-embedded.min.css",
-	"sources": [
-		"../../src/style/style.scss",
-		"../../node_modules/alpheios-components/src/styles/_alpheios.scss"
-	],
-	"names": [],
-	"mappings": "AAEA,AAAA,8BAA8B,AAAC,CAC7B,gBAAgB,CCyBS,OAAO,CDxBhC,UAAU,CAAE,4BAA4B,CACzC"
-}
+{"version":3,"sourceRoot":"","sources":["file:///C:/uds/projects/alpheios/embed-lib/src/style/style.scss","file:///C:/uds/projects/alpheios/embed-lib/node_modules/alpheios-components/src/styles/_alpheios.scss"],"names":[],"mappings":"AAEA,+BACE,iBCyByB,QDxBzB","file":"style-embedded.min.css"}
