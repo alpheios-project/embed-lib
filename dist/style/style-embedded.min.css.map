@@ -1,10 +1,1 @@
-{
-	"version": 3,
-	"file": "style-embedded.min.css",
-	"sources": [
-		"../../src/style/style.scss",
-		"../../node_modules/alpheios-components/src/styles/_alpheios.scss"
-	],
-	"names": [],
-	"mappings": "AAEA,AAAA,8BAA8B,AAAC,CAC7B,gBAAgB,CC2BS,OAAO,CD1BhC,UAAU,CAAE,4BAA4B,CACzC"
-}
+{"version":3,"sourceRoot":"","sources":[],"names":[],"mappings":"","file":"style-embedded.min.css"}

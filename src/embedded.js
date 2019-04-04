@@ -3,7 +3,7 @@
 import ComponentStyles from '../node_modules/alpheios-components/dist/style/style.min.css' // eslint-disable-line
 import { Constants } from 'alpheios-data-models'
 import { UIController, LocalStorageArea, AlignmentSelector,
-  AuthModule, PanelModule, PopupModule, NavModule } from 'alpheios-components'
+  AuthModule, PanelModule, PopupModule, ToolbarModule } from 'alpheios-components'
 import State from './state'
 import Template from './template.htmlf'
 import interact from 'interactjs'
@@ -97,7 +97,9 @@ class Embedded {
     this.ui.registerModule(PopupModule, {
       mountPoint: '#alpheios-popup-embedded'
     })
-    this.ui.registerModule(NavModule, {})
+    this.ui.registerModule(ToolbarModule, {
+      mountPoint: '#alpheios-toolbar-embedded'
+    })
   }
 
   notifyExtension () {
