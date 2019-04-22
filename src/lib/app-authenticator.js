@@ -67,7 +67,7 @@ export default class AppAuthenticator {
               params: {
                 audience: this.auth0env.AUDIENCE,
                 scope: 'openid profile email',
-                prompt: 'consent'
+                prompt: 'consent select_account',
               },
               responseType: 'token id_token'
             }
