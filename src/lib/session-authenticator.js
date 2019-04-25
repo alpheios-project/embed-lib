@@ -10,16 +10,25 @@ export default class SessionAuthenticator {
       this.sessionUrl = serverEnv.SESSION_URL
       this.tokenUrl = serverEnv.TOKEN_URL
       this.endpoints = serverEnv.ENDPOINTS
+      this._loginUrl = serverEnv.LOGIN_URL
+      this._logoutUrl = serverEnv.LOGOUT_URL
   }
 
   /**
-   * Whether or not this authentication module supports login
-   * @return {Boolean} false for server side auth
+   * Login link for server
+   * @return {String} login link from config
    */
-  enableLogin() {
-    return false
+  loginUrl() {
+    return this._loginUrl
   }
 
+  /**
+   * Logout link for server
+   * @return {String} logout link from config
+   */
+  logoutUrl() {
+    return this._logoutUrl
+  }
 
   session () {
     return new Promise((resolve,reject) => {
