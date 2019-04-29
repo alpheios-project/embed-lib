@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Alpheios Embedded Developer Test Page</title>
+    <link rel="stylesheet" href="../dist/style/style.css"/>
+    <link rel="stylesheet" href="../dist/style/style-embedded.min.css"/>
+    <style>
+      .customenabled {
+        color: green;
+      }
+      .customdisabled {
+        color: red;
+      }
+
+    </style>
+</head>
+
+<body>
+    <script src="../dist/alpheios-embedded.js"></script>
+    <script type="text/javascript">
+        let cb = function(evt) {
+          evt.stopPropagation()
+          return true
+        }
+        document.addEventListener("DOMContentLoaded", function(event) {
+          new Alpheios.Embedded(
+            {
+               clientId: 'alpheios-dev',
+              //triggerEvents: "dblclick",
+              //triggerPreCallback: cb,
+              disabledSelector:".customignore",
+              enabledClass: 'customenabled',
+              disabledClass: 'customdisabled',
+            }).activate();
+        });
+    </script>
+    <h4>Greek</h4>
+    <div class="alpheios-enabled" id="block1" xml:lang="grc">
+      <p>τά ταῖν ταῖν τοῦ</p>
+      <p>εγώ εμένα ἐμαυτοῦ ταύταις</p>
+      <p>ένα δύο τρία</p>
+      <p>όμορφος νέος γλυκός</p>
+      <p>συνεχής πλατύς οξύς</p>
+      <p>ἄνδρα μοι ἔννεπε, μοῦσα, πολύτροπον</p>
+      <p>πρόσφυμα ξηρή </p>
+      <p>σκληρή ζώνη ινώδους συνδετικού ιστού που συνδέει συνήθως μύες με οστά</p>
+    </div>
+
+    <h4>Latin</h4>
+    <div class="alpheios-enabled" id="block2" lang="lat">
+      <div><div class="l "><div class="l-text">Cynthia prima suis miserum me cepit ocellis,</div><div class="l-cite d-none">1</div></div><div class="l "><div class="l-text">contactum nullis ante cupidinibus.</div><div class="l-cite d-none">2</div></div><div class="l "><div class="l-text">tum mihi constantis deiecit lumina fastus</div><div class="l-cite d-none">3</div></div><div class="l "><div class="l-text">et caput impositis pressit Amor pedibus,</div><div class="l-cite d-none">4</div></div><div class="l "><div class="l-text">donec  me docuit castas odisse puellas</div><div class="l-cite ">5</div></div><div class="l "><div class="l-text">improbus, et nullo vivere consilio.</div><div class="l-cite d-none">6</div></div><div class="l "><div class="l-text">ei mihi, iam toto furor hic non deficit anno,</div><div class="l-cite d-none">7</div></div><div class="l "><div class="l-text">cum tamen adversos cogor habere deos.</div><div class="l-cite d-none">8</div></div><div class="l "><div class="l-text">Milanion nullos fugiendo, Tulle, labores</div><div class="l-cite d-none">9</div></div><div class="l "><div class="l-text">saevitiam  durae contudit Iasidos.</div><div class="l-cite ">10</div></div><div class="l "><div class="l-text">nam modo Partheniis amens errabat in antris,</div><div class="l-cite d-none">11</div></div><div class="l "><div class="l-text">rursus in hirsutas ibat et ille feras;</div><div class="l-cite d-none">12</div></div><div class="l "><div class="l-text">ille etiam Hylaei percussus vulnere rami</div><div class="l-cite d-none">13</div></div><div class="l "><div class="l-text">saucius Arcadiis rupibus ingemuit.</div><div class="l-cite d-none">14</div></div><div class="l "><div class="l-text">ergo  velocem potuit domuisse puellam:</div><div class="l-cite ">15</div></div><div class="l "><div class="l-text">tantum in amore fides et benefacta valent.</div><div class="l-cite d-none">16</div></div><div class="l "><div class="l-text">in me tardus Amor non ullas cogitat artes,</div><div class="l-cite d-none">17</div></div><div class="l "><div class="l-text">nec meminit notas, ut prius, ire vias.</div><div class="l-cite d-none">18</div></div><div class="l "><div class="l-text">at vos, deductae quibus est pellacia lunae</div><div class="l-cite d-none">19</div></div><div class="l "><div class="l-text">et  labor in magicis sacra piare focis,</div><div class="l-cite ">20</div></div><div class="l "><div class="l-text">en agedum dominae mentem convertite nostrae,</div><div class="l-cite d-none">21</div></div><div class="l "><div class="l-text">et facite illa meo palleat ore magis!</div><div class="l-cite d-none">22</div></div><div class="l "><div class="l-text">tunc ego crediderim Manes et sidera vobis</div><div class="l-cite d-none">23</div></div><div class="l "><div class="l-text">posse Cytinaeis ducere carminibus.</div><div class="l-cite d-none">24</div></div><div class="l "><div class="l-text">aut  vos, qui sero lapsum revocatis, amici,</div><div class="l-cite ">25</div></div><div class="l "><div class="l-text">quaerite non sani pectoris auxilia.</div><div class="l-cite d-none">26</div></div><div class="l "><div class="l-text">fortiter et ferrum saevos patiemur et ignes,</div><div class="l-cite d-none">27</div></div><div class="l "><div class="l-text">sit modo libertas quae velit ira loqui.</div><div class="l-cite d-none">28</div></div><div class="l "><div class="l-text">ferte per extremas gentes et ferte per undas,</div><div class="l-cite d-none">29</div></div><div class="l "><div class="l-text">qua  non ulla meum femina norit iter.</div><div class="l-cite ">30</div></div><div class="l "><div class="l-text">vos remanete, quibus facili deus annuit aure,</div><div class="l-cite d-none">31</div></div><div class="l "><div class="l-text">sitis et in tuto semper amore pares.</div><div class="l-cite d-none">32</div></div><div class="l "><div class="l-text">nam me nostra Venus noctes exercet amaras,</div><div class="l-cite d-none">33</div></div><div class="l "><div class="l-text">et nullo vacuus tempore defit Amor.</div><div class="l-cite d-none">34</div></div><div class="l "><div class="l-text">hoc,  moneo, vitate malum: sua quemque moretur</div><div class="l-cite ">35</div></div><div class="l "><div class="l-text">cura, neque assueto mutet amore torum.</div><div class="l-cite d-none">36</div></div><div class="l "><div class="l-text">quod si quis monitis tardas adverterit aures,</div><div class="l-cite d-none">37</div></div><div class="l "><div class="l-text">heu referet quanto verba dolore mea!</div><div class="l-cite d-none">38</div></div><div class="passage-end"></div></div>
+    </div>
+
+    <h4>Arabic</h4>
+    <div class="alpheios-enabled" id="block3" lang="ara" dir="rtl">
+       1 اَلدٌّنيَا دَارُ مَمَرٍ لاَ دَارُ مَقَرٍ * سُلطَان بِلاَ عَدلٍ كَنَهرٍ
+    </div>
+
+    <h4>Persian</h4>
+    <div class="alpheios-enabled" id="block4" lang="per" dir="rtl">
+                آبادائیدن
+                به نام خداوند جان و خرد
+                کزین برتر اندیشه برنگذرد
+                خداوند نام و خداوند جای
+                خداوند روزی ده رهنمای
+                خداوند کیوان و گردان سپهر
+                فروزنده ماه و ناهید و مهر
+                ز نام و نشان و گمان برترست
+                نگارندهٔ بر شده پیکرست
+                به بینندگان آفریننده را
+                نبینی مرنجان دو بیننده را
+                نیابد بدو نیز اندیشه راه
+                که او برتر از نام و از جایگاه
+                سخن هر چه زین گوهران بگذرد
+                نیابد بدو راه جان و خرد
+    </div>
+
+    <h4>Ge'ez</h4>
+    <div class="alpheios-enabled" id="block5" lang="gez" dir="ltr">
+      ይትባረክ፡ እግዚአብሔር፡ አምላከ፡ እስራኤል፡ አምላክ፡ ለኵሉ፡ መንፈስ፡ ወለኵሉ፡ ዘሥጋ፡ ወይቤሎ፡ እግዚአብሔር፡ ለእዝራ፡ አእምር፡ ወጠይቅ፡
+    </div>
+
+</div>
+
+</body>
+</html>

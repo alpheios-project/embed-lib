@@ -44,7 +44,9 @@ class Embedded {
     enabledClass = '',
     disabledClass = '',
     triggerEvents = 'dblclick',
-    triggerPreCallback = (evt) => { return true } // Not used at the moment but can be set as a filter for `this.ui.getSelectedText()` calls
+    triggerPreCallback = (evt) => { return true }, // Not used at the moment but can be set as a filter for `this.ui.getSelectedText()` calls
+    popupInitialPosition = {},
+    toolbarInitialPosition = {}
     } = {}) {
     this.clientId = clientId
 
@@ -94,12 +96,23 @@ class Embedded {
     this.ui.registerModule(PanelModule, {
       mountPoint: '#alpheios-panel-embedded'
     })
-    this.ui.registerModule(PopupModule, {
+    
+    let popupParams = {
       mountPoint: '#alpheios-popup-embedded'
-    })
-    this.ui.registerModule(ToolbarModule, {
+    }
+    if (popupInitialPosition && Object.values(popupInitialPosition).filter(value => Boolean(value)).length > 0) {
+      popupParams.initialPos = popupInitialPosition
+    }
+    this.ui.registerModule(PopupModule, popupParams)
+
+    let toolbarParams = {
       mountPoint: '#alpheios-toolbar-embedded'
-    })
+    }
+    if (toolbarInitialPosition && Object.values(toolbarInitialPosition).filter(value => Boolean(value)).length > 0) {
+      toolbarParams.initialPos = toolbarInitialPosition
+    }
+
+    this.ui.registerModule(ToolbarModule, toolbarParams)
   }
 
   notifyExtension () {
