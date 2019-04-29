@@ -45,8 +45,8 @@ class Embedded {
     disabledClass = '',
     triggerEvents = 'dblclick',
     triggerPreCallback = (evt) => { return true }, // Not used at the moment but can be set as a filter for `this.ui.getSelectedText()` calls
-    popupInitialPosition = {},
-    toolbarInitialPosition = {}
+    popupInitialPos = {},
+    toolbarInitialPos = {}
     } = {}) {
     this.clientId = clientId
 
@@ -100,16 +100,16 @@ class Embedded {
     let popupParams = {
       mountPoint: '#alpheios-popup-embedded'
     }
-    if (popupInitialPosition && Object.values(popupInitialPosition).filter(value => Boolean(value)).length > 0) {
-      popupParams.initialPos = popupInitialPosition
+    if (popupInitialPos && Object.values(popupInitialPos).filter(value => Boolean(value)).length > 0) {
+      popupParams.initialPos = popupInitialPos
     }
     this.ui.registerModule(PopupModule, popupParams)
 
     let toolbarParams = {
       mountPoint: '#alpheios-toolbar-embedded'
     }
-    if (toolbarInitialPosition && Object.values(toolbarInitialPosition).filter(value => Boolean(value)).length > 0) {
-      toolbarParams.initialPos = toolbarInitialPosition
+    if (toolbarInitialPos && Object.values(toolbarInitialPos).filter(value => Boolean(value)).length > 0) {
+      toolbarParams.initialPos = toolbarInitialPos
     }
 
     this.ui.registerModule(ToolbarModule, toolbarParams)
