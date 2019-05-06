@@ -1,7 +1,7 @@
 {
   "name": "alpheios-embedded",
   "version": "1.0.0",
-  "build": "8",
+  "build": "9",
   "description": "Alpheios Embedded Library",
   "main": "dist/alpheios-embedded.js",
   "directories": {
@@ -50,7 +50,7 @@
     "http-server": "^0.11.1",
     "interactjs": "^1.4.0",
     "intl-messageformat": "^2.2.0",
-    "jest": "^24.7.1",
+    "jest": "^24.8.0",
     "jest-fetch-mock": "^2.1.2",
     "onchange": "^5.2.0",
     "raw-loader": "^2.0.0",
