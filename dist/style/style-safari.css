@@ -398,7 +398,7 @@ html {
   margin: 0 0 calc(var(--alpheios-base-text-size) * 1) !important;
 }
 .alpheios-content a {
-  color: var(--alpheios-color-muted) !important;
+  color: var(--alpheios-color-vivid) !important;
   cursor: pointer !important;
 }
 .alpheios-content a:hover, .alpheios-content a:active {
@@ -1027,7 +1027,7 @@ p.alpheios-lemma__translations-value {
   padding-right: 0.25em !important;
 }
 .alpheios-content .alpheios-morph__linkedattr {
-  color: var(--alpheios-color-muted) !important;
+  color: var(--alpheios-color-vivid) !important;
   cursor: pointer !important;
   font-weight: 700 !important;
 }
@@ -1195,6 +1195,7 @@ select.alpheios-setting__control,
   align-items: stretch !important;
   flex: 0 0 auto !important;
   background: var(--alpheios-color-neutral-lightest) !important;
+  padding: calc(var(--alpheios-base-ui-size) * 1) calc(var(--alpheios-base-ui-size) * 1) 0 !important;
 }
 .alpheios-notification-area__notification {
   display: flex;
@@ -1204,13 +1205,7 @@ select.alpheios-setting__control,
   background: var(--alpheios-notification-bg-color) !important;
   border: 1px solid var(--alpheios-notification-border-color) !important;
   border-radius: calc(var(--alpheios-base-ui-size) * 0.625) !important;
-  margin: 0 calc(var(--alpheios-base-ui-size) * 1) calc(var(--alpheios-base-ui-size) * 1) !important;
-}
-.alpheios-notification-area__notification:first-child {
-  margin-top: calc(var(--alpheios-base-ui-size) * 1) !important;
-}
-.alpheios-notification-area__notification--hidden + .alpheios-notification-area__login-notification {
-  margin-top: calc(var(--alpheios-base-ui-size) * 1) !important;
+  margin-bottom: calc(var(--alpheios-base-ui-size) * 1) !important;
 }
 .alpheios-notification-area__close-btn {
   width: calc(var(--alpheios-base-ui-size) * 1.25) !important;
@@ -1695,42 +1690,20 @@ a.alpheios-popup__providers-link {
   grid-row-gap: 2px !important;
   background: #FFF !important;
   color: var(--alpheios-text-color) !important;
+  position: absolute !important;
+  padding: 30px 15px 15px !important;
+  left: 0 !important;
+  bottom: 20px !important;
   z-index: 10 !important;
-  box-sizing: border-box !important;
+  min-width: 200px !important;
+  border: 1px solid var(--alpheios-border-color) !important;
+  cursor: move !important;
   -webkit-touch-callout: none !important;
   -webkit-user-select: none !important;
   -khtml-user-select: none !important;
   -moz-user-select: none !important;
   -ms-user-select: none !important;
   user-select: none !important;
-}
-[data-ap-layout-type=compact] .alpheios-inflections__footnote-popup {
-  position: fixed !important;
-  left: 0 !important;
-  bottom: 0 !important;
-  width: 50vw !important;
-  border-top: 1px solid var(--alpheios-border-color) !important;
-  padding: calc(var(--alpheios-base-text-size) * 1.875) 15px 15px calc(var(--alpheios-base-ui-size) * 3.125) !important;
-}
-[data-ap-layout-type=compact] .alpheios-panel--left .alpheios-inflections__footnote-popup {
-  border-right: 1px solid var(--alpheios-border-color) !important;
-}
-[data-ap-layout-type=compact] .alpheios-panel--right .alpheios-inflections__footnote-popup {
-  left: auto !important;
-  right: 0 !important;
-  border-left: 1px solid var(--alpheios-border-color) !important;
-}
-[data-ap-screen-orientation=portrait][data-ap-layout-type=compact] .alpheios-inflections__footnote-popup, [data-ap-layout-type=compact] .alpheios-panel--expanded .alpheios-inflections__footnote-popup {
-  width: 100vw !important;
-}
-[data-ap-layout-type=large] .alpheios-inflections__footnote-popup {
-  position: absolute !important;
-  left: 0 !important;
-  bottom: 20px !important;
-  min-width: 200px !important;
-  border: 1px solid var(--alpheios-border-color) !important;
-  cursor: move !important;
-  padding: 30px 15px 15px !important;
 }
 .alpheios-inflections__footnote-popup.hidden {
   display: none;
@@ -1740,27 +1713,19 @@ a.alpheios-popup__providers-link {
   position: absolute !important;
   text-transform: uppercase !important;
   left: 15px !important;
-  top: calc(var(--alpheios-base-ui-size) * 0.4375) !important;
-}
-[data-ap-layout-type=large] .alpheios-inflections__footnote-popup-title {
-  left: 15px !important;
   top: 7px !important;
 }
 .alpheios-inflections__footnote-popup-close-btn {
   position: absolute !important;
-  right: calc(var(--alpheios-base-ui-size) * 0.3125) !important;
-  top: calc(var(--alpheios-base-ui-size) * 0.3125) !important;
+  right: 5px !important;
+  top: 5px !important;
   display: block;
-  width: calc(var(--alpheios-base-ui-size) * 2.75) !important;
-  height: calc(var(--alpheios-base-ui-size) * 2.75) !important;
+  width: 20px !important;
+  height: 20px !important;
   margin: 0 !important;
   cursor: pointer !important;
   fill: var(--alpheios-color-neutral-dark) !important;
   stroke: var(--alpheios-color-neutral-dark) !important;
-}
-[data-ap-layout-type=large] .alpheios-inflections__footnote-popup-close-btn {
-  width: 20px !important;
-  height: 20px !important;
 }
 .alpheios-inflections__footnote-popup-close-btn:hover,
 .alpheios-inflections__footnote-popup-close-btn:active {
@@ -2787,6 +2752,21 @@ h3.alpheios-inflections__credits-title {
 .alpheios-panel__menu-icon.menu-open {
   fill: var(--alpheios-color-bright) !important;
 }
+.alpheios-panel__header-title {
+  direction: ltr !important;
+  display: flex;
+  flex-wrap: nowrap !important;
+  box-sizing: border-box !important;
+  align-items: stretch !important;
+  color: var(--alpheios-color-light) !important;
+  font-family: var(--alpheios-serif-font-face) !important;
+  font-size: calc(var(--alpheios-base-ui-size) * 1.5) !important;
+}
+.alpheios-panel__header-title-text {
+  padding-top: calc(var(--alpheios-base-ui-size) * 0.5) !important;
+  margin: 0 calc(var(--alpheios-base-ui-size) * 1.25) !important;
+  white-space: nowrap !important;
+}
 .alpheios-panel__header-btn-group--end {
   display: flex;
   flex-wrap: nowrap !important;
@@ -2900,17 +2880,14 @@ h3.alpheios-inflections__credits-title {
 .alpheios-panel--compact.alpheios-panel {
   grid-template-columns: auto;
 }
-.alpheios-panel--compact .alpheios-panel__close-btn {
-  margin-left: calc(var(--alpheios-base-ui-size) * 1.25) !important;
-}
 .alpheios-panel--compact.alpheios-panel--left {
-  height: 100% !important;
+  height: 100vh !important;
   width: 50vw !important;
   top: 0 !important;
   bottom: auto !important;
 }
 .alpheios-panel--compact.alpheios-panel--right {
-  height: 100% !important;
+  height: 100vh !important;
   width: 50vw !important;
   right: 0 !important;
   left: auto !important;
