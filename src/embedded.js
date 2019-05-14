@@ -3,7 +3,7 @@
 import ComponentStyles from '../node_modules/alpheios-components/dist/style/style.min.css' // eslint-disable-line
 import { Constants } from 'alpheios-data-models'
 import { UIController, LocalStorageArea, AlignmentSelector,
-  AuthModule, PanelModule, PopupModule, ToolbarModule } from 'alpheios-components'
+  AuthModule, PanelModule, PopupModule, ToolbarModule, ActionPanelModule } from 'alpheios-components'
 import State from './state'
 import Template from './template.htmlf'
 import interact from 'interactjs'
@@ -46,7 +46,8 @@ class Embedded {
     triggerEvents = 'dblclick',
     triggerPreCallback = (evt) => { return true }, // Not used at the moment but can be set as a filter for `this.ui.getSelectedText()` calls
     popupInitialPos = {},
-    toolbarInitialPos = {}
+    toolbarInitialPos = {},
+    layoutType = 'default' // The other option is 'readingTools'
     } = {}) {
     this.clientId = clientId
 
@@ -105,14 +106,32 @@ class Embedded {
     }
     this.ui.registerModule(PopupModule, popupParams)
 
-    let toolbarParams = {
-      mountPoint: '#alpheios-toolbar-embedded'
-    }
-    if (toolbarInitialPos && Object.values(toolbarInitialPos).filter(value => Boolean(value)).length > 0) {
-      toolbarParams.initialPos = toolbarInitialPos
-    }
+    if (layoutType === 'default') {
+      let toolbarParams = {
+        mountPoint: '#alpheios-toolbar-embedded'
+      }
+      if (toolbarInitialPos && Object.values(toolbarInitialPos).filter(value => Boolean(value)).length > 0) {
+        toolbarParams.initialPos = toolbarInitialPos
+      }
 
-    this.ui.registerModule(ToolbarModule, toolbarParams)
+      this.ui.registerModule(ToolbarModule, toolbarParams)
+    } else if (layoutType === 'readingTools') {
+      // This is a special configuration for Alpheios Reading Tools
+      if (this.ui.platform.isDesktop) {
+        let toolbarParams = {
+          mountPoint: '#alpheios-toolbar-embedded'
+        }
+        if (toolbarInitialPos && Object.values(toolbarInitialPos).filter(value => Boolean(value)).length > 0) {
+          toolbarParams.initialPos = toolbarInitialPos
+        }
+
+        this.ui.registerModule(ToolbarModule, toolbarParams)
+      } else if (this.ui.platform.isMobile) {
+        this.ui.registerModule(ActionPanelModule, {
+          lookupResultsIn: 'panel'
+        })
+      }
+    }
   }
 
   notifyExtension () {
@@ -195,6 +214,18 @@ class Embedded {
         target.style.width = `${event.rect.width}px`
       })
     }
+  }
+
+  get platform () {
+    return this.ui.platform
+  }
+
+  openToolbar () {
+    this.ui.openToolbar()
+  }
+
+  openActionPanel () {
+    this.ui.openActionPanel()
   }
 
   /**
