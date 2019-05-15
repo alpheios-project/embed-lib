@@ -47,7 +47,9 @@ class Embedded {
     triggerPreCallback = (evt) => { return true }, // Not used at the moment but can be set as a filter for `this.ui.getSelectedText()` calls
     popupInitialPos = {},
     toolbarInitialPos = {},
-    layoutType = 'default' // The other option is 'readingTools'
+    layoutType = 'default', // The other option is 'readingTools'
+    // Disable text selection on mobile devices
+    disableTextSelection = false
     } = {}) {
     this.clientId = clientId
 
@@ -82,7 +84,9 @@ class Embedded {
       textQueryTrigger: this.triggerEvents,
       textQuerySelector: this.enabledSelector,
       app: { version:`${pckg.version}.${pckg.build}`, name: pckg.description },
-      template: { html: Template }
+      template: { html: Template },
+      // Disable text selection on mobile devices
+      disableTextSelection: disableTextSelection
     })
     // Environment-specific initializations
     if (typeof auth0Env !== 'undefined') {
@@ -115,6 +119,7 @@ class Embedded {
       }
 
       this.ui.registerModule(ToolbarModule, toolbarParams)
+      this.ui.registerModule(ActionPanelModule)
     } else if (layoutType === 'readingTools') {
       // This is a special configuration for Alpheios Reading Tools
       if (this.ui.platform.isDesktop) {
