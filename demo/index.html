@@ -9,6 +9,9 @@
     <script src="https://cdn.auth0.com/js/lock/11.14.0/lock.js"></script>
     <script src="../dist/auth0/env-embed.js"></script>
     <style>
+      body {
+        padding-top: 150px;
+      }
       .customenabled {
         color: green;
       }
@@ -35,6 +38,10 @@
         flex: 1 1 auto;
         text-align: center;
         padding: 5px;
+      }
+      .alpheios-orientation-btn {
+        width: 100%;
+        background: silver;
       }
       .alpheios-platform-data-btn {
         width: 100%;
@@ -141,11 +148,18 @@
 
           const updatePlatformInfo = function () {
             embedded.ui.platform.getData();
-            const info = `TP:${embedded.ui.platform.deviceType} OR:${embedded.ui.platform.orientation} R:${window.screen.width}x${window.screen.height} DPR:${embedded.ui.platform.dpr}`
-            document.querySelector('#alpheios-platform-data-btn').textContent = info
+            let info = `PT:${embedded.ui.platform.deviceType} OR:${embedded.ui.platform.orientation} DPR:${embedded.ui.platform.dpr} OR.SUPP: ${orientationSupported() ? "yes" : "no"}<br>`
+            info += `SCR:${window.screen.width}x${window.screen.height} INNR:${window.innerWidth}x${window.innerHeight} OUTR:${window.outerWidth}x${window.outerHeight}`
+            document.querySelector('#alpheios-platform-data-btn').innerHTML = info
           }
 
           updatePlatformInfo();
+
+          if (!orientationSupported()) {
+            document.querySelector('#alpheios-orientation-portrait-btn').textContent = "Not Supported"
+            document.querySelector('#alpheios-orientation-landscape-btn').textContent = "Not Supported"
+            document.querySelector('#alpheios-orientation-reset-btn').textContent = "Not Supported"
+          }
 
           document.querySelector('#alpheios-platform-data-btn').addEventListener('click', function () {
             updatePlatformInfo();
@@ -168,7 +182,7 @@
               changeOrientation("portrait")
               updatePlatformInfo();
             } else {
-              document.querySelector('#alpheios-orientation-portrait-btn').textContent = "N/A"
+              document.querySelector('#alpheios-orientation-portrait-btn').textContent = "Not Supported"
             }
           })
           document.querySelector('#alpheios-orientation-landscape-btn').addEventListener('click', function () {
@@ -177,7 +191,7 @@
               changeOrientation("landscape");
               updatePlatformInfo();
             } else {
-              document.querySelector('#alpheios-orientation-landscape-btn').textContent = "N/A"
+              document.querySelector('#alpheios-orientation-landscape-btn').textContent = "Not Supported"
             }
           })
           document.querySelector('#alpheios-orientation-reset-btn').addEventListener('click', function () {
@@ -186,29 +200,29 @@
               changeOrientation("unlocked");
               updatePlatformInfo();
             } else {
-              document.querySelector('#alpheios-orientation-reset-btn').textContent = "N/A"
+              document.querySelector('#alpheios-orientation-reset-btn').textContent = "Not Supported"
             }
           })
 
           window.addEventListener('orientationchange', function () {
             console.info('orientationchange')
+            document.querySelector('#alpheios-orientation-btn').textContent += " or.chg"
             updatePlatformInfo();
           })
 
           window.addEventListener("resize", function () {
             console.info('resize')
-            const info = `SCR:${window.screen.width}x${window.screen.height} INNR:${window.innerWidth}x${window.innerHeight} OTR:${window.outerWidth}x${window.outerHeight}`
-            document.querySelector('#alpheios-platform-data-btn').textContent = info
-
-            // updatePlatformInfo();
-            // Get screen size (inner/outerWidth, inner/outerHeight)
-
+            document.querySelector('#alpheios-orientation-btn').textContent += " rsz"
+            updatePlatformInfo();
           }, false);
         });
     </script>
     <div class="alpheios-info-cont">
       <div class="alpheios-info-cont-row">
         <div id="alpheios-platform-data-btn" class="alpheios-info-btn alpheios-platform-data-btn">Platform Data</div>
+      </div>
+      <div class="alpheios-info-cont-row">
+        <div id="alpheios-orientation-btn" class="alpheios-info-btn alpheios-orientation-btn">Orientation CBs:</div>
       </div>
       <div class="alpheios-info-cont-row">
         <div id="alpheios-orientation-portrait-btn" class="alpheios-info-btn alpheios-orientation-portrait-btn">Portrait</div>
