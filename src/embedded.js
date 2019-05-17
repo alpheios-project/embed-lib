@@ -101,7 +101,7 @@ class Embedded {
     this.ui.registerModule(PanelModule, {
       mountPoint: '#alpheios-panel-embedded'
     })
-    
+
     let popupParams = {
       mountPoint: '#alpheios-popup-embedded'
     }
@@ -177,7 +177,10 @@ class Embedded {
     }
     let activateOn = this.doc.querySelectorAll(selector)
     if (activateOn.length === 0) {
-      throw new Error(`activation element ${activateOn} is missing`)
+      // it could be that we want to activate Alpheios for lookups via the 
+      // tools even if there isn't any text on the page to activate to on
+      // so just print a warning here.
+      console.log(`No elements matching ${activateOn}`)
     }
     if (this.enabledClass) {
       for (let elem of activateOn) {
