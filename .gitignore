@@ -1,5 +1,6 @@
 node_modules
 coverage
+reports/
 
 ## sensitive environment information
 /dist/auth0/

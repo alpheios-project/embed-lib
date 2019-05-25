@@ -1,9 +1,11 @@
-<div id="alpheios-popup-embedded" >
+<div>
+  <div id="alpheios-popup-embedded">
     <component v-bind:is="uiComponentName" :module-data="moduleData"></component>
-</div>
-<div id="alpheios-panel-embedded">
+  </div>
+  <div id="alpheios-panel-embedded">
     <component v-bind:is="$store.state.panel.layout"></component>
-</div>
-<div id="alpheios-toolbar-embedded">
-  <component v-bind:is="$store.state.toolbar.layout" :module-data="moduleData"></component>
+  </div>
+  <div id="alpheios-toolbar-embedded">
+    <component v-bind:is="$store.state.toolbar.layout" :module-data="moduleData"></component>
+  </div>
 </div>

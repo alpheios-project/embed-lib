@@ -15,6 +15,7 @@
     "auth0-env-update": "node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/prod --t=dist/auth0 --f=env-embed.js",
     "auth0-env-dev-update": "node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/dev --t=dist/auth0 --f=env-embed.js",
     "lint": "eslint --fix src/**/*.js",
+    "code-analysis-prod": "node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs webpack production vue config.mjs --code-analysis",
     "dev": "npm run build-dev && http-server -c-1 -p 8888 & onchange src -- npm run build-dev"
   },
   "repository": {
@@ -29,11 +30,11 @@
   "homepage": "https://github.com/alpheios-project/wordsvc#readme",
   "devDependencies": {
     "alpheios-client-adapters": "github:alpheios-project/client-adapters",
-    "alpheios-components": "github:alpheios-project/components",
+    "alpheios-components": "file:../components",
     "alpheios-data-models": "github:alpheios-project/data-models",
     "alpheios-experience": "github:alpheios-project/experience",
     "alpheios-inflection-tables": "git://github.com/alpheios-project/inflection-tables.git",
-    "alpheios-node-build": "github:alpheios-project/node-build",
+    "alpheios-node-build": "file:../node-build",
     "alpheios-res-client": "github:alpheios-project/res-client",
     "alpheios-wordlist": "github:alpheios-project/wordlist",
     "coveralls": "^3.0.3",
@@ -61,6 +62,8 @@
     "vue-loader": "^15.7.0",
     "vue-style-loader": "^4.1.2",
     "vue-svg-loader": "^0.12.0",
+    "vue-template-compiler": "^2.6.10",
+    "vue-template-loader": "^1.0.0",
     "webpack-dev-server": "^3.4.1"
   },
   "engines": {
