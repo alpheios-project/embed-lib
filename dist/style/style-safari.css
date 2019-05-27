@@ -1521,7 +1521,7 @@ select.alpheios-setting__control,
   cursor: pointer !important;
   fill: var(--alpheios-icon-color) !important;
   stroke: var(--alpheios-icon-color) !important;
-  stroke-width: 2.5 !important;
+  stroke-width: 0 !important;
 }
 .alpheios-popup__close-btn svg {
   position: relative !important;
@@ -2109,6 +2109,9 @@ h3.alpheios-inflections__credits-title {
   -webkit-overflow-scrolling: touch !important;
   overflow-y: auto !important;
   height: 85vh !important;
+}
+.alpheios-has-notification .alpheios-grammar__frame-cont {
+  height: 80vh !important;
 }
 .alpheios-grammar__frame {
   position: absolute !important;
@@ -2851,7 +2854,7 @@ h3.alpheios-inflections__credits-title {
   cursor: pointer !important;
   fill: var(--alpheios-icon-color) !important;
   stroke: var(--alpheios-icon-color) !important;
-  stroke-width: 2.5 !important;
+  stroke-width: 0 !important;
 }
 .alpheios-panel__close-btn svg {
   position: relative !important;

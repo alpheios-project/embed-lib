@@ -1521,7 +1521,7 @@ select.alpheios-setting__control,
   cursor: pointer;
   fill: var(--alpheios-icon-color);
   stroke: var(--alpheios-icon-color);
-  stroke-width: 2.5;
+  stroke-width: 0;
 }
 .alpheios-popup__close-btn svg {
   position: relative;
@@ -2108,7 +2108,7 @@ h3.alpheios-inflections__credits-title {
   position: relative;
   -webkit-overflow-scrolling: touch;
   overflow-y: auto;
-  height: 85vh;
+  flex-direction: column;
 }
 .alpheios-grammar__frame {
   position: absolute;
@@ -2851,7 +2851,7 @@ h3.alpheios-inflections__credits-title {
   cursor: pointer;
   fill: var(--alpheios-icon-color);
   stroke: var(--alpheios-icon-color);
-  stroke-width: 2.5;
+  stroke-width: 0;
 }
 .alpheios-panel__close-btn svg {
   position: relative;
@@ -2914,6 +2914,9 @@ h3.alpheios-inflections__credits-title {
 }
 .alpheios-panel__contentitem {
   margin-bottom: 1em;
+}
+.alpheios-panel__tab__word-usage {
+  width: 100%;
 }
 .alpheios-panel__tab-panel--options {
   display: block;
