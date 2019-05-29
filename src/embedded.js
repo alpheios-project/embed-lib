@@ -5,7 +5,6 @@ import { Constants } from 'alpheios-data-models'
 import { UIController, LocalStorageArea, AlignmentSelector,
   AuthModule, PanelModule, PopupModule, ToolbarModule, ActionPanelModule } from 'alpheios-components'
 import State from './state'
-import Template from './template.htmlf'
 import interact from 'interactjs'
 import Package from '../package.json'
 import AppAuthenticator from './lib/app-authenticator'
@@ -84,7 +83,6 @@ class Embedded {
       textQueryTrigger: this.triggerEvents,
       textQuerySelector: this.enabledSelector,
       app: { version:`${pckg.version}.${pckg.build}`, name: pckg.description },
-      template: { html: Template },
       // Disable text selection on mobile devices
       disableTextSelection: disableTextSelection
     })
@@ -98,22 +96,16 @@ class Embedded {
       this.ui.registerModule(AuthModule, { auth: null })
     }
     // Register UI modules
-    this.ui.registerModule(PanelModule, {
-      mountPoint: '#alpheios-panel-embedded'
-    })
+    this.ui.registerModule(PanelModule, {})
 
-    let popupParams = {
-      mountPoint: '#alpheios-popup-embedded'
-    }
+    let popupParams = {}
     if (popupInitialPos && Object.values(popupInitialPos).filter(value => Boolean(value)).length > 0) {
       popupParams.initialPos = popupInitialPos
     }
     this.ui.registerModule(PopupModule, popupParams)
 
     if (layoutType === 'default') {
-      let toolbarParams = {
-        mountPoint: '#alpheios-toolbar-embedded'
-      }
+      let toolbarParams = {}
       if (toolbarInitialPos && Object.values(toolbarInitialPos).filter(value => Boolean(value)).length > 0) {
         toolbarParams.initialPos = toolbarInitialPos
       }
@@ -123,9 +115,7 @@ class Embedded {
     } else if (layoutType === 'readingTools') {
       // This is a special configuration for Alpheios Reading Tools
       if (this.ui.platform.isDesktop) {
-        let toolbarParams = {
-          mountPoint: '#alpheios-toolbar-embedded'
-        }
+        let toolbarParams = {}
         if (toolbarInitialPos && Object.values(toolbarInitialPos).filter(value => Boolean(value)).length > 0) {
           toolbarParams.initialPos = toolbarInitialPos
         }
