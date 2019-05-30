@@ -35,6 +35,13 @@ npm install alpheios-embedded@1.0.0-beta.0
 <link rel="stylesheet" href="path_to_node_modules/alpheios-embedded/dist/style/style-embedded.min.css"/>
 <script src="path_to_node_modules/alpheios-embedded/dist/alpheios-embedded.min.js"></script>
 ```
+
+**Note**: in order to enable mobile-responsive behavior, please also be sure to include the following meta tag to the head of the page:
+
+```
+<meta name="viewport" content="width=device-width, initial-scale=1">
+```
+
 **2. Activate Alpheios**
 
 Add the following Javascript to your page activate Alpheios:
