@@ -27,7 +27,7 @@ See also sample files `sample.html` and `sample-cdn.html` at the root of this re
 **Or install from NPM**
 
 ```
-npm install alpheios-embedded
+npm install alpheios-embedded@1.0.0-beta.0
 ```
 
 ```
