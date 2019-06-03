@@ -4,7 +4,27 @@ const projectRoot = process.cwd()
 const webpack = {
   common: {
     entry: './embedded.js',
-    externals: { },
+    // target: 'web',
+    /*optimization: {
+      splitChunks: {
+        chunks: 'all'
+        /!*maxInitialRequests: Infinity,
+        minSize: 0,
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name(module) {
+              // get the name. E.g. node_modules/packageName/not/this/part.js
+              // or node_modules/packageName
+              const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
+
+              // npm package names are URL-safe, but some servers don't like @ symbols
+              return `js/npm/${packageName.replace('@', '')}`;
+            },
+          }
+        },*!/
+      }
+    }*/
   },
 
   production: {
@@ -27,9 +47,15 @@ const webpack = {
   },
   development: {
     output: {
+      // publicPath are where output chuncks are located, relative to the web page
+      // Shall be set to match configuration of production environment
+      publicPath: '../dist/',
       filename: 'alpheios-embedded.js',
+      // chunkFilename: '[name].js',
       libraryTarget: 'window',
-      library: 'Alpheios'
+      library: 'Alpheios',
+//      libraryTarget: 'window',
+//      library: 'Alpheios'
     },
     resolve: {
       alias: {
