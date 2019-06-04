@@ -1,7 +1,7 @@
 {
   "name": "alpheios-embedded",
-  "version": "1.0.0-beta.0",
-  "build": "20",
+  "version": "1.0.0",
+  "build": "21",
   "description": "Alpheios Embedded Library",
   "main": "dist/alpheios-embedded.js",
   "directories": {
@@ -48,7 +48,7 @@
     "html-loader": "^0.5.5",
     "html-loader-jest": "^0.2.1",
     "http-server": "^0.11.1",
-    "interactjs": "^1.4.4",
+    "interactjs": "^1.4.6",
     "intl-messageformat": "^2.2.0",
     "jest": "^24.8.0",
     "jest-fetch-mock": "^2.1.2",
@@ -61,7 +61,7 @@
     "vue-loader": "^15.7.0",
     "vue-style-loader": "^4.1.2",
     "vue-svg-loader": "^0.12.0",
-    "webpack-dev-server": "^3.4.1"
+    "webpack-dev-server": "^3.5.1"
   },
   "engines": {
     "node": ">= 9.10.1",
