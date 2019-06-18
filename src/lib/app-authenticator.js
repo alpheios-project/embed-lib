@@ -68,8 +68,9 @@ export default class AppAuthenticator {
             },
             languageDictionary: {
               title: "Login",
-              signUpTerms: "By signing up, you agree to our terms of service and <a href=\"https://alpheios.net/pages/privacy-policy\">privacy policy</a>."
+              signUpTerms: "By signing up, you agree to our <a href=\"https://alpheios.net/pages/userterms\" target=\"_blank\">terms of service</a> and <a href=\"https://alpheios.net/pages/privacy-policy\">privacy policy</a>."
             },
+            mustAcceptTerms: true,
             auth: {
               redirect: false,
               params: {
