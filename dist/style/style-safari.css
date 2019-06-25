@@ -2108,10 +2108,7 @@ h3.alpheios-inflections__credits-title {
   position: relative !important;
   -webkit-overflow-scrolling: touch !important;
   overflow-y: auto !important;
-  height: 85vh !important;
-}
-.alpheios-has-notification .alpheios-grammar__frame-cont {
-  height: 80vh !important;
+  flex-direction: column !important;
 }
 .alpheios-grammar__frame {
   position: absolute !important;
@@ -2241,6 +2238,23 @@ h3.alpheios-inflections__credits-title {
 .alpheios-lookup__resource-control .alpheios-setting__control {
   width: 100% !important;
 }
+.alpheios-lookup__search-control-icon {
+  display: none;
+}
+.alpheios-button-primary span.alpheios-lookup__search-control-label {
+  color: var(--alpheios-btn-primary-font-color) !important;
+}
+.alpheios-lookup__panel.alpheios-landscape .alpheios-lookup__search-control-label {
+  display: none;
+}
+.alpheios-lookup__panel.alpheios-landscape .alpheios-button-primary {
+  padding: 0 !important;
+}
+.alpheios-lookup__panel.alpheios-landscape .alpheios-lookup__search-control-icon {
+  display: inline-block;
+  width: 35px !important;
+  height: 25px !important;
+}
 /*
  Calculates a size of text elements relative to the base size.
  Such elements can be scaled proportionally by changing the `--alpheios-base-text-size` custom prop.
@@ -2343,12 +2357,6 @@ h3.alpheios-inflections__credits-title {
 .alpheios-word-usage-header .alpheios-word-usage-header-select-textwork {
   margin-top: 10px !important;
 }
-.alpheios-word-usage-header-actions {
-  margin-top: 10px !important;
-  padding-top: 10px !important;
-  padding-bottom: 10px !important;
-  border-top: 1px solid var(--alpheios-border-color) !important;
-}
 /*
  Calculates a size of text elements relative to the base size.
  Such elements can be scaled proportionally by changing the `--alpheios-base-text-size` custom prop.
@@ -2362,6 +2370,8 @@ h3.alpheios-inflections__credits-title {
 }
 .alpheios-word-usage-header-sorting {
   padding-bottom: 10px !important;
+  margin-top: 10px !important;
+  border-bottom: 1px solid var(--alpheios-border-color) !important;
 }
 /*
  Calculates a size of text elements relative to the base size.
@@ -2387,16 +2397,12 @@ h3.alpheios-inflections__credits-title {
   flex: 1 1 auto !important;
   position: relative !important;
   -webkit-overflow-scrolling: touch !important;
-  overflow-y: auto !important;
 }
 .alpheios-word-usage div.alpheios-word_usage_list__provider {
   flex: none !important;
   font-weight: normal !important;
   padding: 10px 0 !important;
   font-size: 80% !important;
-}
-.alpheios-word-usage .alpheios-word-usage-header {
-  border-bottom: 1px solid var(--alpheios-border-color) !important;
 }
 .alpheios-word-usage .alpheios-word-usage-header-select-author,
 .alpheios-word-usage .alpheios-word-usage-header-select-textwork,
@@ -2439,12 +2445,14 @@ h3.alpheios-inflections__credits-title {
   padding-top: 10px !important;
   padding-bottom: 5px !important;
 }
-.alpheios-word-usage a.alpheios-word-usage__examples-source-link-compact {
+.alpheios-word-usage__examples-source-link-compact-cont {
   grid-column: 1/4 !important;
-  color: var(--alpheios-link-color-on-light) !important;
   padding-top: 5px !important;
   padding-bottom: 10px !important;
   border-bottom: 1px solid var(--alpheios-border-color) !important;
+}
+.alpheios-word-usage a.alpheios-word-usage__examples-source-link-compact-text {
+  color: var(--alpheios-link-color-on-light) !important;
 }
 .alpheios-word-usage__examples-pre {
   grid-column: 1 !important;
@@ -2516,15 +2524,15 @@ h3.alpheios-inflections__credits-title {
  */
 .alpheios-wordlist-language__worditem {
   border-bottom: 1px solid var(--alpheios-border-color) !important;
-  padding: 2px 0 !important;
+  padding: 7px 0 !important;
 }
 .alpheios-worditem__data {
   display: inline-block;
   vertical-align: middle !important;
 }
 .alpheios-wordlist-language__worditem .alpheios-worditem__icon {
-  width: 15px !important;
-  height: 15px !important;
+  width: 25px !important;
+  height: 25px !important;
   text-align: center !important;
   cursor: pointer !important;
   fill: var(--alpheios-link-color-on-dark) !important;
@@ -2532,8 +2540,8 @@ h3.alpheios-inflections__credits-title {
   margin: 5px !important;
 }
 .alpheios-wordlist-language__worditem .alpheios-worditem__icon svg {
-  width: 15px !important;
-  height: 15px !important;
+  width: 25px !important;
+  height: 25px !important;
   display: inline-block;
   vertical-align: top !important;
 }
@@ -2560,13 +2568,16 @@ h3.alpheios-inflections__credits-title {
   cursor: pointer !important;
 }
 .alpheios-worditem__lemmasList {
-  width: 34% !important;
+  width: 29% !important;
 }
 .alpheios-visibility__hidden {
   visibility: hidden !important;
 }
 .alpheios-worditem__lemmasList-lemmaitem {
   cursor: pointer !important;
+}
+.alpheios-layout-compact .alpheios-worditem__targetWord {
+  width: 25% !important;
 }
 /*
  Calculates a size of text elements relative to the base size.
@@ -2594,7 +2605,7 @@ h3.alpheios-inflections__credits-title {
   vertical-align: middle !important;
 }
 .alpheios-wordlist-filters .alpheios-wordlist-header-input-filterBy-block {
-  margin-left: 2% !important;
+  margin-left: 1% !important;
 }
 .alpheios-wordlist-filters .alpheios-wordlist-header-select-filterBy {
   width: 80% !important;
@@ -2654,6 +2665,22 @@ h3.alpheios-inflections__credits-title {
   font-weight: bold !important;
   color: var(--alpheios-color-vivid) !important;
 }
+.alpheios-layout-compact .alpheios-wordlist-filters {
+  padding: 10px 2px !important;
+}
+.alpheios-layout-compact .alpheios-wordlist-header-select-filterBy-block {
+  width: 42% !important;
+}
+.alpheios-layout-compact .alpheios-wordlist-header-select-filterBy,
+.alpheios-layout-compact .alpheios-wordlist-header-input-filterBy {
+  font-size: 85% !important;
+}
+.alpheios-layout-compact .alpheios-wordlist-header-input-filterBy-block {
+  width: 52% !important;
+}
+.alpheios-layout-compact .alpheios-select-input-group {
+  width: 68% !important;
+}
 /*
  Calculates a size of text elements relative to the base size.
  Such elements can be scaled proportionally by changing the `--alpheios-base-text-size` custom prop.
@@ -2666,8 +2693,8 @@ h3.alpheios-inflections__credits-title {
   border-bottom: 1px solid var(--alpheios-border-color) !important;
 }
 .alpheios-wordlist-commands .alpheios-wordlist-commands__item {
-  width: 15px !important;
-  height: 15px !important;
+  width: 25px !important;
+  height: 25px !important;
   display: inline-block;
   vertical-align: middle !important;
   text-align: center !important;
@@ -2675,8 +2702,8 @@ h3.alpheios-inflections__credits-title {
   margin: 0 5px 10px !important;
 }
 .alpheios-wordlist-commands .alpheios-wordlist-commands__item svg {
-  width: 15px !important;
-  height: 15px !important;
+  width: 25px !important;
+  height: 25px !important;
   display: inline-block;
   vertical-align: top !important;
 }
@@ -2729,38 +2756,13 @@ h3.alpheios-inflections__credits-title {
  Calculates a size of UI elements relative to the base size.
  Such elements can be scaled proportionally by changing the `--alpheios-base-ui-size` custom prop.
  */
-.alpheios-wordlist-commands {
-  border-bottom: 1px solid var(--alpheios-border-color) !important;
-}
-.alpheios-wordlist-commands .alpheios-wordlist-commands__item {
-  width: 15px !important;
-  height: 15px !important;
-  display: inline-block;
-  text-align: center !important;
-  cursor: pointer !important;
-  margin: 0 5px 10px !important;
-}
-.alpheios-wordlist-commands .alpheios-wordlist-commands__item svg {
-  width: 15px !important;
-  height: 15px !important;
-  display: inline-block;
-  vertical-align: top !important;
-}
-/*
- Calculates a size of text elements relative to the base size.
- Such elements can be scaled proportionally by changing the `--alpheios-base-text-size` custom prop.
- */
-/*
- Calculates a size of UI elements relative to the base size.
- Such elements can be scaled proportionally by changing the `--alpheios-base-ui-size` custom prop.
- */
 .alpheios-wordlist-language {
   padding-bottom: 5px !important;
   margin-bottom: 10px !important;
 }
 .alpheios-wordlist-language__title {
   font-weight: bold !important;
-  font-size: 110% !important;
+  font-size: 120% !important;
   display: inline-block;
   vertical-align: middle !important;
 }
@@ -2843,8 +2845,7 @@ h3.alpheios-inflections__credits-title {
   fill: var(--alpheios-color-bright-hover) !important;
   stroke: var(--alpheios-color-bright-hover) !important;
 }
-.alpheios-panel__header-btn:active,
-.alpheios-panel__header-btn .alpheios-navbuttons__icon-active {
+.alpheios-panel__header-btn:active, .alpheios-panel__header-btn.alpheios-navbuttons__icon-active {
   fill: var(--alpheios-color-bright-pressed) !important;
   stroke: var(--alpheios-color-bright-pressed) !important;
 }
@@ -2917,6 +2918,9 @@ h3.alpheios-inflections__credits-title {
 }
 .alpheios-panel__contentitem {
   margin-bottom: 1em !important;
+}
+.alpheios-panel__tab__word-usage {
+  width: 100% !important;
 }
 .alpheios-panel__tab-panel--options {
   display: block;
@@ -3006,6 +3010,12 @@ h3.alpheios-inflections__credits-title {
 }
 .alpheios-panel--compact .alpheios-panel__close-btn {
   margin-left: calc(var(--alpheios-base-ui-size) * 0.75) !important;
+}
+@media screen and (max-width: 360px) {
+.alpheios-panel__header-btn--infl-data,
+.alpheios-panel__header-btn--treebank-data {
+    display: none;
+}
 }
 /*
  Calculates a size of text elements relative to the base size.
