@@ -2134,9 +2134,17 @@ h3.alpheios-inflections__credits-title {
 .alpheios-treebank {
   display: flex;
   flex-direction: column !important;
+  height: 100% !important;
 }
 .alpheios-treebank__frame {
+  /*
+  A minimal height of the treebank's iframe, shall be no less than 43em,
+  but no more than that because max width of panel's content is 800px and
+  treebank frame will not if in if too wide
+  */
+  width: 690px !important;
   flex: 1 1 100vh !important;
+  height: 100% !important;
 }
 /*
  Calculates a size of text elements relative to the base size.
@@ -2357,6 +2365,12 @@ h3.alpheios-inflections__credits-title {
 .alpheios-word-usage-header .alpheios-word-usage-header-select-textwork {
   margin-top: 10px !important;
 }
+.alpheios-word-usage-header-actions {
+  margin-top: 10px !important;
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+  border-top: 1px solid var(--alpheios-border-color) !important;
+}
 /*
  Calculates a size of text elements relative to the base size.
  Such elements can be scaled proportionally by changing the `--alpheios-base-text-size` custom prop.
@@ -2370,8 +2384,6 @@ h3.alpheios-inflections__credits-title {
 }
 .alpheios-word-usage-header-sorting {
   padding-bottom: 10px !important;
-  margin-top: 10px !important;
-  border-bottom: 1px solid var(--alpheios-border-color) !important;
 }
 /*
  Calculates a size of text elements relative to the base size.
@@ -2403,6 +2415,9 @@ h3.alpheios-inflections__credits-title {
   font-weight: normal !important;
   padding: 10px 0 !important;
   font-size: 80% !important;
+}
+.alpheios-word-usage .alpheios-word-usage-header {
+  border-bottom: 1px solid var(--alpheios-border-color) !important;
 }
 .alpheios-word-usage .alpheios-word-usage-header-select-author,
 .alpheios-word-usage .alpheios-word-usage-header-select-textwork,
@@ -2924,6 +2939,10 @@ h3.alpheios-inflections__credits-title {
 }
 .alpheios-panel__tab-panel--options {
   display: block;
+}
+.alpheios-panel__tab__treebank {
+  width: 100% !important;
+  height: 100% !important;
 }
 .alpheios-panel__tab-panel-options-cont {
   display: flex;
