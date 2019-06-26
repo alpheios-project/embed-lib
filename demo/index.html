@@ -20,19 +20,14 @@
 </head>
 
 <body>
-<!--    <script src="../dist/alpheios-embedded.js"></script>-->
+    <script src="../dist/alpheios-embedded.js"></script>
     <script type="text/javascript">
         let cb = function(evt) {
           evt.stopPropagation()
           return true
         }
         document.addEventListener("DOMContentLoaded", function(event) {
-          import ('../dist/alpheios-embedded.js').then(embedLib => {
-            console.info(`Embedded library has been imported successfully`)
-            console.info(embedLib)
-
-            Alpheios.importEmbedDependencies().then(Embedded => {
-              new Embedded(
+          new Alpheios.Embedded(
                 {
                   clientId: 'alpheios-dev',
                   //triggerEvents: "dblclick",
@@ -50,13 +45,6 @@
                   },
                   disableTextSelection: true
                 }).activate();
-            }).catch(e => {
-              console.error(`Import of an embedded library dependencies failed: ${e}`)
-            })
-
-          }).catch(e => {
-            console.error(`Import of an embedded library failed: ${e}`)
-          })
         });
     </script>
     <h4>Greek</h4>

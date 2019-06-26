@@ -1,8 +1,8 @@
 /* eslint-env jest */
 /* global Event */
 import ComponentStyles from '../node_modules/alpheios-components/dist/style/style.min.css' // eslint-disable-line
-//import { UIController, LocalStorageArea, AlignmentSelector,
-//  AuthModule, PanelModule, PopupModule, ToolbarModule, ActionPanelModule } from 'alpheios-components'
+import { UIController, LocalStorageArea, AlignmentSelector,
+  AuthModule, PanelModule, PopupModule, ToolbarModule, ActionPanelModule } from 'alpheios-components'
 import State from './state'
 import interact from 'interactjs'
 import Package from '../package.json'
@@ -10,25 +10,6 @@ import AppAuthenticator from './lib/app-authenticator'
 import SessionAuthenticator from './lib/session-authenticator'
 
 let components
-
-/* eslint-disable */
-export function importEmbedDependencies () {
-  return new Promise((resolve, reject) => {
-    import(
-      /* webpackChunkName: 'alpheios-components' */
-      '../node_modules/alpheios-components/dist/alpheios-components.js'
-      )
-      .then(componentsModule => {
-        console.log('Components have been imported successfully')
-        components = componentsModule
-        resolve (Embedded)
-      })
-      .catch(e => {
-        reject(e)
-      })
-  })
-}
-/* eslint-enable */
 
 /**
  * Encapsulation of Alpheios functionality which can be embedded in a webpage
@@ -268,5 +249,3 @@ class Embedded {
     return false
   }
 }
-
-// export { importEmbedDependencies }
