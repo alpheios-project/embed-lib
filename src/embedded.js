@@ -9,8 +9,6 @@ import Package from '../package.json'
 import AppAuthenticator from './lib/app-authenticator'
 import SessionAuthenticator from './lib/session-authenticator'
 
-let components
-
 /**
  * Encapsulation of Alpheios functionality which can be embedded in a webpage
  */
@@ -79,8 +77,8 @@ class Embedded {
     this.state.setPanelClosed() // A default state of the panel is CLOSED
     this.state.tab = 'info' // A default tab is "info"
 
-    this.ui = components.UIController.create(this.state, {
-      storageAdapter: components.LocalStorageArea,
+    this.ui = UIController.create(this.state, {
+      storageAdapter: LocalStorageArea,
       textQueryTrigger: this.triggerEvents,
       textQuerySelector: this.enabledSelector,
       app: { version:`${pckg.version}.${pckg.build}`, name: pckg.description },
@@ -90,20 +88,20 @@ class Embedded {
     // Environment-specific initializations
     if (typeof auth0Env !== 'undefined') {
       // Register an authentication module only with authentication environment is loaded
-      this.ui.registerModule(components.AuthModule, { auth: new AppAuthenticator() })
+      this.ui.registerModule(AuthModule, { auth: new AppAuthenticator() })
     } else if (typeof serverEnv !== 'undefined') {
-      this.ui.registerModule(components.AuthModule, { auth: new SessionAuthenticator(serverEnv.sessionUrl) })
+      this.ui.registerModule(AuthModule, { auth: new SessionAuthenticator(serverEnv.sessionUrl) })
     } else {
-      this.ui.registerModule(components.AuthModule, { auth: null })
+      this.ui.registerModule(AuthModule, { auth: null })
     }
     // Register UI modules
-    this.ui.registerModule(components.PanelModule, {})
+    this.ui.registerModule(PanelModule, {})
 
     let popupParams = {}
     if (popupInitialPos && Object.values(popupInitialPos).filter(value => Boolean(value)).length > 0) {
       popupParams.initialPos = popupInitialPos
     }
-    this.ui.registerModule(components.PopupModule, popupParams)
+    this.ui.registerModule(PopupModule, popupParams)
 
     if (layoutType === 'default') {
       let toolbarParams = {}
@@ -111,8 +109,8 @@ class Embedded {
         toolbarParams.initialPos = toolbarInitialPos
       }
 
-      this.ui.registerModule(components.ToolbarModule, toolbarParams)
-      this.ui.registerModule(components.ActionPanelModule)
+      this.ui.registerModule(ToolbarModule, toolbarParams)
+      this.ui.registerModule(ActionPanelModule)
     } else if (layoutType === 'readingTools') {
       // This is a special configuration for Alpheios Reading Tools
       if (this.ui.platform.isDesktop) {
@@ -121,9 +119,9 @@ class Embedded {
           toolbarParams.initialPos = toolbarInitialPos
         }
 
-        this.ui.registerModule(components.ToolbarModule, toolbarParams)
+        this.ui.registerModule(ToolbarModule, toolbarParams)
       } else if (this.ui.platform.isMobile) {
-        this.ui.registerModule(components.ActionPanelModule, {
+        this.ui.registerModule(ActionPanelModule, {
           lookupResultsIn: 'panel'
         })
       }
@@ -188,7 +186,7 @@ class Embedded {
       }
     }
 
-    let alignment = new components.AlignmentSelector(this.doc, {})
+    let alignment = new AlignmentSelector(this.doc, {})
     alignment.activate()
     let alignedTranslation = this.doc.querySelectorAll('.aligned-translation')
     for (let a of alignedTranslation) {
@@ -249,3 +247,5 @@ class Embedded {
     return false
   }
 }
+
+export { Embedded }
