@@ -1,6 +1,6 @@
 {
   "name": "alpheios-embedded",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "build": "24",
   "description": "Alpheios Embedded Library",
   "main": "dist/alpheios-embedded.js",
