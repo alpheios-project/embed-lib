@@ -19,15 +19,15 @@ See also sample files `sample.html` and `sample-cdn.html` at the root of this re
 **Via jsdelivr CDN**
 
 ```
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-embedded@1.0.0-beta.0/dist/style/style.min.css"/>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-embedded@1.0.0-beta.0/dist/style/style-embedded.min.css"/>
-<script src="https://cdn.jsdelivr.net/npm/alpheios-embedded@1.0.0-beta.0/dist/alpheios-embedded.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-embedded@1.0.0-beta.1/dist/style/style.min.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-embedded@1.0.0-beta.1/dist/style/style-embedded.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/alpheios-embedded@1.0.0-beta.1/dist/alpheios-embedded.min.js"></script>
 ```
 
 **Or install from NPM**
 
 ```
-npm install alpheios-embedded@1.0.0-beta.0
+npm install alpheios-embedded@1.0.0-beta.1
 ```
 
 ```
