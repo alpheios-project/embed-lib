@@ -1400,6 +1400,21 @@ select.alpheios-setting__control,
   border-style: solid !important;
   border-color: transparent transparent var(--alpheios-border-color) transparent !important;
 }
+.alph_tooltip-bottom-left {
+  top: 135% !important;
+  right: 0 !important;
+  left: auto !important;
+}
+.alph_tooltip-bottom-left::after {
+  content: "" !important;
+  position: absolute !important;
+  bottom: 100% !important;
+  right: 15% !important;
+  margin-left: -5px !important;
+  border-width: 5px !important;
+  border-style: solid !important;
+  border-color: transparent transparent var(--alpheios-border-color) transparent !important;
+}
 .alpheios-panel--right .alph_tooltip-bottom-right {
   top: 135% !important;
   right: auto !important;
@@ -1515,13 +1530,39 @@ select.alpheios-setting__control,
   width: calc(var(--alpheios-base-ui-size) * 1.75) !important;
   height: auto !important;
 }
-.alpheios-popup__close-btn {
+.alpheios-popup__toolbar-top__btn {
   width: calc(var(--alpheios-base-ui-size) * 3.5) !important;
   height: 100% !important;
   cursor: pointer !important;
   fill: var(--alpheios-icon-color) !important;
   stroke: var(--alpheios-icon-color) !important;
   stroke-width: 0 !important;
+}
+.alpheios-popup__toolbar-top__btn svg {
+  position: relative !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  left: calc(var(--alpheios-base-ui-size) * 1) !important;
+  width: calc(var(--alpheios-base-ui-size) * 2) !important;
+  height: auto !important;
+  stroke-width: 1 !important;
+}
+.alpheios-popup__toolbar-top__btn:hover, .alpheios-popup__toolbar-top__btn:focus {
+  fill: var(--alpheios-icon-color-hover) !important;
+  stroke: var(--alpheios-icon-color-hover) !important;
+  background: var(--alpheios-icon-bg-color-hover) !important;
+}
+.alpheios-popup__toolbar-top__btn:active {
+  fill: var(--alpheios-icon-color-active) !important;
+  stroke: var(--alpheios-icon-color-active) !important;
+  background: var(--alpheios-icon-bg-color-active) !important;
+}
+.alpheios-popup__close-btn {
+  width: calc(var(--alpheios-base-ui-size) * 3.5) !important;
+  height: 100% !important;
+  cursor: pointer !important;
+  fill: var(--alpheios-icon-color) !important;
+  stroke: var(--alpheios-icon-color) !important;
 }
 .alpheios-popup__close-btn svg {
   position: relative !important;
@@ -1766,6 +1807,10 @@ a:not([href]):not([tabindex]).alpheios-popup__providers-link:hover {
   justify-content: flex-end !important;
   position: absolute !important;
   top: calc(var(--alpheios-base-text-size) * -3.125) !important;
+}
+.alpheios-inflections__table-ctrl-cell--btn {
+  display: inline-block;
+  margin: 0 0 15px 20px !important;
 }
 .alpheios-inflections__table-ctrl-cell {
   flex-grow: 1 !important;
@@ -2123,6 +2168,23 @@ h3.alpheios-inflections__credits-title {
   padding: 0 !important;
   overflow: scroll !important;
 }
+.alpheios-grammar__button--back-block {
+  position: absolute !important;
+  top: 5px !important;
+  right: 20px !important;
+  z-index: 1000 !important;
+}
+.alpheios-svg-index {
+  display: block;
+  padding: 4px !important;
+  border-radius: 15px !important;
+  opacity: 0.5 !important;
+}
+.alpheios-svg-index svg {
+  width: 22px !important;
+  height: auto !important;
+  fill: var(--alpheios-btn-primary-font-color) !important;
+}
 /*
  Calculates a size of text elements relative to the base size.
  Such elements can be scaled proportionally by changing the `--alpheios-base-text-size` custom prop.
@@ -2134,9 +2196,17 @@ h3.alpheios-inflections__credits-title {
 .alpheios-treebank {
   display: flex;
   flex-direction: column !important;
+  height: 100% !important;
 }
 .alpheios-treebank__frame {
+  /*
+  A minimal height of the treebank's iframe, shall be no less than 43em,
+  but no more than that because max width of panel's content is 800px and
+  treebank frame will not if in if too wide
+  */
+  width: 690px !important;
   flex: 1 1 100vh !important;
+  height: 100% !important;
 }
 /*
  Calculates a size of text elements relative to the base size.
@@ -2263,6 +2333,42 @@ h3.alpheios-inflections__credits-title {
  Calculates a size of UI elements relative to the base size.
  Such elements can be scaled proportionally by changing the `--alpheios-base-ui-size` custom prop.
  */
+.alpheios-resource-options__cont {
+  display: flex;
+  flex-direction: column !important;
+}
+.alpheios-resource-options__item {
+  margin-bottom: calc(var(--alpheios-base-text-size) * 0.625) !important;
+  display: flex;
+  align-items: flex-start !important;
+  flex: 1 1 auto !important;
+}
+/*
+ Calculates a size of text elements relative to the base size.
+ Such elements can be scaled proportionally by changing the `--alpheios-base-text-size` custom prop.
+ */
+/*
+ Calculates a size of UI elements relative to the base size.
+ Such elements can be scaled proportionally by changing the `--alpheios-base-ui-size` custom prop.
+ */
+.alpheios-feature-options__cont {
+  display: flex;
+  flex-direction: column !important;
+}
+.alpheios-feature-options__item {
+  margin-bottom: calc(var(--alpheios-base-text-size) * 0.625) !important;
+  display: flex;
+  align-items: flex-start !important;
+  flex: 1 1 auto !important;
+}
+/*
+ Calculates a size of text elements relative to the base size.
+ Such elements can be scaled proportionally by changing the `--alpheios-base-text-size` custom prop.
+ */
+/*
+ Calculates a size of UI elements relative to the base size.
+ Such elements can be scaled proportionally by changing the `--alpheios-base-ui-size` custom prop.
+ */
 .alpheios-setting__button-group {
   color: var(--alpheios-text-color-vivid) !important;
   border: 1px solid var(--alpheios-text-color-vivid) !important;
@@ -2288,6 +2394,24 @@ h3.alpheios-inflections__credits-title {
   color: var(--alpheios-color-neutral-lightest) !important;
   background: var(--alpheios-text-color-vivid) !important;
   box-shadow: inset 0 calc(var(--alpheios-base-text-size) * 0.25) calc(var(--alpheios-base-text-size) * 0.25) rgba(0, 0, 0, 0.1) !important;
+}
+/*
+ Calculates a size of text elements relative to the base size.
+ Such elements can be scaled proportionally by changing the `--alpheios-base-text-size` custom prop.
+ */
+/*
+ Calculates a size of UI elements relative to the base size.
+ Such elements can be scaled proportionally by changing the `--alpheios-base-ui-size` custom prop.
+ */
+.alpheios-ui-options__cont {
+  display: flex;
+  flex-direction: column !important;
+}
+.alpheios-ui-options__item {
+  margin-bottom: calc(var(--alpheios-base-text-size) * 0.625) !important;
+  display: flex;
+  align-items: flex-start !important;
+  flex: 1 1 auto !important;
 }
 /*
  Calculates a size of text elements relative to the base size.
@@ -2436,9 +2560,6 @@ h3.alpheios-inflections__credits-title {
 .alpheios-word-usage__examples-show-sources-btn {
   margin: 40px 0 20px !important;
 }
-.alpheios-panel--large .alpheios-word-usage__examples-show-sources-btn {
-  display: none;
-}
 .alpheios-word-usage a.alpheios-word-usage__examples-source-link-large {
   grid-column: 1/4 !important;
   color: var(--alpheios-link-color-on-light) !important;
@@ -2453,6 +2574,11 @@ h3.alpheios-inflections__credits-title {
 }
 .alpheios-word-usage a.alpheios-word-usage__examples-source-link-compact-text {
   color: var(--alpheios-link-color-on-light) !important;
+}
+.alpheios-word-usage__examples-pre, .alpheios-word-usage__examples-target-word, .alpheios-word-usage__examples-post {
+  padding-bottom: 10px !important;
+  border-bottom: 1px solid var(--alpheios-border-color) !important;
+  white-space: nowrap !important;
 }
 .alpheios-word-usage__examples-pre {
   grid-column: 1 !important;
@@ -2472,18 +2598,6 @@ h3.alpheios-inflections__credits-title {
   text-align: left !important;
   border-bottom: 1px solid var(--alpheios-border-color) !important;
 }
-.alpheios-word-usage__examples-pre, .alpheios-word-usage__examples-target-word, .alpheios-word-usage__examples-post {
-  padding-bottom: 10px !important;
-  border-bottom: 1px solid var(--alpheios-border-color) !important;
-  white-space: nowrap !important;
-}
-.alpheios-word-usage__examples--sources-visible .alpheios-word-usage__examples-pre, .alpheios-word-usage__examples--sources-visible .alpheios-word-usage__examples-target-word, .alpheios-word-usage__examples--sources-visible .alpheios-word-usage__examples-post {
-  padding-bottom: 5px !important;
-  border-bottom: none !important;
-}
-.alpheios-panel--compact .alpheios-word-usage__examples-source-link-large {
-  display: none;
-}
 .alpheios-word-usage .alpheios-word-usage-header-show-link {
   cursor: pointer !important;
   color: var(--alpheios-color-vivid) !important;
@@ -2491,6 +2605,9 @@ h3.alpheios-inflections__credits-title {
 .alpheios-word-usage .alpheios-word-usage-header-show-link:hover {
   text-decoration: underline !important;
   color: var(--alpheios-color-vivid-hover) !important;
+}
+.alpheios-word-usage__examples-show-sources-btn {
+  display: none;
 }
 .alpheios-layout-compact .alpheios-word-usage-header-select-type-filters-block .alpheios-word-usage-header-select-type-filter {
   display: inline-block;
@@ -2513,6 +2630,15 @@ h3.alpheios-inflections__credits-title {
 }
 .alpheios-layout-compact .alpheios-word-usage__examples-show-sources-btn {
   margin: 20px 0 !important;
+}
+.alpheios-layout-compact .alpheios-word-usage__examples-source-link-large {
+  display: none;
+}
+.alpheios-layout-compact .alpheios-word-usage__examples-show-sources-btn {
+  display: inline-block;
+}
+.alpheios-layout-compact .alpheios-word-usage__examples--sources-visible .alpheios-word-usage__examples-source-link-large {
+  display: block;
 }
 /*
  Calculates a size of text elements relative to the base size.
@@ -2925,6 +3051,10 @@ h3.alpheios-inflections__credits-title {
 .alpheios-panel__tab-panel--options {
   display: block;
 }
+.alpheios-panel__tab__treebank {
+  width: 100% !important;
+  height: 100% !important;
+}
 .alpheios-panel__tab-panel-options-cont {
   display: flex;
   flex-direction: column !important;
@@ -2949,9 +3079,6 @@ h3.alpheios-inflections__credits-title {
 }
 .alpheios-panel--compact.alpheios-panel {
   grid-template-columns: auto;
-}
-.alpheios-panel--compact .alpheios-panel__close-btn {
-  margin-left: calc(var(--alpheios-base-ui-size) * 1.25) !important;
 }
 .alpheios-panel--compact.alpheios-panel--left {
   height: 100% !important;
@@ -3008,10 +3135,7 @@ h3.alpheios-inflections__credits-title {
 .alpheios-panel--compact .alpheios-panel__tab__inflections .alpheios-inflections__forms-cont {
   margin-bottom: 0 !important;
 }
-.alpheios-panel--compact .alpheios-panel__close-btn {
-  margin-left: calc(var(--alpheios-base-ui-size) * 0.75) !important;
-}
-@media screen and (max-width: 360px) {
+@media screen and (max-width: 359px) {
 .alpheios-panel__header-btn--infl-data,
 .alpheios-panel__header-btn--treebank-data {
     display: none;
