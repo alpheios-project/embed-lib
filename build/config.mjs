@@ -4,6 +4,9 @@ const projectRoot = process.cwd()
 const webpack = {
   common: {
     entry: './embedded.js',
+    externals: {
+      'alpheios-client-adapters': 'alpheios-client-adapters'
+    }
     // target: 'web',
     /*optimization: {
       splitChunks: {

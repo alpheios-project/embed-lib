@@ -1,13 +1,34 @@
 /* eslint-env jest */
 /* global Event */
-import ComponentStyles from '../node_modules/alpheios-components/dist/style/style.min.css' // eslint-disable-line
-import { UIController, LocalStorageArea, AlignmentSelector,
-  AuthModule, PanelModule, PopupModule, ToolbarModule, ActionPanelModule } from 'alpheios-components'
+//import ComponentStyles from '../node_modules/alpheios-components/dist/style/style.min.css' // eslint-disable-line
+//import { UIController, LocalStorageArea, AlignmentSelector,
+//  AuthModule, PanelModule, PopupModule, ToolbarModule, ActionPanelModule } from 'alpheios-components'
 import State from './state'
 import interact from 'interactjs'
 import Package from '../package.json'
 import AppAuthenticator from './lib/app-authenticator'
 import SessionAuthenticator from './lib/session-authenticator'
+
+let components
+
+/* eslint-disable */
+export function importEmbedDependencies () {
+  return new Promise((resolve, reject) => {
+    import(
+      /* webpackIgnore: true */
+      './alpheios-components.js'
+      )
+      .then(componentsModule => {
+        console.log('Components have been imported successfully')
+        components = componentsModule
+        resolve (Embedded)
+      })
+      .catch(e => {
+        reject(e)
+      })
+  })
+}
+/* eslint-enable */
 
 /**
  * Encapsulation of Alpheios functionality which can be embedded in a webpage
@@ -77,8 +98,8 @@ class Embedded {
     this.state.setPanelClosed() // A default state of the panel is CLOSED
     this.state.tab = 'info' // A default tab is "info"
 
-    this.ui = UIController.create(this.state, {
-      storageAdapter: LocalStorageArea,
+    this.ui = components.UIController.create(this.state, {
+      storageAdapter: components.LocalStorageArea,
       textQueryTrigger: this.triggerEvents,
       textQuerySelector: this.enabledSelector,
       app: { version:`${pckg.version}.${pckg.build}`, name: pckg.description },
@@ -88,20 +109,20 @@ class Embedded {
     // Environment-specific initializations
     if (typeof auth0Env !== 'undefined') {
       // Register an authentication module only with authentication environment is loaded
-      this.ui.registerModule(AuthModule, { auth: new AppAuthenticator() })
+      this.ui.registerModule(components.AuthModule, { auth: new AppAuthenticator() })
     } else if (typeof serverEnv !== 'undefined') {
-      this.ui.registerModule(AuthModule, { auth: new SessionAuthenticator(serverEnv.sessionUrl) })
+      this.ui.registerModule(components.AuthModule, { auth: new SessionAuthenticator(serverEnv.sessionUrl) })
     } else {
-      this.ui.registerModule(AuthModule, { auth: null })
+      this.ui.registerModule(components.AuthModule, { auth: null })
     }
     // Register UI modules
-    this.ui.registerModule(PanelModule, {})
+    this.ui.registerModule(components.PanelModule, {})
 
     let popupParams = {}
     if (popupInitialPos && Object.values(popupInitialPos).filter(value => Boolean(value)).length > 0) {
       popupParams.initialPos = popupInitialPos
     }
-    this.ui.registerModule(PopupModule, popupParams)
+    this.ui.registerModule(components.PopupModule, popupParams)
 
     if (layoutType === 'default') {
       let toolbarParams = {}
@@ -109,8 +130,8 @@ class Embedded {
         toolbarParams.initialPos = toolbarInitialPos
       }
 
-      this.ui.registerModule(ToolbarModule, toolbarParams)
-      this.ui.registerModule(ActionPanelModule)
+      this.ui.registerModule(components.ToolbarModule, toolbarParams)
+      this.ui.registerModule(components.ActionPanelModule)
     } else if (layoutType === 'readingTools') {
       // This is a special configuration for Alpheios Reading Tools
       if (this.ui.platform.isDesktop) {
@@ -119,9 +140,9 @@ class Embedded {
           toolbarParams.initialPos = toolbarInitialPos
         }
 
-        this.ui.registerModule(ToolbarModule, toolbarParams)
+        this.ui.registerModule(components.ToolbarModule, toolbarParams)
       } else if (this.ui.platform.isMobile) {
-        this.ui.registerModule(ActionPanelModule, {
+        this.ui.registerModule(components.ActionPanelModule, {
           lookupResultsIn: 'panel'
         })
       }
@@ -186,7 +207,7 @@ class Embedded {
       }
     }
 
-    let alignment = new AlignmentSelector(this.doc, {})
+    let alignment = new components.AlignmentSelector(this.doc, {})
     alignment.activate()
     let alignedTranslation = this.doc.querySelectorAll('.aligned-translation')
     for (let a of alignedTranslation) {
@@ -248,4 +269,4 @@ class Embedded {
   }
 }
 
-export { Embedded }
+// export { importEmbedDependencies }

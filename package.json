@@ -35,7 +35,7 @@
     "alpheios-data-models": "github:alpheios-project/data-models",
     "alpheios-experience": "github:alpheios-project/experience",
     "alpheios-inflection-tables": "git://github.com/alpheios-project/inflection-tables.git",
-    "alpheios-node-build": "github:alpheios-project/node-build",
+    "alpheios-node-build": "github:alpheios-project/node-build#code-analysis",
     "alpheios-res-client": "github:alpheios-project/res-client",
     "alpheios-wordlist": "github:alpheios-project/wordlist",
     "coveralls": "^3.0.4",
@@ -95,7 +95,5 @@
       "**/support"
     ]
   },
-  "dependencies": {
-    "node-sass": "^4.12.0"
-  }
+  "dependencies": {}
 }
