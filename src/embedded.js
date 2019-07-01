@@ -14,16 +14,26 @@ let components
 let interact
 
 /* eslint-disable */
-export function importEmbedDependencies () {
+export function importDependencies (options = { mode: 'production' }) {
+  let lib = {}
+  switch (options.mode) {
+    case 'development':
+      lib.components = 'alpheios-components.min.js'
+      lib.interact = 'interact.min.js'
+      break
+    default:
+      lib.components = 'alpheios-components.js'
+      lib.interact = 'interact.js'
+  }
   return new Promise((resolve, reject) => {
     let componentsImport = import(
       /* webpackIgnore: true */
-      './lib/alpheios-components.min.js'
+      `./lib/${lib.components}`
       )
 
     let interactImport = import(
       /* webpackIgnore: true */
-      './lib/interact.min.js'
+      `./lib/${lib.interact}`
       )
 
     componentsImport

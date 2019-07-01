@@ -102,12 +102,12 @@ module.exports = {"name":"alpheios-embedded","version":"1.0.0","build":"25","des
 /*!*********************!*\
   !*** ./embedded.js ***!
   \*********************/
-/*! exports provided: importEmbedDependencies */
+/*! exports provided: importDependencies */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "importEmbedDependencies", function() { return importEmbedDependencies; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "importDependencies", function() { return importDependencies; });
 /* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./state */ "./state.js");
 /* harmony import */ var _package_json__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../package.json */ "../package.json");
 var _package_json__WEBPACK_IMPORTED_MODULE_1___namespace = /*#__PURE__*/__webpack_require__.t(/*! ../package.json */ "../package.json", 1);
@@ -129,16 +129,26 @@ let components
 let interact
 
 /* eslint-disable */
-function importEmbedDependencies () {
+function importDependencies (options = { mode: 'production' }) {
+  let lib = {}
+  switch (options.mode) {
+    case 'development':
+      lib.components = 'alpheios-components.min.js'
+      lib.interact = 'interact.min.js'
+      break
+    default:
+      lib.components = 'alpheios-components.js'
+      lib.interact = 'interact.js'
+  }
   return new Promise((resolve, reject) => {
     let componentsImport = import(
       /* webpackIgnore: true */
-      './lib/alpheios-components.min.js'
+      `./lib/${lib.components}`
       )
 
     let interactImport = import(
       /* webpackIgnore: true */
-      './lib/interact.min.js'
+      `./lib/${lib.interact}`
       )
 
     componentsImport
