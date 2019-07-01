@@ -4,3 +4,4 @@ reports/
 
 ## sensitive environment information
 /dist/auth0/
+/dist/lib/
