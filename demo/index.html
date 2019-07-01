@@ -29,9 +29,8 @@
         document.addEventListener("DOMContentLoaded", function(event) {
           import ('../dist/alpheios-embedded.js').then(embedLib => {
             console.info(`Embedded library has been imported successfully`)
-            console.info(embedLib)
 
-            Alpheios.importEmbedDependencies().then(Embedded => {
+            window.AlpheiosEmbed.importEmbedDependencies().then(Embedded => {
               new Embedded(
                 {
                   clientId: 'alpheios-dev',

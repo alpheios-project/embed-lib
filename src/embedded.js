@@ -4,28 +4,56 @@
 //import { UIController, LocalStorageArea, AlignmentSelector,
 //  AuthModule, PanelModule, PopupModule, ToolbarModule, ActionPanelModule } from 'alpheios-components'
 import State from './state'
-import interact from 'interactjs'
+// TODO: interact.js is imported by both components and embed-lib. Need to eliminate duplication
+// import interact from 'interactjs'
 import Package from '../package.json'
 import AppAuthenticator from './lib/app-authenticator'
 import SessionAuthenticator from './lib/session-authenticator'
-
+// A variable that will store an instance of the imported components module
 let components
+let interact
 
 /* eslint-disable */
 export function importEmbedDependencies () {
   return new Promise((resolve, reject) => {
-    import(
+    let componentsImport = import(
       /* webpackIgnore: true */
-      './alpheios-components.js'
+      './lib/alpheios-components.min.js'
       )
-      .then(componentsModule => {
-        console.log('Components have been imported successfully')
-        components = componentsModule
-        resolve (Embedded)
+
+    let interactImport = import(
+      /* webpackIgnore: true */
+      './lib/interact.min.js'
+      )
+
+    componentsImport
+      .then(() => {
+        // Assign a components module imported as a prop of `windows` to the `components` var
+        console.info(`Components library has been imported successfully`)
+        components = window.AlpheiosComponents
       })
       .catch(e => {
+        console.info(`Components import error`)
         reject(e)
       })
+
+    interactImport
+      .then((interactModule) => {
+        // Assign a components module imported as a prop of `windows` to the `components` var
+        console.info(`Interact.js library has been imported successfully`)
+        console.log(interactModule)
+        interact = interactModule
+        window.interact = interactModule
+      })
+      .catch(e => {
+        console.info(`Interact import error`)
+        reject(e)
+      })
+
+    Promise.all([componentsImport]).then(() => {
+      console.info(`All promises have been imported successfully`)
+      resolve (Embedded)
+    })
   })
 }
 /* eslint-enable */
