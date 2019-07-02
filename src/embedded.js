@@ -4,14 +4,11 @@
 //import { UIController, LocalStorageArea, AlignmentSelector,
 //  AuthModule, PanelModule, PopupModule, ToolbarModule, ActionPanelModule } from 'alpheios-components'
 import State from './state'
-// TODO: interact.js is imported by both components and embed-lib. Need to eliminate duplication
-// import interact from 'interactjs'
 import Package from '../package.json'
 import AppAuthenticator from './lib/app-authenticator'
 import SessionAuthenticator from './lib/session-authenticator'
 // A variable that will store an instance of the imported components module
 let components
-let interact
 
 /* eslint-disable */
 export function importDependencies (options = { mode: 'production' }) {
@@ -19,11 +16,9 @@ export function importDependencies (options = { mode: 'production' }) {
   switch (options.mode) {
     case 'development':
       lib.components = 'alpheios-components.min.js'
-      lib.interact = 'interact.min.js'
       break
     default:
       lib.components = 'alpheios-components.js'
-      lib.interact = 'interact.js'
   }
   return new Promise((resolve, reject) => {
     let componentsImport = import(
@@ -31,39 +26,17 @@ export function importDependencies (options = { mode: 'production' }) {
       `./lib/${lib.components}`
       )
 
-    let interactImport = import(
-      /* webpackIgnore: true */
-      `./lib/${lib.interact}`
-      )
-
     componentsImport
       .then(() => {
         // Assign a components module imported as a prop of `windows` to the `components` var
         console.info(`Components library has been imported successfully`)
         components = window.AlpheiosComponents
+        resolve (Embedded)
       })
       .catch(e => {
         console.info(`Components import error`)
         reject(e)
       })
-
-    interactImport
-      .then((interactModule) => {
-        // Assign a components module imported as a prop of `windows` to the `components` var
-        console.info(`Interact.js library has been imported successfully`)
-        console.log(interactModule)
-        interact = interactModule
-        window.interact = interactModule
-      })
-      .catch(e => {
-        console.info(`Interact import error`)
-        reject(e)
-      })
-
-    Promise.all([componentsImport]).then(() => {
-      console.info(`All promises have been imported successfully`)
-      resolve (Embedded)
-    })
   })
 }
 /* eslint-enable */
@@ -247,10 +220,9 @@ class Embedded {
 
     let alignment = new components.AlignmentSelector(this.doc, {})
     alignment.activate()
-    let alignedTranslation = this.doc.querySelectorAll('.aligned-translation')
-    for (let a of alignedTranslation) {
-      interact(a).resizable({
-      // resize from all edges and corners
+    let alignmentTranslation = components.UIController.initAlignedTranslation(this.doc, '.aligned-translation',
+      {
+        // resize from all edges and corners
         edges: { left: true, right: true, bottom: false, top: false },
 
         // minimum size
@@ -264,12 +236,13 @@ class Embedded {
           endOnly: true
         },
         inertia: true
-      }).on('resizemove', event => {
+      },
+      event => {
         let target = event.target
         // update the element's style
         target.style.width = `${event.rect.width}px`
-      })
-    }
+      }
+    )
   }
 
   get platform () {

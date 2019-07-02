@@ -15,10 +15,10 @@
     "auth0-env-update": "node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/prod --t=dist/auth0 --f=env-embed.js",
     "auth0-env-dev-update": "node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/dev --t=dist/auth0 --f=env-embed.js",
     "lint": "eslint --fix src/**/*.js",
-    "update-dependencies": "node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/ --t=dist/lib --f=alpheios-components.js --f=alpheios-components.js.map --f=alpheios-components.min.js && node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/interactjs/dist/ --t=dist/lib --f=interact.js --f=interact.js.map --f=interact.min.js --f=interact.min.js.map",
+    "update-dependencies": "node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/ --t=dist/lib --f=alpheios-components.js --f=alpheios-components.js.map --f=alpheios-components.min.js",
     "build-prod-experimental": "node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs webpack production app config.mjs && npm run update-dependencies",
     "build-dev-experimental": "node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs webpack development app config.mjs && npm run update-dependencies",
-    "dev": "npm run build-dev && http-server -c-1 -p 8888 & onchange src -- npm run build-dev"
+    "dev": "npm run build-dev-experimental && http-server -c-1 -p 8888 & onchange src -- npm run build-dev-experimental"
   },
   "repository": {
     "type": "git",
@@ -32,7 +32,7 @@
   "homepage": "https://github.com/alpheios-project/wordsvc#readme",
   "devDependencies": {
     "alpheios-client-adapters": "github:alpheios-project/client-adapters",
-    "alpheios-components": "github:alpheios-project/components#code-optimization",
+    "alpheios-components": "file:../components",
     "alpheios-data-models": "github:alpheios-project/data-models",
     "alpheios-experience": "github:alpheios-project/experience",
     "alpheios-inflection-tables": "git://github.com/alpheios-project/inflection-tables.git",

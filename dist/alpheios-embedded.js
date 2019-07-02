@@ -94,7 +94,7 @@ window["AlpheiosEmbed"] =
 /*! exports provided: name, version, build, description, main, directories, scripts, repository, author, license, bugs, homepage, devDependencies, engines, jest, eslintConfig, standard, dependencies, default */
 /***/ (function(module) {
 
-module.exports = {"name":"alpheios-embedded","version":"1.0.0","build":"25","description":"Alpheios Embedded Library","main":"dist/alpheios-embedded.js","directories":{"doc":"doc"},"scripts":{"test":"eslint --fix src/**/*.js && jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js","build":"eslint --fix src/**/*.js && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all all vue && node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/style --t=dist/style","build-prod":"eslint --fix src/**/*.js && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all production vue && node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/style --t=dist/style","build-dev":"eslint --fix src/**/*.js && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all development vue && node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/style --t=dist/style","auth0-env-update":"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/prod --t=dist/auth0 --f=env-embed.js","auth0-env-dev-update":"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/dev --t=dist/auth0 --f=env-embed.js","lint":"eslint --fix src/**/*.js","update-dependencies":"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/ --t=dist/lib --f=alpheios-components.js --f=alpheios-components.js.map --f=alpheios-components.min.js && node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/interactjs/dist/ --t=dist/lib --f=interact.js --f=interact.js.map --f=interact.min.js --f=interact.min.js.map","build-prod-experimental":"node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs webpack production app config.mjs && npm run update-dependencies","build-dev-experimental":"node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs webpack development app config.mjs && npm run update-dependencies","dev":"npm run build-dev && http-server -c-1 -p 8888 & onchange src -- npm run build-dev"},"repository":{"type":"git","url":"git+https://github.com/alpheios-project/wordsvc.git"},"author":"The Alpheios Project, Ltd.","license":"ISC","bugs":{"url":"https://github.com/alpheios-project/wordsvc/issues"},"homepage":"https://github.com/alpheios-project/wordsvc#readme","devDependencies":{"alpheios-client-adapters":"github:alpheios-project/client-adapters","alpheios-components":"github:alpheios-project/components#code-optimization","alpheios-data-models":"github:alpheios-project/data-models","alpheios-experience":"github:alpheios-project/experience","alpheios-inflection-tables":"git://github.com/alpheios-project/inflection-tables.git","alpheios-node-build":"github:alpheios-project/node-build#code-analysis","alpheios-res-client":"github:alpheios-project/res-client","alpheios-wordlist":"github:alpheios-project/wordlist","coveralls":"^3.0.4","css-loader":"^3.0.0","eslint":"^6.0.1","eslint-config-standard":"^12.0.0","eslint-plugin-import":"^2.18.0","eslint-plugin-node":"^9.1.0","eslint-plugin-promise":"^4.2.1","eslint-plugin-standard":"^4.0.0","eslint-plugin-vue":"^5.2.3","html-loader":"^0.5.5","html-loader-jest":"^0.2.1","http-server":"^0.11.1","interactjs":"^1.4.11","intl-messageformat":"^2.2.0","jest":"^24.8.0","jest-fetch-mock":"^2.1.2","onchange":"^6.0.0","raw-loader":"^3.0.0","sass-loader":"^7.1.0","source-map-loader":"^0.2.4","style-loader":"^0.23.1","url-loader":"^2.0.1","vue-loader":"^15.7.0","vue-style-loader":"^4.1.2","vue-svg-loader":"^0.12.0","webpack-dev-server":"^3.7.2"},"engines":{"node":">= 9.10.1","npm":">= 5.6.0"},"jest":{"verbose":true,"transform":{"^.+\\.htmlf$":"html-loader-jest","^.+\\.jsx?$":"babel-jest"},"transformIgnorePatterns":["node_modules/alpheios-components/"]},"eslintConfig":{"env":{"browser":true,"node":true},"parserOptions":{"ecmaVersion":2018,"sourceType":"module"}},"standard":{"ignore":["**/dist","**/support"]},"dependencies":{}};
+module.exports = {"name":"alpheios-embedded","version":"1.0.0","build":"25","description":"Alpheios Embedded Library","main":"dist/alpheios-embedded.js","directories":{"doc":"doc"},"scripts":{"test":"eslint --fix src/**/*.js && jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js","build":"eslint --fix src/**/*.js && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all all vue && node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/style --t=dist/style","build-prod":"eslint --fix src/**/*.js && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all production vue && node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/style --t=dist/style","build-dev":"eslint --fix src/**/*.js && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all development vue && node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/style --t=dist/style","auth0-env-update":"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/prod --t=dist/auth0 --f=env-embed.js","auth0-env-dev-update":"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/dev --t=dist/auth0 --f=env-embed.js","lint":"eslint --fix src/**/*.js","update-dependencies":"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/ --t=dist/lib --f=alpheios-components.js --f=alpheios-components.js.map --f=alpheios-components.min.js","build-prod-experimental":"node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs webpack production app config.mjs && npm run update-dependencies","build-dev-experimental":"node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs webpack development app config.mjs && npm run update-dependencies","dev":"npm run build-dev-experimental && http-server -c-1 -p 8888 & onchange src -- npm run build-dev-experimental"},"repository":{"type":"git","url":"git+https://github.com/alpheios-project/wordsvc.git"},"author":"The Alpheios Project, Ltd.","license":"ISC","bugs":{"url":"https://github.com/alpheios-project/wordsvc/issues"},"homepage":"https://github.com/alpheios-project/wordsvc#readme","devDependencies":{"alpheios-client-adapters":"github:alpheios-project/client-adapters","alpheios-components":"file:../components","alpheios-data-models":"github:alpheios-project/data-models","alpheios-experience":"github:alpheios-project/experience","alpheios-inflection-tables":"git://github.com/alpheios-project/inflection-tables.git","alpheios-node-build":"github:alpheios-project/node-build#code-analysis","alpheios-res-client":"github:alpheios-project/res-client","alpheios-wordlist":"github:alpheios-project/wordlist","coveralls":"^3.0.4","css-loader":"^3.0.0","eslint":"^6.0.1","eslint-config-standard":"^12.0.0","eslint-plugin-import":"^2.18.0","eslint-plugin-node":"^9.1.0","eslint-plugin-promise":"^4.2.1","eslint-plugin-standard":"^4.0.0","eslint-plugin-vue":"^5.2.3","html-loader":"^0.5.5","html-loader-jest":"^0.2.1","http-server":"^0.11.1","interactjs":"^1.4.11","intl-messageformat":"^2.2.0","jest":"^24.8.0","jest-fetch-mock":"^2.1.2","onchange":"^6.0.0","raw-loader":"^3.0.0","sass-loader":"^7.1.0","source-map-loader":"^0.2.4","style-loader":"^0.23.1","url-loader":"^2.0.1","vue-loader":"^15.7.0","vue-style-loader":"^4.1.2","vue-svg-loader":"^0.12.0","webpack-dev-server":"^3.7.2"},"engines":{"node":">= 9.10.1","npm":">= 5.6.0"},"jest":{"verbose":true,"transform":{"^.+\\.htmlf$":"html-loader-jest","^.+\\.jsx?$":"babel-jest"},"transformIgnorePatterns":["node_modules/alpheios-components/"]},"eslintConfig":{"env":{"browser":true,"node":true},"parserOptions":{"ecmaVersion":2018,"sourceType":"module"}},"standard":{"ignore":["**/dist","**/support"]},"dependencies":{}};
 
 /***/ }),
 
@@ -119,14 +119,11 @@ var _package_json__WEBPACK_IMPORTED_MODULE_1___namespace = /*#__PURE__*/__webpac
 //import { UIController, LocalStorageArea, AlignmentSelector,
 //  AuthModule, PanelModule, PopupModule, ToolbarModule, ActionPanelModule } from 'alpheios-components'
 
-// TODO: interact.js is imported by both components and embed-lib. Need to eliminate duplication
-// import interact from 'interactjs'
 
 
 
 // A variable that will store an instance of the imported components module
 let components
-let interact
 
 /* eslint-disable */
 function importDependencies (options = { mode: 'production' }) {
@@ -134,11 +131,9 @@ function importDependencies (options = { mode: 'production' }) {
   switch (options.mode) {
     case 'development':
       lib.components = 'alpheios-components.min.js'
-      lib.interact = 'interact.min.js'
       break
     default:
       lib.components = 'alpheios-components.js'
-      lib.interact = 'interact.js'
   }
   return new Promise((resolve, reject) => {
     let componentsImport = import(
@@ -146,39 +141,17 @@ function importDependencies (options = { mode: 'production' }) {
       `./lib/${lib.components}`
       )
 
-    let interactImport = import(
-      /* webpackIgnore: true */
-      `./lib/${lib.interact}`
-      )
-
     componentsImport
       .then(() => {
         // Assign a components module imported as a prop of `windows` to the `components` var
         console.info(`Components library has been imported successfully`)
         components = window.AlpheiosComponents
+        resolve (Embedded)
       })
       .catch(e => {
         console.info(`Components import error`)
         reject(e)
       })
-
-    interactImport
-      .then((interactModule) => {
-        // Assign a components module imported as a prop of `windows` to the `components` var
-        console.info(`Interact.js library has been imported successfully`)
-        console.log(interactModule)
-        interact = interactModule
-        window.interact = interactModule
-      })
-      .catch(e => {
-        console.info(`Interact import error`)
-        reject(e)
-      })
-
-    Promise.all([componentsImport]).then(() => {
-      console.info(`All promises have been imported successfully`)
-      resolve (Embedded)
-    })
   })
 }
 /* eslint-enable */
@@ -362,10 +335,9 @@ class Embedded {
 
     let alignment = new components.AlignmentSelector(this.doc, {})
     alignment.activate()
-    let alignedTranslation = this.doc.querySelectorAll('.aligned-translation')
-    for (let a of alignedTranslation) {
-      interact(a).resizable({
-      // resize from all edges and corners
+    let alignmentTranslation = components.UIController.initAlignedTranslation(this.doc, '.aligned-translation',
+      {
+        // resize from all edges and corners
         edges: { left: true, right: true, bottom: false, top: false },
 
         // minimum size
@@ -379,12 +351,13 @@ class Embedded {
           endOnly: true
         },
         inertia: true
-      }).on('resizemove', event => {
+      },
+      event => {
         let target = event.target
         // update the element's style
         target.style.width = `${event.rect.width}px`
-      })
-    }
+      }
+    )
   }
 
   get platform () {
