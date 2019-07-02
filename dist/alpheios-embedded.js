@@ -116,8 +116,6 @@ var _package_json__WEBPACK_IMPORTED_MODULE_1___namespace = /*#__PURE__*/__webpac
 /* eslint-env jest */
 /* global Event */
 //import ComponentStyles from '../node_modules/alpheios-components/dist/style/style.min.css' // eslint-disable-line
-//import { UIController, LocalStorageArea, AlignmentSelector,
-//  AuthModule, PanelModule, PopupModule, ToolbarModule, ActionPanelModule } from 'alpheios-components'
 
 
 
@@ -126,22 +124,50 @@ var _package_json__WEBPACK_IMPORTED_MODULE_1___namespace = /*#__PURE__*/__webpac
 let components
 
 /* eslint-disable */
-function importDependencies (options = { mode: 'production' }) {
-  let lib = {}
+/**
+ * Imports dynamic dependencies that are required for the embed-lib.
+ * @param {object} options - A configuration object of the import function.
+ * @param {'production' | 'development' | 'custom'} options.mode - What type of libraries shall be imported.
+ *         'production' - will load minified version of libraries from a `dist/lib` local directory (this is a default value);
+ *         'development' - will load non-optimized libraries with source maps from a `dist/lib` local directory;
+ *         'custom' - allows to specify your own paths for loading the libraries. The paths shall be specified
+ *                    as values of keys of a `libs` object.
+ * @param {object} options.libs - An object whose properties specify paths from where libraries to be loaded.
+ *        {string} options.libs.components - A path to a components library. Value for a default `production` mode
+ *                 is `./lib/alpheios-components.min.js`.
+ * @return {Promise} - A promise that is resolved when all dependencies are loaded
+ * or rejected when there was an error during an import.
+ */
+function importDependencies (options) {
+  let libs = {}
   switch (options.mode) {
     case 'development':
-      lib.components = 'alpheios-components.min.js'
+      libs.components = './lib/alpheios-components.min.js'
+      break
+    case 'custom':
+      libs = options.libs
       break
     default:
-      lib.components = 'alpheios-components.js'
+      libs.components = './lib/alpheios-components.js'
   }
   return new Promise((resolve, reject) => {
+    let imports = []
     let componentsImport = import(
       /* webpackIgnore: true */
-      `./lib/${lib.components}`
-      )
+      libs.components
+    ).then(() => {
+      console.info(`Components library has been imported successfully`)
+      components = window.AlpheiosComponents
+    })
+    imports.push(componentsImport)
 
-    componentsImport
+    /*let imports = Array.from(Object.values(libs)).map(path => import(
+      /!* webpackIgnore: true *!/
+    path))*/
+
+
+
+    /*componentsImport
       .then(() => {
         // Assign a components module imported as a prop of `windows` to the `components` var
         console.info(`Components library has been imported successfully`)
@@ -152,6 +178,26 @@ function importDependencies (options = { mode: 'production' }) {
         console.info(`Components import error`)
         reject(e)
       })
+
+    interactImport
+      .then((interactModule) => {
+        // Assign a components module imported as a prop of `windows` to the `components` var
+        console.info(`Interact.js library has been imported successfully`)
+        console.log(interactModule)
+        interact = interactModule
+        window.interact = interactModule
+      })
+      .catch(e => {
+        console.info(`Interact import error`)
+        reject(e)
+      })*/
+
+    Promise.all(imports).then(() => {
+      console.info(`All promises have been imported successfully`)
+      resolve (Embedded)
+    }).catch((e) => {
+      reject(e)
+    })
   })
 }
 /* eslint-enable */
