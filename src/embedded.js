@@ -8,7 +8,6 @@ import SessionAuthenticator from './lib/session-authenticator'
 // A variable that will store an instance of the imported components module
 let components
 
-/* eslint-disable */
 /**
  * Imports dynamic dependencies that are required for the embed-lib.
  * @param {object} options - A configuration object of the import function.
@@ -54,7 +53,6 @@ export function importDependencies (options) {
     })
   })
 }
-/* eslint-enable */
 
 /**
  * Encapsulation of Alpheios functionality which can be embedded in a webpage

@@ -9,15 +9,14 @@
   },
   "scripts": {
     "test": "eslint --fix src/**/*.js && jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
-    "build": "eslint --fix src/**/*.js && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all all vue && node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/style --t=dist/style",
-    "build-prod": "eslint --fix src/**/*.js && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all production vue && node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/style --t=dist/style",
-    "build-dev": "eslint --fix src/**/*.js && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all development vue && node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/style --t=dist/style",
+    "build": "eslint --fix src/**/*.js && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all all app config.mjs && npm run update-dependencies",
+    "build-prod": "eslint --fix src/**/*.js && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all production app config.mjs && npm run update-dependencies",
+    "build-dev": "eslint --fix src/**/*.js && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all development app config.mjs && npm run update-dependencies",
     "auth0-env-update": "node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/prod --t=dist/auth0 --f=env-embed.js",
     "auth0-env-dev-update": "node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/dev --t=dist/auth0 --f=env-embed.js",
     "lint": "eslint --fix src/**/*.js",
-    "update-dependencies": "node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/ --t=dist/lib --f=alpheios-components.js --f=alpheios-components.js.map --f=alpheios-components.min.js",
-    "build-prod-experimental": "node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs webpack production app config.mjs && npm run update-dependencies",
-    "build-dev-experimental": "node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs webpack development app config.mjs && npm run update-dependencies",
+    "update-dependencies": "node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/ --t=dist/lib --f=alpheios-components.js --f=alpheios-components.js.map --f=alpheios-components.min.js && node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/style --t=dist/style --f=style-components.css --f=style-components.css.map --f=style-components.min.css  --f=style-components-safari.css --f=style-components-safari.css.map --f=style-components-safari.min.css",
+    "build-experimental": "node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs webpack development app config.mjs && npm run update-dependencies",
     "dev": "npm run build-dev-experimental && http-server -c-1 -p 8888 & onchange src -- npm run build-dev-experimental"
   },
   "repository": {
@@ -85,9 +84,11 @@
       "browser": true,
       "node": true
     },
+    "parser": "babel-eslint",
     "parserOptions": {
-      "ecmaVersion": 2018,
-      "sourceType": "module"
+      "sourceType": "module",
+      "ecmaVersion": 2019,
+      "allowImportExportEverywhere": true
     }
   },
   "standard": {

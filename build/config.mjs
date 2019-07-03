@@ -22,14 +22,4 @@ const webpack = {
   }
 }
 
-const sass = {
-  tasks: [
-    { source: `src/style/style.scss`,
-      target: `dist/style/style-embedded.css`,
-      style: 'compressed',
-      sourceMap: true
-    }
-  ]
-}
-
-export { webpack, sass }
+export { webpack }
