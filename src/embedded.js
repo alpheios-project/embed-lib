@@ -226,6 +226,13 @@ class Embedded {
   }
 
   /**
+   * Opens the action panel with toolbar buttons hidden and only the lookup visible
+   */
+  openLookup () {
+    this.ui.openActionPanel(false)
+  }
+
+  /**
    *  Detect mobile device
    */
   detectMobile () {
