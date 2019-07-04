@@ -17,7 +17,7 @@
     "lint": "eslint --fix src/**/*.js",
     "update-dependencies": "node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/ --t=dist/lib --f=alpheios-components.js --f=alpheios-components.js.map --f=alpheios-components.min.js && node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/style --t=dist/style --f=style-components.css --f=style-components.css.map --f=style-components.min.css  --f=style-components-safari.css --f=style-components-safari.css.map --f=style-components-safari.min.css",
     "build-experimental": "node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs webpack development app config.mjs && npm run update-dependencies",
-    "dev": "npm run build-dev-experimental && http-server -c-1 -p 8888 & onchange src -- npm run build-dev-experimental"
+    "dev": "npm run build-experimental && http-server -c-1 -p 8888 & onchange src -- npm run build-experimental"
   },
   "repository": {
     "type": "git",

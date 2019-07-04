@@ -26,13 +26,13 @@ export function importDependencies (options) {
   let libs = {}
   switch (options.mode) {
     case 'development':
-      libs.components = './lib/alpheios-components.min.js'
+      libs.components = './lib/alpheios-components.js'
       break
     case 'custom':
       libs = options.libs
       break
     default:
-      libs.components = './lib/alpheios-components.js'
+      libs.components = './lib/alpheios-components.min.js'
   }
   return new Promise((resolve, reject) => {
     let imports = []
