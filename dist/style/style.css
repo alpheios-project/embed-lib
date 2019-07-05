@@ -3520,15 +3520,21 @@ p.alpheios-word-usage-filter-title {
  */
 .alpheios-action-panel {
   width: 300px;
-  height: 130px;
+  height: auto;
   position: fixed;
-  padding: 10px 20px;
+  padding: 30px 20px 10px;
   border: 1px solid var(--alpheios-border-color);
   border-radius: calc(var(--alpheios-base-ui-size) * 0.625);
   background-color: var(--alpheios-text-bg-color);
   transition: display 0.4s;
 }
+.alpheios-action-panel.alpheios-action-panel--lookup-visible {
+  height: 130px;
+}
 .alpheios-action-panel.alpheios-action-panel--nav-visible {
+  height: 100px;
+}
+.alpheios-action-panel.alpheios-action-panel--lookup-visible.alpheios-action-panel--nav-visible {
   height: 190px;
 }
 .alpheios-action-panel__close-icon {
@@ -3547,7 +3553,6 @@ p.alpheios-word-usage-filter-title {
   fill: var(--alpheios-color-vivid-pressed);
 }
 .alpheios-action-panel__lookup-cont {
-  margin: 20px 0 10px;
   height: 90px;
   position: relative;
 }
@@ -3577,7 +3582,7 @@ p.alpheios-word-usage-filter-title {
 .alpheios-action-panel__nav-cont {
   display: flex;
   justify-content: flex-start;
-  margin-bottom: 10px;
+  margin: 10px 0;
 }
 .alpheios-action-panel__nav-cont .alph_tooltip {
   margin-right: 8px;

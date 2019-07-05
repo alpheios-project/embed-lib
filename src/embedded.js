@@ -211,6 +211,7 @@ class Embedded {
         target.style.width = `${event.rect.width}px`
       })
     }
+    return this
   }
 
   get platform () {
