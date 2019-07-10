@@ -122,7 +122,7 @@ Variable name | Default | Description
  `--alpheios-lookup-button-bg-hover` | `--alpheios-btn-primary-bg-color-hover` | Lookup main button - background color - hover state
  `--alpheios-lookup-button-border-color-hover` | `--alpheios-btn-primary-border-color-hover` | Lookup main button - border color - hover state
  Inflections Browser |  | 
- `--alpheios-inflect-browser-title-color` | `--alpheios-link-color-on-light` | Inflections Browser - main title - font color
+ `--alpheios-inflect-title-color` | `--alpheios-link-color-on-light` | Inflections Browser - main title - font color
  `--alpheios-inflect-button-control-color` | `--alpheios-btn-secondary-font-color` | Inflections Browser - expand/collapse button - font color
  `--alpheios-inflect-button-control-bg` | `--alpheios-btn-secondary-bg-color` | Inflections Browser - expand/collapse button - background color
  `--alpheios-inflect-button-control-border-color` | `--alpheios-btn-secondary-border-color`  | Inflections Browser - expand/collapse button - border color
