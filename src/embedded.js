@@ -171,6 +171,10 @@ class Embedded {
     }
   }
 
+  get platform () {
+    return this.ui.platform
+  }
+
   notifyExtension () {
     this.doc.body.dispatchEvent(new Event('Alpheios_Embedded_Response'))
   }
@@ -209,7 +213,7 @@ class Embedded {
     }
     let activateOn = this.doc.querySelectorAll(selector)
     if (activateOn.length === 0) {
-      // it could be that we want to activate Alpheios for lookups via the 
+      // it could be that we want to activate Alpheios for lookups via the
       // tools even if there isn't any text on the page to activate to on
       // so just print a warning here.
       console.log(`No elements matching ${activateOn}`)
@@ -253,12 +257,7 @@ class Embedded {
         // update the element's style
         target.style.width = `${event.rect.width}px`
       })
-    }
     return this
-  }
-
-  get platform () {
-    return this.ui.platform
   }
 
   openToolbar () {
