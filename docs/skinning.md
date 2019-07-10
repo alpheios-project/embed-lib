@@ -129,7 +129,7 @@ Variable name | Default | Description
  `--alpheios-inflect-button-control-color-hover` | `--alpheios-btn-secondary-font-color-hover`  | Inflections Browser - expand/collapse button - font color - hover state
  `--alpheios-inflect-button-control-bg-hover` | `--alpheios-btn-secondary-bg-color-hover`  | Inflections Browser - expand/collapse button - background color - hover state
  `--alpheios-inflect-button-control-border-color-hover` | `--alpheios-btn-secondary-border-color-hover`  | Inflections Browser - expand/collapse button - border color - hover state
- `--alpheios-inflect-match-cell-border-color` | `--alpheios-highlight-border-color` | Inflections Browser - border color for cells that has match
+ `--alpheios-inflect-feat-match-cell-border-color` | `--alpheios-highlight-border-color` | Inflections Browser - border color for cells that have full feature match
  `--alpheios-inflect-match-suff-bg` | `--alpheios-highlight-light-color`  | Inflections Browser - background color for matched suffix
  `--alpheios-inflect-match-suff-color` | `--alpheios-text-color`  | Inflections Browser - font color for matched suffix
  `--alpheios-inflect-full-match-suff-bg` | `--alpheios-highlight-color` | Inflections Browser - background color for full matched suffix
