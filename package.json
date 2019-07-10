@@ -1,7 +1,7 @@
 {
   "name": "alpheios-embedded",
   "version": "1.0.0",
-  "build": "25",
+  "build": "26",
   "description": "Alpheios Embedded Library",
   "main": "dist/alpheios-embedded.js",
   "directories": {
@@ -34,7 +34,7 @@
     "alpheios-components": "github:alpheios-project/components",
     "alpheios-data-models": "github:alpheios-project/data-models",
     "alpheios-experience": "github:alpheios-project/experience",
-    "alpheios-inflection-tables": "git://github.com/alpheios-project/inflection-tables.git",
+    "alpheios-inflection-tables": "github:alpheios-project/inflection-tables",
     "alpheios-node-build": "github:alpheios-project/node-build",
     "alpheios-res-client": "github:alpheios-project/res-client",
     "alpheios-wordlist": "github:alpheios-project/wordlist",

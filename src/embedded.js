@@ -252,8 +252,9 @@ class Embedded {
         let target = event.target
         // update the element's style
         target.style.width = `${event.rect.width}px`
-      }
-    )
+      })
+    }
+    return this
   }
 
   get platform () {
@@ -267,6 +268,21 @@ class Embedded {
   openActionPanel () {
     this.ui.openActionPanel()
   }
+
+  /**
+   * Opens the action panel with toolbar buttons hidden and only the lookup visible.
+   */
+  openActionPanelLookup () {
+    this.ui.openActionPanel({ showNav: false })
+  }
+
+  /**
+   * Opens the action panel with only toolbar buttons visible.
+   */
+  openActionPanelToolbar () {
+    this.ui.openActionPanel({ showLookup: false })
+  }
+
 
   /**
    *  Detect mobile device
@@ -290,5 +306,3 @@ class Embedded {
     return false
   }
 }
-
-// export { importEmbedDependencies }
