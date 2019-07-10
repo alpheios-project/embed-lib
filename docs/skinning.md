@@ -1,8 +1,9 @@
-# Apply skinning to the Alpheios Tools
+# Branding Instructions 
 
-All branding could be changed using various variables.
-You should define your values of variables and apply them to the `:root` tag.
-For example this way:
+The basic styles of the Alpheios user interface components can be branded by adding a CSS stylesheet which redefines the Alpheios CSS variables on the `:root` pseudo-class selector.
+
+For example:
+
 ```
 :root {
     --alpheios-toolbar-bg-color: #008484;
@@ -19,46 +20,46 @@ For example this way:
 
 ```
 
-There are several variables that allow to change colors for the Alpheios Tools:
+Following is a list of the Alpheios CSS variable names that can be customized, along with their default values and descriptions of what they affect in the interface.
 
 Variable name | Default | Description
 ------------ | ------------- | -------------
-`--alpheios-toolbar-bg-color` | #0E2233 | It is a dark color used for popup, panel headers and for the background of floating toolbar
-`--alpheios-border-color` | #757575 | It is used for toolbar border and lookup component border
+`--alpheios-toolbar-bg-color` | #0E2233 | The background color used for Alpheios toolbars (popup, and panel and floating).
+`--alpheios-border-color` | #757575 | Toolbar and Lookup component border color. 
  |  | 
-`--alpheios-icon-color` | #FFF | It is used for toolbar, popup and panel icons (desktop and compact)
-`--alpheios-icon-color-hover` | #FFD27D | State color for icon color - hover
-`--alpheios-icon-color-active` | #FFC24F | State color for icon color - active, pressed
-`--alpheios-icon-color-disabled` | #757575 | State color for icon color - disabled
+`--alpheios-icon-color` | #FFF | Stroke color for the Alpheios icons. 
+`--alpheios-icon-color-hover` | #FFD27D | Fill and stroke color for the Alpheios icons when in the __hover__ state.
+`--alpheios-icon-color-active` | #FFC24F | Fill and stroke color the Alpheios icons when in  the __active__ state.
+`--alpheios-icon-color-disabled` | #757575 | Fill and stroke color for the Alpheios icons when in the __disabled__ state.
  |  | 
-`--alpheios-link-color` | #185F6D | Link color - used in popup (for example for grammar links)
-`--alpheios-link-color-hover` | #124D59 | Link color - used in popup (for examp[le for grammar links) - hover state
+`--alpheios-link-color` | #185F6D | Primary link color (used in the popup for grammar links, among other places)
+`--alpheios-link-color-hover` | #124D59 | Primary link color in __hover__ state
  |  | 
-`--alpheios-link-special-color` | #C64906 | Another color link (for example for credit link)
-`--alpheios-link-special-color-hover` | #F27431 | Another color link (for example for credit link) - hover state
+`--alpheios-link-special-color` | #C64906 | Alternate link color (e.g. used in the popup for the credit link)
+`--alpheios-link-special-color-hover` | #F27431 | Alternate link color in __hover__ state
  |  | 
-`--alpheios-text-color` | #757575 | Text color (used in popup and panel)
-`--alpheios-text-bg-color` | #FFF | Panel, popup content background color
+`--alpheios-text-color` | #757575 | Main text color for all Alpheios components
+`--alpheios-text-bg-color` | #FFF | Main text background color for all Alpheios components 
  |  | 
-`--alpheios-btn-primary-font-color` | #FFF | Font color for buttons
-`--alpheios-btn-primary-bg-color` | #C64906 | Background color for buttons
-`--alpheios-btn-primary-border-color` | #C64906 | Border color for buttons
-`--alpheios-btn-primary-font-color-hover` | #FFF | Font color for buttons - hover state
-`--alpheios-btn-primary-bg-color-hover` | #F27431 | Background color for buttons - hover state
-`--alpheios-btn-primary-border-color-hover` | #F27431 | Border color for buttons - hover state
+`--alpheios-btn-primary-font-color` | #FFF | Font color for primary (i.e. the majority of) buttons
+`--alpheios-btn-primary-bg-color` | #C64906 | Background color for primary buttons
+`--alpheios-btn-primary-border-color` | #C64906 | Border color for primary buttons
+`--alpheios-btn-primary-font-color-hover` | #FFF | Font color for primary buttons in __hover__ state
+`--alpheios-btn-primary-bg-color-hover` | #F27431 | Background color for primary buttons in __hover__ state
+`--alpheios-btn-primary-border-color-hover` | #F27431 | Border color for primary  buttons in __hover__ state
  |  | 
-`--alpheios-btn-secondary-font-color` | #0E2233 | Font color for buttons (second) - used in inflections
-`--alpheios-btn-secondary-bg-color` | #FFC24F | Background color for buttons (second) - used in inflections
-`--alpheios-btn-secondary-border-color` | #FFC24F | Border color for buttons (second) - used in inflections
-`--alpheios-btn-secondary-font-color-hover` | #0E2233 | Font color for buttons (second) - used in inflections - hover state
-`--alpheios-btn-secondary-bg-color-hover` | #FFD27D | Background color for buttons (second) - used in inflections - hover state
-`--alpheios-btn-secondary-border-color-hover` | #FFD27D | Border color for buttons (second) - used in inflections - hover state
+`--alpheios-btn-secondary-font-color` | #0E2233 | Font color for secondary buttons (e.g. used in inflections)
+`--alpheios-btn-secondary-bg-color` | #FFC24F | Background color for secondary buttons
+`--alpheios-btn-secondary-border-color` | #FFC24F | Border color for secondary buttons
+`--alpheios-btn-secondary-font-color-hover` | #0E2233 | Font color for secondary buttons in __hover__ state
+`--alpheios-btn-secondary-bg-color-hover` | #FFD27D | Background color for secondary buttons in __hover__ state
+`--alpheios-btn-secondary-border-color-hover` | #FFD27D | Border color for seondary buttons in __hover__ state
  |  | 
- `--alpheios-highlight-color` | #F6D918 | Color for highlighting items (inflections, word list and word usage examples)
- `--alpheios-highlight-light-color` | #BCE5F0 | Color for highlighting items (inflections)
- `--alpheios-highlight-border-color` | #BCE5F0 | Color for highlighting items (inflections)
- `--alpheios-highlight-dark-color` | #C64906 | Color for highlighting items (inflections)
- `--alpheios-highlight-dark-color-hover` | #F27431 | Color for highlighting items (inflections) - hover state
+ `--alpheios-highlight-color` | #F6D918 | Main color used for highlighting items (e.g. inflections, word list and word usage examples)
+ `--alpheios-highlight-light-color` | #BCE5F0 | Alternate color used for highlighting items (used primarily in inflections)
+ `--alpheios-highlight-border-color` | #BCE5F0 | Border color used for highlighting items (used primarily in inflections)
+ `--alpheios-highlight-dark-color` | #C64906 | Alternate color for highlighting items (used primarily in inflections)
+ `--alpheios-highlight-dark-color-hover` | #F27431 | Alternate color for highlighting items in __hover__ state
   | | 
   `--alpheios-important-notification-color`  | #C64906 | Color for important notifications
 
