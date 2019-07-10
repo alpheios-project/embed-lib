@@ -91,10 +91,10 @@ window["AlpheiosEmbed"] =
 /*!***********************!*\
   !*** ../package.json ***!
   \***********************/
-/*! exports provided: name, version, build, description, main, directories, scripts, repository, author, license, bugs, homepage, devDependencies, engines, jest, eslintConfig, standard, dependencies, default */
+/*! exports provided: name, version, build, description, main, directories, scripts, repository, author, license, bugs, homepage, devDependencies, engines, jest, eslintConfig, eslintIgnore, dependencies, default */
 /***/ (function(module) {
 
-module.exports = {"name":"alpheios-embedded","version":"1.0.0","build":"25","description":"Alpheios Embedded Library","main":"dist/alpheios-embedded.js","directories":{"doc":"doc"},"scripts":{"test":"eslint --fix src/**/*.js && jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js","build":"eslint --fix src/**/*.js && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all all app config.mjs && npm run update-dependencies","build-prod":"eslint --fix src/**/*.js && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all production app config.mjs && npm run update-dependencies","build-dev":"eslint --fix src/**/*.js && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all development app config.mjs && npm run update-dependencies","auth0-env-update":"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/prod --t=dist/auth0 --f=env-embed.js","auth0-env-dev-update":"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/dev --t=dist/auth0 --f=env-embed.js","lint":"eslint --fix src/**/*.js","update-dependencies":"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/ --t=dist/lib && node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/style --t=dist/style","build-experimental":"node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs webpack development app config.mjs","dev":"npm run build-experimental && http-server -c-1 -p 8888 & onchange src -- npm run build-experimental"},"repository":{"type":"git","url":"git+https://github.com/alpheios-project/wordsvc.git"},"author":"The Alpheios Project, Ltd.","license":"ISC","bugs":{"url":"https://github.com/alpheios-project/wordsvc/issues"},"homepage":"https://github.com/alpheios-project/wordsvc#readme","devDependencies":{"alpheios-client-adapters":"github:alpheios-project/client-adapters","alpheios-components":"file:../components","alpheios-data-models":"github:alpheios-project/data-models","alpheios-experience":"github:alpheios-project/experience","alpheios-inflection-tables":"git://github.com/alpheios-project/inflection-tables.git","alpheios-node-build":"file:../node-build","alpheios-res-client":"github:alpheios-project/res-client","alpheios-wordlist":"github:alpheios-project/wordlist","copy-webpack-plugin":"^5.0.3","coveralls":"^3.0.4","css-loader":"^3.0.0","eslint":"^6.0.1","eslint-config-standard":"^12.0.0","eslint-plugin-import":"^2.18.0","eslint-plugin-node":"^9.1.0","eslint-plugin-promise":"^4.2.1","eslint-plugin-standard":"^4.0.0","eslint-plugin-vue":"^5.2.3","html-loader":"^0.5.5","html-loader-jest":"^0.2.1","http-server":"^0.11.1","interactjs":"^1.4.11","intl-messageformat":"^2.2.0","jest":"^24.8.0","jest-fetch-mock":"^2.1.2","onchange":"^6.0.0","raw-loader":"^3.0.0","sass-loader":"^7.1.0","source-map-loader":"^0.2.4","style-loader":"^0.23.1","url-loader":"^2.0.1","vue-loader":"^15.7.0","vue-style-loader":"^4.1.2","vue-svg-loader":"^0.12.0","webpack-dev-server":"^3.7.2"},"engines":{"node":">= 9.10.1","npm":">= 5.6.0"},"jest":{"verbose":true,"transform":{"^.+\\.htmlf$":"html-loader-jest","^.+\\.jsx?$":"babel-jest"},"transformIgnorePatterns":["node_modules/alpheios-components/"]},"eslintConfig":{"env":{"browser":true,"node":true},"parser":"babel-eslint","parserOptions":{"sourceType":"module","ecmaVersion":2019,"allowImportExportEverywhere":true}},"standard":{"ignore":["**/dist","**/support"]},"dependencies":{}};
+module.exports = JSON.parse("{\"name\":\"alpheios-embedded\",\"version\":\"1.0.0\",\"build\":\"25\",\"description\":\"Alpheios Embedded Library\",\"main\":\"dist/alpheios-embedded.js\",\"directories\":{\"doc\":\"doc\"},\"scripts\":{\"test\":\"npm run lint && jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js\",\"build\":\"npm run build-dev && npm run build-prod\",\"build-prod\":\"npm run lint && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all production app config.mjs\",\"build-dev\":\"npm run lint && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all development app config.mjs\",\"auth0-env-update\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/prod --t=dist/auth0 --f=env-embed.js\",\"auth0-env-dev-update\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/dev --t=dist/auth0 --f=env-embed.js\",\"lint\":\"eslint --fix src/**/*.js\",\"update-dependencies\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/ --t=dist/lib && node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/style --t=dist/style\",\"build-experimental\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs webpack development app config.mjs\",\"dev\":\"npm run build-experimental && http-server -c-1 -p 8888 & onchange src -- npm run build-experimental\"},\"repository\":{\"type\":\"git\",\"url\":\"git+https://github.com/alpheios-project/wordsvc.git\"},\"author\":\"The Alpheios Project, Ltd.\",\"license\":\"ISC\",\"bugs\":{\"url\":\"https://github.com/alpheios-project/wordsvc/issues\"},\"homepage\":\"https://github.com/alpheios-project/wordsvc#readme\",\"devDependencies\":{\"alpheios-client-adapters\":\"github:alpheios-project/client-adapters\",\"alpheios-components\":\"github:alpheios-project/components\",\"alpheios-data-models\":\"github:alpheios-project/data-models\",\"alpheios-experience\":\"github:alpheios-project/experience\",\"alpheios-inflection-tables\":\"git://github.com/alpheios-project/inflection-tables.git\",\"alpheios-node-build\":\"github:alpheios-project/node-build#code-optimization\",\"alpheios-res-client\":\"github:alpheios-project/res-client\",\"alpheios-wordlist\":\"github:alpheios-project/wordlist\",\"copy-webpack-plugin\":\"^5.0.3\",\"coveralls\":\"^3.0.4\",\"css-loader\":\"^3.0.0\",\"eslint\":\"^6.0.1\",\"eslint-config-standard\":\"^12.0.0\",\"eslint-plugin-import\":\"^2.18.0\",\"eslint-plugin-node\":\"^9.1.0\",\"eslint-plugin-promise\":\"^4.2.1\",\"eslint-plugin-standard\":\"^4.0.0\",\"eslint-plugin-vue\":\"^5.2.3\",\"html-loader\":\"^0.5.5\",\"html-loader-jest\":\"^0.2.1\",\"http-server\":\"^0.11.1\",\"interactjs\":\"^1.4.12\",\"intl-messageformat\":\"^2.2.0\",\"jest\":\"^24.8.0\",\"jest-fetch-mock\":\"^2.1.2\",\"onchange\":\"^6.0.0\",\"raw-loader\":\"^3.0.0\",\"sass-loader\":\"^7.1.0\",\"source-map-loader\":\"^0.2.4\",\"style-loader\":\"^0.23.1\",\"url-loader\":\"^2.0.1\",\"vue-loader\":\"^15.7.0\",\"vue-style-loader\":\"^4.1.2\",\"vue-svg-loader\":\"^0.12.0\",\"webpack-dev-server\":\"^3.7.2\"},\"engines\":{\"node\":\">= 9.10.1\",\"npm\":\">= 5.6.0\"},\"jest\":{\"verbose\":true,\"transform\":{\"^.+\\\\.htmlf$\":\"html-loader-jest\",\"^.+\\\\.jsx?$\":\"babel-jest\"},\"transformIgnorePatterns\":[\"node_modules/alpheios-components/\"]},\"eslintConfig\":{\"env\":{\"browser\":true,\"node\":true},\"parser\":\"babel-eslint\",\"parserOptions\":{\"sourceType\":\"module\",\"ecmaVersion\":2019,\"allowImportExportEverywhere\":true}},\"eslintIgnore\":[\"**/dist\"],\"dependencies\":{}}");
 
 /***/ }),
 
@@ -115,7 +115,6 @@ var _package_json__WEBPACK_IMPORTED_MODULE_1___namespace = /*#__PURE__*/__webpac
 /* harmony import */ var _lib_session_authenticator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./lib/session-authenticator */ "./lib/session-authenticator.js");
 /* eslint-env jest */
 /* global Event */
-//import ComponentStyles from '../node_modules/alpheios-components/dist/style/style.min.css' // eslint-disable-line
 
 
 
@@ -126,9 +125,10 @@ let components
 /**
  * Imports dynamic dependencies that are required for the embed-lib.
  * @param {object} options - A configuration object of the import function.
- * @param {'production' | 'development' | 'custom'} options.mode - What type of libraries shall be imported.
- *         'production' - will load minified version of libraries from a `dist/lib` local directory (this is a default value);
+ * @param {'production' | 'development' | 'cdn' | 'custom'} options.mode - What type of libraries shall be imported.
+ *         'production' - will load minified version of libraries from a `dist/lib` local directory;
  *         'development' - will load non-optimized libraries with source maps from a `dist/lib` local directory;
+ *         'cdn' - will load the latest version of minified libraries from JSDelivr (this is a default value);
  *         'custom' - allows to specify your own paths for loading the libraries. The paths shall be specified
  *                    as values of keys of a `libs` object.
  * @param {object} options.libs - An object whose properties specify paths from where libraries to be loaded.
@@ -140,14 +140,19 @@ let components
 function importDependencies (options) {
   let libs = {}
   switch (options.mode) {
+    case 'production':
+      libs.components = './lib/alpheios-components.min.js'
+      break
     case 'development':
       libs.components = './lib/alpheios-components.js'
       break
     case 'custom':
       libs = options.libs
       break
+    case 'cdn':
     default:
-      libs.components = './lib/alpheios-components.min.js'
+      libs.components = 'https://cdn.jsdelivr.net/npm/alpheios-components@latest/dist/alpheios-components.min.js'
+      break
   }
   return new Promise((resolve, reject) => {
     let imports = []
@@ -226,13 +231,6 @@ class Embedded {
     this.triggerEvents = triggerEvents
     this.triggerPreCallback = triggerPreCallback
 
-    let pckg
-    try {
-      pckg = _package_json__WEBPACK_IMPORTED_MODULE_1__
-    } catch (e) {
-      throw new Error(`Cannot parse package.json, its format is probably incorrect`)
-    }
-
     // Set an initial UI Controller state for activation
     this.state.setPanelClosed() // A default state of the panel is CLOSED
     this.state.tab = 'info' // A default tab is "info"
@@ -241,7 +239,7 @@ class Embedded {
       storageAdapter: components.LocalStorageArea,
       textQueryTrigger: this.triggerEvents,
       textQuerySelector: this.enabledSelector,
-      app: { version:`${pckg.version}.${pckg.build}`, name: pckg.description },
+      app: { version:`${_package_json__WEBPACK_IMPORTED_MODULE_1__["version"]}.${_package_json__WEBPACK_IMPORTED_MODULE_1__["build"]}`, name: _package_json__WEBPACK_IMPORTED_MODULE_1__["description"] },
       // Disable text selection on mobile devices
       disableTextSelection: disableTextSelection
     })

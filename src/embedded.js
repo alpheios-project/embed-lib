@@ -1,8 +1,7 @@
 /* eslint-env jest */
 /* global Event */
-//import ComponentStyles from '../node_modules/alpheios-components/dist/style/style.min.css' // eslint-disable-line
 import State from './state'
-import Package from '../package.json'
+import { version as packageVersion, build as packageBuild, description as packageDescription } from '../package.json'
 import AppAuthenticator from './lib/app-authenticator'
 import SessionAuthenticator from './lib/session-authenticator'
 // A variable that will store an instance of the imported components module
@@ -11,9 +10,10 @@ let components
 /**
  * Imports dynamic dependencies that are required for the embed-lib.
  * @param {object} options - A configuration object of the import function.
- * @param {'production' | 'development' | 'custom'} options.mode - What type of libraries shall be imported.
- *         'production' - will load minified version of libraries from a `dist/lib` local directory (this is a default value);
+ * @param {'production' | 'development' | 'cdn' | 'custom'} options.mode - What type of libraries shall be imported.
+ *         'production' - will load minified version of libraries from a `dist/lib` local directory;
  *         'development' - will load non-optimized libraries with source maps from a `dist/lib` local directory;
+ *         'cdn' - will load the latest version of minified libraries from JSDelivr (this is a default value);
  *         'custom' - allows to specify your own paths for loading the libraries. The paths shall be specified
  *                    as values of keys of a `libs` object.
  * @param {object} options.libs - An object whose properties specify paths from where libraries to be loaded.
@@ -25,14 +25,19 @@ let components
 export function importDependencies (options) {
   let libs = {}
   switch (options.mode) {
+    case 'production':
+      libs.components = './lib/alpheios-components.min.js'
+      break
     case 'development':
       libs.components = './lib/alpheios-components.js'
       break
     case 'custom':
       libs = options.libs
       break
+    case 'cdn':
     default:
-      libs.components = './lib/alpheios-components.min.js'
+      libs.components = 'https://cdn.jsdelivr.net/npm/alpheios-components@latest/dist/alpheios-components.min.js'
+      break
   }
   return new Promise((resolve, reject) => {
     let imports = []
@@ -111,13 +116,6 @@ class Embedded {
     this.triggerEvents = triggerEvents
     this.triggerPreCallback = triggerPreCallback
 
-    let pckg
-    try {
-      pckg = Package
-    } catch (e) {
-      throw new Error(`Cannot parse package.json, its format is probably incorrect`)
-    }
-
     // Set an initial UI Controller state for activation
     this.state.setPanelClosed() // A default state of the panel is CLOSED
     this.state.tab = 'info' // A default tab is "info"
@@ -126,7 +124,7 @@ class Embedded {
       storageAdapter: components.LocalStorageArea,
       textQueryTrigger: this.triggerEvents,
       textQuerySelector: this.enabledSelector,
-      app: { version:`${pckg.version}.${pckg.build}`, name: pckg.description },
+      app: { version:`${packageVersion}.${packageBuild}`, name: packageDescription },
       // Disable text selection on mobile devices
       disableTextSelection: disableTextSelection
     })
