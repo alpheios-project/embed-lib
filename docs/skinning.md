@@ -30,7 +30,6 @@ Variable name | Default | Description
 `--alpheios-icon-color-hover` | #FFD27D | State color for icon color - hover
 `--alpheios-icon-color-active` | #FFC24F | State color for icon color - active, pressed
 `--alpheios-icon-color-disabled` | #757575 | State color for icon color - disabled
-`--alpheios-icon-color-disabled` | #757575 | State color for icon color - disabled
  |  | 
 `--alpheios-link-color` | #185F6D | Link color - used in popup (for example for grammar links)
 `--alpheios-link-color-hover` | #124D59 | Link color - used in popup (for examp[le for grammar links) - hover state
