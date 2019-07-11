@@ -10,13 +10,21 @@
 
 <body>
 <script src="../dist/auth0/env-embed.js"></script>
-<script src="../dist/alpheios-embedded.js"></script>
 <script type="text/javascript">
-    let alpheiosEmbedded = null
-      document.addEventListener("DOMContentLoaded", function(event) {
-        alpheiosEmbedded = new Alpheios.Embedded({clientId:'alpheios-sample-file'})
-        alpheiosEmbedded.activate()
-      });
+    document.addEventListener("DOMContentLoaded", function(event) {
+      import ('../dist/alpheios-embedded.js').then(embedLib => {
+        console.info(`Embedded library has been imported successfully`)
+
+        window.AlpheiosEmbed.importDependencies({ mode: 'development' }).then(Embedded => {
+          new Embedded({clientId: 'alpheios-dev-auth',}).activate();
+        }).catch(e => {
+          console.error(`Import of an embedded library dependencies failed: ${e}`)
+        })
+
+      }).catch(e => {
+        console.error(`Import of an embedded library failed: ${e}`)
+      })
+    });
 </script>
 
 <div class="alpheios-enabled">
