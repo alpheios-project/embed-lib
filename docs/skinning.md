@@ -67,32 +67,32 @@ Variable name | Default | Description
 Variable name | Default | Description
 ------------ | ------------- | -------------
  Toolbar (Desktop) |  | 
- `--alpheios-desktop-toolbar-bg` | `--alpheios-toolbar-bg-color` | Toolbar background color
- `--alpheios-desktop-toolbar-border-color` | `--alpheios-border-color` | Toolbar border color
- `--alpheios-desktop-toolbar-icon-color` | `--alpheios-icon-color` | Toolbar icon color
- `--alpheios-desktop-toolbar-icon-color-hover` | `--alpheios-icon-color-hover` | Toolbar icon color - hover state
- `--alpheios-desktop-toolbar-icon-color-active` | `--alpheios-icon-color-active` | Toolbar icon color - active state
- `--alpheios-desktop-toolbar-icon-color-disabled` | `--alpheios-icon-color-disabled` | Toolbar icon color - disabled state
- `--alpheios-desktop-toolbar-icon-bg-disabled` | `--alpheios-toolbar-bg-color` | Toolbar background icon color - disabled state
+ `--alpheios-desktop-toolbar-bg` | `--alpheios-toolbar-bg-color` | Desktop toolbar background color
+ `--alpheios-desktop-toolbar-border-color` | `--alpheios-border-color` | Desktop toolbar border color
+ `--alpheios-desktop-toolbar-icon-color` | `--alpheios-icon-color` | Desktop toolbar icon color
+ `--alpheios-desktop-toolbar-icon-color-hover` | `--alpheios-icon-color-hover` | Desktop toolbar icon color - __hover__ state
+ `--alpheios-desktop-toolbar-icon-color-active` | `--alpheios-icon-color-active` | Desktop toolbar icon color - __active__ state
+ `--alpheios-desktop-toolbar-icon-color-disabled` | `--alpheios-icon-color-disabled` | Desktop toolbar icon color - __disabled__ state
+ `--alpheios-desktop-toolbar-icon-bg-disabled` | `--alpheios-toolbar-bg-color` | Desktop toolbar icon background color - __disabled__ state
   Toolbar (Mobile) |  | 
- `--alpheios-compact-toolbar-bg` | `--alpheios-toolbar-bg-color` | Toolbar background color
- `--alpheios-compact-toolbar-icon-color` | `--alpheios-icon-color` | Toolbar icon color
- `--alpheios-compact-popup-progress-bar-line` | `--alpheios-toolbar-bg-color` | Color of progress bar
- Popup |  | 
+ `--alpheios-compact-toolbar-bg` | `--alpheios-toolbar-bg-color` | Mobile toolbar background color
+ `--alpheios-compact-toolbar-icon-color` | `--alpheios-icon-color` | Mobile toolbar icon color
+ `--alpheios-compact-popup-progress-bar-line` | `--alpheios-toolbar-bg-color` | Color of progress bar on Mobile
+ Popup (Desktop) |  | 
  `--alpheios-desktop-popup-header-bg` | `--alpheios-toolbar-bg-color` | Popup header background color
  `--alpheios-desktop-popup-body-bg` | `--alpheios-text-bg-color` | Popup body background color
  `--alpheios-desktop-popup-content-bg` | `--alpheios-text-bg-color` | Popup content background color
   | | 
  `--alpheios-desktop-popup-icon-color` | `--alpheios-icon-color` | Popup header icons color
- `--alpheios-desktop-popup-icon-color-hover` | `--alpheios-icon-color-hover` | Popup header icons color - hover state
- `--alpheios-desktop-popup-icon-bg-hover` | `--alpheios-toolbar-bg-color` | Popup header - icon background - hover state
- `--alpheios-desktop-popup-icon-color-active` | `--alpheios-icon-color-active` |  Popup header - icons color - active state
+ `--alpheios-desktop-popup-icon-color-hover` | `--alpheios-icon-color-hover` | Popup header icons color - __hover__ state
+ `--alpheios-desktop-popup-icon-bg-hover` | `--alpheios-toolbar-bg-color` | Popup header - icon background - __hover__ state
+ `--alpheios-desktop-popup-icon-color-active` | `--alpheios-icon-color-active` |  Popup header - icons color - __active__ state
   | | 
  `--alpheios-desktop-popup-progress-bar-line` | `--alpheios-toolbar-bg-color` | Popup progress bar color
   `--alpheios-desktop-popup-link-color` | `--alpheios-link-color` | Popup link color (grammar links)
- `--alpheios-desktop-popup-link-color-hover` | `--alpheios-link-color-hover` | Popup link color (grammar links) - hover state
+ `--alpheios-desktop-popup-link-color-hover` | `--alpheios-link-color-hover` | Popup link color (grammar links) - __hover__ state
  `--alpheios-desktop-popup-credit-link-color` | `--alpheios-link-special-color` | Popup - color for credits link
- `--alpheios-desktop-popup-credit-link-color-hover` | `--alpheios-link-special-color-hover` | Popup - color for credits link - hover state
+ `--alpheios-desktop-popup-credit-link-color-hover` | `--alpheios-link-special-color-hover` | Popup - color for credits link - __hover__ state
  `--alpheios-desktop-popup-credit-providers-color` | `--alpheios-text-color` | Popup - color for credits block, provider text color
   Panel (Desktop) |  | 
  `--alpheios-desktop-panel-header-bg` | `--alpheios-toolbar-bg-color` | Panel header background color
