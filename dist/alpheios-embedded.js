@@ -249,6 +249,7 @@ class Embedded {
     } else if (typeof serverEnv !== 'undefined') {
       this.ui.registerModule(components.AuthModule, { auth: new _lib_session_authenticator__WEBPACK_IMPORTED_MODULE_3__["default"](serverEnv) })
     } else {
+      console.log("No auth0Env or serverEnv")
       this.ui.registerModule(components.AuthModule, { auth: null })
     }
     // Register UI modules
