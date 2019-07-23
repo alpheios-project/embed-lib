@@ -264,6 +264,10 @@ class Embedded {
     this.ui.openActionPanel()
   }
 
+  closeActionPanel () {
+    this.ui.closeActionPanel()
+  }
+
   /**
    * Opens the action panel with toolbar buttons hidden and only the lookup visible.
    */
