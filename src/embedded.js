@@ -81,12 +81,10 @@ class Embedded {
    *     triggerPreCallback: a callback function which is called when the trigger event handler is invoked, prior to initiating
    *                         Alpheios functionality. It should return true to proceed with lookup or false to abort.
    *                         Default: no-op, returns true
-   *     mobileRedirectUrl: a URL to which to direct users if they use a mobile device to access a page which has Alpheios embedded
    */
   constructor ({
     clientId = null,
     documentObject = document,
-    mobileRedirectUrl = null,
     enabledSelector = '.alpheios-enabled',
     disabledSelector = '',
     enabledClass = '',
@@ -97,7 +95,8 @@ class Embedded {
     toolbarInitialPos = {},
     layoutType = 'default', // The other option is 'readingTools'
     // Disable text selection on mobile devices
-    disableTextSelection = false
+    disableTextSelection = false,
+    textLangCode = null,
     } = {}) {
     this.clientId = clientId
 
@@ -108,7 +107,6 @@ class Embedded {
     // clientId
     this.doc = documentObject
     this.state = new State()
-    this.mobileRedirectUrl = mobileRedirectUrl
     this.enabledSelector = enabledSelector
     this.disabledSelector = disabledSelector
     this.enabledClass = enabledClass
@@ -126,7 +124,8 @@ class Embedded {
       textQuerySelector: this.enabledSelector,
       app: { version:`${packageVersion}.${packageBuild}`, name: packageDescription },
       // Disable text selection on mobile devices
-      disableTextSelection: disableTextSelection
+      disableTextSelection: disableTextSelection,
+      textLangCode: textLangCode
     })
     // Environment-specific initializations
     if (typeof auth0Env !== 'undefined') {
@@ -202,9 +201,6 @@ class Embedded {
       return
     }
 
-    if (this.mobileRedirectUrl && this.detectMobile()) {
-      document.location = this.mobileRedirectUrl
-    }
     let selector = this.enabledSelector
 
     let trigger = this.triggerEvents.split(/,/)
@@ -280,28 +276,5 @@ class Embedded {
    */
   openActionPanelToolbar () {
     this.ui.openActionPanel({ showLookup: false })
-  }
-
-
-  /**
-   *  Detect mobile device
-   */
-  detectMobile () {
-    if (window.sessionStorage.desktop) {
-      return false
-    } else if (window.localStorage.mobile) {
-      return true
-    }
-
-    // alternative
-    var mobile = ['iphone', 'ipad', 'android', 'blackberry', 'nokia', 'opera mini', 'windows mobile', 'windows phone', 'iemobile']
-    for (var i in mobile) {
-      if (navigator.userAgent.toLowerCase().indexOf(mobile[i].toLowerCase()) > 0) {
-        return true
-      }
-    }
-
-    // nothing found.. assume desktop
-    return false
   }
 }
