@@ -132,8 +132,9 @@ class Embedded {
       // Register an authentication module only with authentication environment is loaded
       this.ui.registerModule(components.AuthModule, { auth: new AppAuthenticator() })
     } else if (typeof serverEnv !== 'undefined') {
-      this.ui.registerModule(components.AuthModule, { auth: new SessionAuthenticator(serverEnv.sessionUrl) })
+      this.ui.registerModule(components.AuthModule, { auth: new SessionAuthenticator(serverEnv) })
     } else {
+      console.log("No auth0Env or serverEnv")
       this.ui.registerModule(components.AuthModule, { auth: null })
     }
     // Register UI modules

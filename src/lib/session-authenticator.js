@@ -7,11 +7,12 @@ export default class SessionAuthenticator {
    * @constructor
    */
   constructor (env) {
-      this.sessionUrl = serverEnv.SESSION_URL
-      this.tokenUrl = serverEnv.TOKEN_URL
-      this.endpoints = serverEnv.ENDPOINTS
-      this._loginUrl = serverEnv.LOGIN_URL
-      this._logoutUrl = serverEnv.LOGOUT_URL
+      this.sessionUrl = env.SESSION_URL
+      this.tokenUrl = env.TOKEN_URL
+      this.endpoints = env.ENDPOINTS
+      this._loginUrl = env.LOGIN_URL
+      this._logoutUrl = env.LOGOUT_URL
+      console.log("Created SessionAuthenticator",this)
   }
 
   /**

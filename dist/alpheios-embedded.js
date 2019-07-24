@@ -247,8 +247,9 @@ class Embedded {
       // Register an authentication module only with authentication environment is loaded
       this.ui.registerModule(components.AuthModule, { auth: new _lib_app_authenticator__WEBPACK_IMPORTED_MODULE_2__["default"]() })
     } else if (typeof serverEnv !== 'undefined') {
-      this.ui.registerModule(components.AuthModule, { auth: new _lib_session_authenticator__WEBPACK_IMPORTED_MODULE_3__["default"](serverEnv.sessionUrl) })
+      this.ui.registerModule(components.AuthModule, { auth: new _lib_session_authenticator__WEBPACK_IMPORTED_MODULE_3__["default"](serverEnv) })
     } else {
+      console.log("No auth0Env or serverEnv")
       this.ui.registerModule(components.AuthModule, { auth: null })
     }
     // Register UI modules
@@ -615,11 +616,12 @@ class SessionAuthenticator {
    * @constructor
    */
   constructor (env) {
-      this.sessionUrl = serverEnv.SESSION_URL
-      this.tokenUrl = serverEnv.TOKEN_URL
-      this.endpoints = serverEnv.ENDPOINTS
-      this._loginUrl = serverEnv.LOGIN_URL
-      this._logoutUrl = serverEnv.LOGOUT_URL
+      this.sessionUrl = env.SESSION_URL
+      this.tokenUrl = env.TOKEN_URL
+      this.endpoints = env.ENDPOINTS
+      this._loginUrl = env.LOGIN_URL
+      this._logoutUrl = env.LOGOUT_URL
+      console.log("Created SessionAuthenticator",this)
   }
 
   /**
