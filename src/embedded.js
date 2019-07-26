@@ -67,6 +67,7 @@ class Embedded {
    * @constructor
    * @param {Object} arguments - object with the following properties:
    *     clientId: a string identifying the embedding client or site. Required.
+   *     authEnv: authentication environment object.(Optional)
    *     documentObject: the parent document. Default: window.document
    *     enabledSelector: a CSS Selector string identifying the page elements for which Alpheios should be activated
    *                      Default: ".alpheios-enabled"
@@ -84,6 +85,7 @@ class Embedded {
    */
   constructor ({
     clientId = null,
+    authEnv = null,
     documentObject = document,
     enabledSelector = '.alpheios-enabled',
     disabledSelector = '',
@@ -106,6 +108,7 @@ class Embedded {
     // TODO at some point in the future we may add authentication of
     // clientId
     this.doc = documentObject
+    this.authEnv = authEnv
     this.state = new State()
     this.enabledSelector = enabledSelector
     this.disabledSelector = disabledSelector
@@ -128,13 +131,15 @@ class Embedded {
       textLangCode: textLangCode
     })
     // Environment-specific initializations
-    if (typeof auth0Env !== 'undefined') {
-      // Register an authentication module only with authentication environment is loaded
-      this.ui.registerModule(components.AuthModule, { auth: new AppAuthenticator() })
-    } else if (typeof serverEnv !== 'undefined') {
-      this.ui.registerModule(components.AuthModule, { auth: new SessionAuthenticator(serverEnv) })
+    if (this.authEnv) {
+      if (authEnv.CLIENT_ID) {
+        // Register an authentication module only with authentication environment is loaded
+        this.ui.registerModule(components.AuthModule, { auth: new AppAuthenticator(authEnv) })
+      } else if (authEnv.LOGIN_URL) {
+        this.ui.registerModule(components.AuthModule, { auth: new SessionAuthenticator(authEnv) })
+      }
     } else {
-      console.log("No auth0Env or serverEnv")
+      console.log("No authentication environment supplied")
       this.ui.registerModule(components.AuthModule, { auth: null })
     }
     // Register UI modules

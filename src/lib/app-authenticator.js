@@ -5,11 +5,18 @@
 export default class AppAuthenticator {
   /**
    * @constructor
+   * @param {Object} env - environment object with the following properties
+   *    CLIENT_ID - Auth0 client id
+   *    DOMAIN - Auth0 domain
+   *    AUDIENCE - Auth0 audience
+   *    ENDPOINTS - Alpheios user api endpoints
+   *    LOGOUT_URL - Auth0 logout url
    */
-  constructor () {
+  constructor (env) {
     // An Auth0 Lock widget instance. Will be initialized lazily
     this.auth0Lock = null
     this._auth0profile = null // A user profile from Auth0
+    this.env = env
   }
 
   /**
@@ -46,21 +53,20 @@ export default class AppAuthenticator {
     // initiating authentication
     return new Promise((resolve, reject) => {
       if (!this.auth0Lock) {
-        if (!auth0Env) {
+        if (!this.env) {
           let error = `Unable to find Auth0 configuration. Auth0 functionality will be disabled`
           console.error(error)
           reject(error)
         }
-        this.auth0env = auth0Env
         // test environment
-        if (this.auth0env.TEST_ID) {
-          localStorage.setItem('access_token', this.auth0env.TEST_ID)
-          localStorage.setItem('id_token', this.auth0env.TEST_ID)
+        if (this.env.TEST_ID) {
+          localStorage.setItem('access_token', this.env.TEST_ID)
+          localStorage.setItem('id_token', this.env.TEST_ID)
           localStorage.setItem('is_test_user', true)
           resolve("Authenticated")
         } else {
           // initialize auth0 lock
-          this.auth0Lock = new Auth0Lock(this.auth0env.CLIENT_ID, this.auth0env.DOMAIN, {
+          this.auth0Lock = new Auth0Lock(this.env.CLIENT_ID, this.env.DOMAIN, {
             theme: {
               logo: 'https://alpheios.net/logos/alpheios_32.png',
               labeledSubmitButton: false,
@@ -74,7 +80,7 @@ export default class AppAuthenticator {
             auth: {
               redirect: false,
               params: {
-                audience: this.auth0env.AUDIENCE,
+                audience: this.env.AUDIENCE,
                 scope: 'openid profile email',
                 prompt: 'consent select_account',
               },
@@ -163,7 +169,7 @@ export default class AppAuthenticator {
    * @return {Object}
    */
   getEndPoints () {
-    return this.auth0env.ENDPOINTS
+    return this.env.ENDPOINTS
   }
 
   /**
@@ -174,7 +180,7 @@ export default class AppAuthenticator {
     localStorage.removeItem('access_token')
     localStorage.removeItem('profile')
     this.auth0Lock.logout({
-      returnTo: this.auth0env.LOGOUT_URL
+      returnTo: this.env.LOGOUT_URL
     })
   }
 
