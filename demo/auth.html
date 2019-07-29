@@ -16,7 +16,7 @@
         console.info(`Embedded library has been imported successfully`)
 
         window.AlpheiosEmbed.importDependencies({ mode: 'development' }).then(Embedded => {
-          new Embedded({clientId: 'alpheios-dev-auth',}).activate();
+          new Embedded({clientId: 'alpheios-dev-auth', authEnv: auth0Env}).activate();
         }).catch(e => {
           console.error(`Import of an embedded library dependencies failed: ${e}`)
         })

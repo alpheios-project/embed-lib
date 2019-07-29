@@ -5,6 +5,12 @@
 export default class SessionAuthenticator {
   /**
    * @constructor
+   * @param {Object} env - environment object with the following properties
+   *    LOGIN_URL - login url
+   *    LOGOUT_URL - logout url
+   *    SESSION_URL - session url
+   *    TOKEN_URL - token url
+   *    ENDPOINTS - Alpheios user api endpoints
    */
   constructor (env) {
       this.sessionUrl = env.SESSION_URL
