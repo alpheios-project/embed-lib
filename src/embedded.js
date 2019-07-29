@@ -202,6 +202,9 @@ class Embedded {
       this.doc.body.setAttribute('alpheios-embed-lib-status', 'active')
       this.doc.body.addEventListener('Alpheios_Embedded_Check', event => { this.notifyExtension(event) })
 
+      // and set the state on the components
+      this.ui.setEmbedLibActive(true)
+
     } catch (error) {
       console.error(`Cannot activate a UI controller: ${error}`)
       return
