@@ -270,6 +270,9 @@ class Embedded {
   }
 
   openActionPanel () {
+    if (this.ui.platform.isMobile) {
+      this.ui.closePanel()
+    }
     this.ui.openActionPanel()
   }
 
@@ -281,6 +284,9 @@ class Embedded {
    * Opens the action panel with toolbar buttons hidden and only the lookup visible.
    */
   openActionPanelLookup () {
+    if (this.ui.platform.isMobile) {
+      this.ui.closePanel()
+    }
     this.ui.openActionPanel({ showNav: false })
   }
 
@@ -288,6 +294,9 @@ class Embedded {
    * Opens the action panel with only toolbar buttons visible.
    */
   openActionPanelToolbar () {
+    if (this.ui.platform.isMobile) {
+      this.ui.closePanel()
+    }
     this.ui.openActionPanel({ showLookup: false })
   }
 }
