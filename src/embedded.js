@@ -95,6 +95,7 @@ class Embedded {
     triggerPreCallback = (evt) => { return true }, // Not used at the moment but can be set as a filter for `this.ui.getSelectedText()` calls
     popupInitialPos = {},
     toolbarInitialPos = {},
+    actionPanelInitialPos = {},
     layoutType = 'default', // The other option is 'readingTools'
     // Disable text selection on mobile devices
     disableTextSelection = false,
@@ -151,6 +152,11 @@ class Embedded {
     }
     this.ui.registerModule(components.PopupModule, popupParams)
 
+    let actionPanelParams = {}
+    if (actionPanelInitialPos && Object.values(actionPanelInitialPos).filter(value => Boolean(value)).length > 0) {
+      actionPanelParams.initialPos = actionPanelInitialPos
+    }
+
     if (layoutType === 'default') {
       let toolbarParams = {}
       if (toolbarInitialPos && Object.values(toolbarInitialPos).filter(value => Boolean(value)).length > 0) {
@@ -170,7 +176,8 @@ class Embedded {
         this.ui.registerModule(components.ToolbarModule, toolbarParams)
       } else if (this.ui.platform.isMobile) {
         this.ui.registerModule(components.ActionPanelModule, {
-          lookupResultsIn: 'panel'
+          lookupResultsIn: 'panel',
+          initialPos: actionPanelParams.initialPos
         })
       }
     }
