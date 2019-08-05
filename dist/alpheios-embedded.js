@@ -94,7 +94,7 @@ window["AlpheiosEmbed"] =
 /*! exports provided: name, version, build, description, main, directories, scripts, repository, author, license, bugs, homepage, devDependencies, engines, jest, eslintConfig, eslintIgnore, dependencies, default */
 /***/ (function(module) {
 
-module.exports = JSON.parse("{\"name\":\"alpheios-embedded\",\"version\":\"1.0.0\",\"build\":\"34\",\"description\":\"Alpheios Embedded Library\",\"main\":\"dist/alpheios-embedded.js\",\"directories\":{\"doc\":\"doc\"},\"scripts\":{\"test\":\"npm run lint && jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js\",\"build\":\"npm run build-dev && npm run build-prod\",\"build-prod\":\"npm run lint && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all production app config.mjs\",\"build-dev\":\"npm run lint && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all development app config.mjs\",\"auth0-env-update\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/prod --t=dist/auth0 --f=env-embed.js\",\"auth0-env-dev-update\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/dev --t=dist/auth0 --f=env-embed.js\",\"lint\":\"eslint --fix src/**/*.js\",\"update-dependencies\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/ --t=dist/lib && node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/style --t=dist/style\",\"build-experimental\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs webpack development app config.mjs\",\"dev\":\"npm run build-experimental && http-server -c-1 -p 8888 & onchange src -- npm run build-experimental\"},\"repository\":{\"type\":\"git\",\"url\":\"git+https://github.com/alpheios-project/wordsvc.git\"},\"author\":\"The Alpheios Project, Ltd.\",\"license\":\"ISC\",\"bugs\":{\"url\":\"https://github.com/alpheios-project/wordsvc/issues\"},\"homepage\":\"https://github.com/alpheios-project/wordsvc#readme\",\"devDependencies\":{\"alpheios-client-adapters\":\"github:alpheios-project/client-adapters\",\"alpheios-components\":\"github:alpheios-project/components\",\"alpheios-data-models\":\"github:alpheios-project/data-models\",\"alpheios-experience\":\"github:alpheios-project/experience\",\"alpheios-inflection-tables\":\"github:alpheios-project/inflection-tables\",\"alpheios-node-build\":\"github:alpheios-project/node-build\",\"alpheios-res-client\":\"github:alpheios-project/res-client\",\"alpheios-wordlist\":\"github:alpheios-project/wordlist\",\"copy-webpack-plugin\":\"^5.0.3\",\"coveralls\":\"^3.0.4\",\"css-loader\":\"^3.0.0\",\"eslint\":\"^6.0.1\",\"eslint-config-standard\":\"^12.0.0\",\"eslint-plugin-import\":\"^2.18.0\",\"eslint-plugin-node\":\"^9.1.0\",\"eslint-plugin-promise\":\"^4.2.1\",\"eslint-plugin-standard\":\"^4.0.0\",\"eslint-plugin-vue\":\"^5.2.3\",\"html-loader\":\"^0.5.5\",\"html-loader-jest\":\"^0.2.1\",\"http-server\":\"^0.11.1\",\"interactjs\":\"^1.4.14\",\"intl-messageformat\":\"^2.2.0\",\"jest\":\"^24.8.0\",\"jest-fetch-mock\":\"^2.1.2\",\"onchange\":\"^6.0.0\",\"raw-loader\":\"^3.0.0\",\"sass-loader\":\"^7.1.0\",\"source-map-loader\":\"^0.2.4\",\"style-loader\":\"^0.23.1\",\"url-loader\":\"^2.0.1\",\"vue-loader\":\"^15.7.0\",\"vue-style-loader\":\"^4.1.2\",\"vue-svg-loader\":\"^0.12.0\",\"webpack-dev-server\":\"^3.7.2\"},\"engines\":{\"node\":\">= 9.10.1\",\"npm\":\">= 5.6.0\"},\"jest\":{\"verbose\":true,\"transform\":{\"^.+\\\\.htmlf$\":\"html-loader-jest\",\"^.+\\\\.jsx?$\":\"babel-jest\"},\"transformIgnorePatterns\":[\"node_modules/alpheios-components/\"]},\"eslintConfig\":{\"env\":{\"browser\":true,\"node\":true},\"parser\":\"babel-eslint\",\"parserOptions\":{\"sourceType\":\"module\",\"ecmaVersion\":2019,\"allowImportExportEverywhere\":true}},\"eslintIgnore\":[\"**/dist\"],\"dependencies\":{}}");
+module.exports = JSON.parse("{\"name\":\"alpheios-embedded\",\"version\":\"1.0.0\",\"build\":\"35\",\"description\":\"Alpheios Embedded Library\",\"main\":\"dist/alpheios-embedded.js\",\"directories\":{\"doc\":\"doc\"},\"scripts\":{\"test\":\"npm run lint && jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js\",\"build\":\"npm run build-dev && npm run build-prod\",\"build-prod\":\"npm run lint && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all production app config.mjs\",\"build-dev\":\"npm run lint && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all development app config.mjs\",\"auth0-env-update\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/prod --t=dist/auth0 --f=env-embed.js\",\"auth0-env-dev-update\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/dev --t=dist/auth0 --f=env-embed.js\",\"lint\":\"eslint --fix src/**/*.js\",\"update-dependencies\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/ --t=dist/lib && node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/style --t=dist/style\",\"build-experimental\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs webpack development app config.mjs\",\"dev\":\"npm run build-experimental && http-server -c-1 -p 8888 & onchange src -- npm run build-experimental\"},\"repository\":{\"type\":\"git\",\"url\":\"git+https://github.com/alpheios-project/wordsvc.git\"},\"author\":\"The Alpheios Project, Ltd.\",\"license\":\"ISC\",\"bugs\":{\"url\":\"https://github.com/alpheios-project/wordsvc/issues\"},\"homepage\":\"https://github.com/alpheios-project/wordsvc#readme\",\"devDependencies\":{\"alpheios-client-adapters\":\"github:alpheios-project/client-adapters\",\"alpheios-components\":\"github:alpheios-project/components\",\"alpheios-data-models\":\"github:alpheios-project/data-models\",\"alpheios-experience\":\"github:alpheios-project/experience\",\"alpheios-inflection-tables\":\"github:alpheios-project/inflection-tables\",\"alpheios-node-build\":\"github:alpheios-project/node-build\",\"alpheios-res-client\":\"github:alpheios-project/res-client\",\"alpheios-wordlist\":\"github:alpheios-project/wordlist\",\"copy-webpack-plugin\":\"^5.0.3\",\"coveralls\":\"^3.0.4\",\"css-loader\":\"^3.0.0\",\"eslint\":\"^6.0.1\",\"eslint-config-standard\":\"^12.0.0\",\"eslint-plugin-import\":\"^2.18.0\",\"eslint-plugin-node\":\"^9.1.0\",\"eslint-plugin-promise\":\"^4.2.1\",\"eslint-plugin-standard\":\"^4.0.0\",\"eslint-plugin-vue\":\"^5.2.3\",\"html-loader\":\"^0.5.5\",\"html-loader-jest\":\"^0.2.1\",\"http-server\":\"^0.11.1\",\"interactjs\":\"^1.4.14\",\"intl-messageformat\":\"^2.2.0\",\"jest\":\"^24.8.0\",\"jest-fetch-mock\":\"^2.1.2\",\"onchange\":\"^6.0.0\",\"raw-loader\":\"^3.0.0\",\"sass-loader\":\"^7.1.0\",\"source-map-loader\":\"^0.2.4\",\"style-loader\":\"^0.23.1\",\"url-loader\":\"^2.0.1\",\"vue-loader\":\"^15.7.0\",\"vue-style-loader\":\"^4.1.2\",\"vue-svg-loader\":\"^0.12.0\",\"webpack-dev-server\":\"^3.7.2\"},\"engines\":{\"node\":\">= 9.10.1\",\"npm\":\">= 5.6.0\"},\"jest\":{\"verbose\":true,\"transform\":{\"^.+\\\\.htmlf$\":\"html-loader-jest\",\"^.+\\\\.jsx?$\":\"babel-jest\"},\"transformIgnorePatterns\":[\"node_modules/alpheios-components/\"]},\"eslintConfig\":{\"env\":{\"browser\":true,\"node\":true},\"parser\":\"babel-eslint\",\"parserOptions\":{\"sourceType\":\"module\",\"ecmaVersion\":2019,\"allowImportExportEverywhere\":true}},\"eslintIgnore\":[\"**/dist\"],\"dependencies\":{}}");
 
 /***/ }),
 
@@ -192,7 +192,9 @@ class Embedded {
    *                   Default: ""
    *     disabledClass: a CSS class to apply to alpheios disabled elements
    *                    Default: ""
-   *     eventTriggers: a comma-separated list of DOM events to which Alpheios functionality should be attached
+   *     mobileTriggerEvent: DOM Event to trigger word selection on mobile devices
+   *                         Default: longTap
+   *     desktopTriggerEvent: DOM Event to trigger word selection on desktops
    *                    Default: "dblclick"
    *     triggerPreCallback: a callback function which is called when the trigger event handler is invoked, prior to initiating
    *                         Alpheios functionality. It should return true to proceed with lookup or false to abort.
@@ -206,7 +208,8 @@ class Embedded {
     disabledSelector = '',
     enabledClass = '',
     disabledClass = '',
-    triggerEvents = 'dblclick',
+    mobileTriggerEvent = null,
+    desktopTriggerEvent = null,
     triggerPreCallback = (evt) => { return true }, // Not used at the moment but can be set as a filter for `this.ui.getSelectedText()` calls
     popupInitialPos = {},
     toolbarInitialPos = {},
@@ -230,7 +233,8 @@ class Embedded {
     this.disabledSelector = disabledSelector
     this.enabledClass = enabledClass
     this.disabledClass = disabledClass
-    this.triggerEvents = triggerEvents
+    this.desktopTriggerEvent = desktopTriggerEvent
+    this.mobileTriggerEvent = mobileTriggerEvent
     this.triggerPreCallback = triggerPreCallback
 
     // Set an initial UI Controller state for activation
@@ -239,8 +243,10 @@ class Embedded {
 
     this.ui = components.UIController.create(this.state, {
       storageAdapter: components.LocalStorageArea,
-      textQueryTrigger: this.triggerEvents,
+      textQueryTriggerDesktop: this.desktopTriggerEvent,
+      textQueryTriggerMobile: this.mobileTriggerEvent,
       textQuerySelector: this.enabledSelector,
+      triggerPreCallback: this.triggerPreCallback,
       app: { version:`${_package_json__WEBPACK_IMPORTED_MODULE_1__["version"]}.${_package_json__WEBPACK_IMPORTED_MODULE_1__["build"]}`, name: _package_json__WEBPACK_IMPORTED_MODULE_1__["description"] },
       // Disable text selection on mobile devices
       disableTextSelection: disableTextSelection,
@@ -334,9 +340,8 @@ class Embedded {
 
     let selector = this.enabledSelector
 
-    let trigger = this.triggerEvents.split(/,/)
-    if (!selector || !trigger) {
-      throw new Error('Configuration must define both trigger and selector')
+    if (!selector) {
+      throw new Error('Configuration must define selector')
     }
     let activateOn = this.doc.querySelectorAll(selector)
     if (activateOn.length === 0) {

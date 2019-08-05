@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../dist/style/style-components.css"/>
+    <link href="styles/auth.css" rel="stylesheet">
+</head>
+
+<body>
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function(event) {
+      import ('../dist/alpheios-embedded.js').then(embedLib => {
+        console.info(`Embedded library has been imported successfully`)
+
+        //sample function to detect Ctrl+Click
+        let detectCtrl = function (event) {
+          return event.ctrlKey
+        }
+
+        window.AlpheiosEmbed.importDependencies({ mode: 'development' }).then(Embedded => {
+          new Embedded(
+            { clientId: 'alpheios-dev-tpc',
+              authEnv: null,
+              desktopTriggerEvent: 'click',
+              triggerPreCallback: detectCtrl
+            }).activate();
+        }).catch(e => {
+          console.error(`Import of an embedded library dependencies failed: ${e}`)
+        })
+
+      }).catch(e => {
+        console.error(`Import of an embedded library failed: ${e}`)
+      })
+    });
+</script>
+
+<div class="alpheios-enabled">
+    <h4 lang="eng" data-alpheios-ignore="all">Greek</h4>
+    <div xml:lang="grc">
+        <p data-alpheios-ignore="all">This is a block of English text which Alpheios is instructed to ignore,
+            inside a block of Greek text for which Alpheios is instructed to be enabled.</p>
+        <p>τά ταῖν ταῖν τοῦ</p>
+        <p>εγώ εμένα ἐμαυτοῦ ταύταις</p>
+        <p>ένα δύο τρία</p>
+        <p>όμορφος νέος γλυκός</p>
+        <p>συνεχής πλατύς οξύς</p>
+        <p>ἄνδρα μοι ἔννεπε, μοῦσα, πολύτροπον</p>
+        <p>πρόσφυμα ξηρή </p>
+        <p>σκληρή ζώνη ινώδους συνδετικού ιστού που συνδέει συνήθως μύες με οστά</p>
+    </div>
+
+    <h4 lang="eng" data-alpheios-ignore="all">Latin</h4>
+    <div lang="lat">
+        <p>fero ferre tuli latus ferant</p>
+        <p>sum sunt</p>
+        <p>mare cupidinibus cepit differ</p>
+        <p>a bene placito</p>
+        <p>ab ovo usque ad mala</p>
+        <p>caeli  beatum</p>
+    </div>
+
+    <h4 lang="eng" data-alpheios-ignore="all">Arabic</h4>
+    <div lang="ara" dir="rtl">
+        1 اَلدٌّنيَا دَارُ مَمَرٍ لاَ دَارُ مَقَرٍ * سُلطَان بِلاَ عَدلٍ كَنَهرٍ
+    </div>
+
+    <h4 lang="eng" data-alpheios-ignore="all">Persian</h4>
+    <div lang="per" dir="rtl">
+        آبادائیدن
+        به نام خداوند جان و خرد
+        کزین برتر اندیشه برنگذرد
+        خداوند نام و خداوند جای
+        خداوند روزی ده رهنمای
+        خداوند کیوان و گردان سپهر
+        فروزنده ماه و ناهید و مهر
+        ز نام و نشان و گمان برترست
+        نگارندهٔ بر شده پیکرست
+        به بینندگان آفریننده را
+        نبینی مرنجان دو بیننده را
+        نیابد بدو نیز اندیشه راه
+        که او برتر از نام و از جایگاه
+        سخن هر چه زین گوهران بگذرد
+        نیابد بدو راه جان و خرد
+    </div>
+
+    <h4 lang="eng" data-alpheios-ignore="all">Ge'ez</h4>
+    <div lang="gez" dir="ltr">
+        ይትባረክ፡ እግዚአብሔር፡ አምላከ፡ እስራኤል፡ አምላክ፡ ለኵሉ፡ መንፈስ፡ ወለኵሉ፡ ዘሥጋ፡ ወይቤሎ፡ እግዚአብሔር፡ ለእዝራ፡ አእምር፡ ወጠይቅ፡
+    </div>
+</div>
+
+</div>
+
+</body>
+</html>

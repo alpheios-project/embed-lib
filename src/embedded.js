@@ -77,7 +77,9 @@ class Embedded {
    *                   Default: ""
    *     disabledClass: a CSS class to apply to alpheios disabled elements
    *                    Default: ""
-   *     eventTriggers: a comma-separated list of DOM events to which Alpheios functionality should be attached
+   *     mobileTriggerEvent: DOM Event to trigger word selection on mobile devices
+   *                         Default: longTap
+   *     desktopTriggerEvent: DOM Event to trigger word selection on desktops
    *                    Default: "dblclick"
    *     triggerPreCallback: a callback function which is called when the trigger event handler is invoked, prior to initiating
    *                         Alpheios functionality. It should return true to proceed with lookup or false to abort.
@@ -91,7 +93,8 @@ class Embedded {
     disabledSelector = '',
     enabledClass = '',
     disabledClass = '',
-    triggerEvents = 'dblclick',
+    mobileTriggerEvent = null,
+    desktopTriggerEvent = null,
     triggerPreCallback = (evt) => { return true }, // Not used at the moment but can be set as a filter for `this.ui.getSelectedText()` calls
     popupInitialPos = {},
     toolbarInitialPos = {},
@@ -115,7 +118,8 @@ class Embedded {
     this.disabledSelector = disabledSelector
     this.enabledClass = enabledClass
     this.disabledClass = disabledClass
-    this.triggerEvents = triggerEvents
+    this.desktopTriggerEvent = desktopTriggerEvent
+    this.mobileTriggerEvent = mobileTriggerEvent
     this.triggerPreCallback = triggerPreCallback
 
     // Set an initial UI Controller state for activation
@@ -124,8 +128,10 @@ class Embedded {
 
     this.ui = components.UIController.create(this.state, {
       storageAdapter: components.LocalStorageArea,
-      textQueryTrigger: this.triggerEvents,
+      textQueryTriggerDesktop: this.desktopTriggerEvent,
+      textQueryTriggerMobile: this.mobileTriggerEvent,
       textQuerySelector: this.enabledSelector,
+      triggerPreCallback: this.triggerPreCallback,
       app: { version:`${packageVersion}.${packageBuild}`, name: packageDescription },
       // Disable text selection on mobile devices
       disableTextSelection: disableTextSelection,
@@ -219,9 +225,8 @@ class Embedded {
 
     let selector = this.enabledSelector
 
-    let trigger = this.triggerEvents.split(/,/)
-    if (!selector || !trigger) {
-      throw new Error('Configuration must define both trigger and selector')
+    if (!selector) {
+      throw new Error('Configuration must define selector')
     }
     let activateOn = this.doc.querySelectorAll(selector)
     if (activateOn.length === 0) {
