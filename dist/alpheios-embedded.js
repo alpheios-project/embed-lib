@@ -218,6 +218,7 @@ class Embedded {
     // Disable text selection on mobile devices
     disableTextSelection = false,
     textLangCode = null,
+    overrideHelp = false
     } = {}) {
     this.clientId = clientId
 
@@ -251,7 +252,8 @@ class Embedded {
       clientId: this.clientId,
       // Disable text selection on mobile devices
       disableTextSelection: disableTextSelection,
-      textLangCode: textLangCode
+      textLangCode: textLangCode,
+      overrideHelp: overrideHelp
     })
     // Environment-specific initializations
     if (this.authEnv) {
@@ -663,7 +665,6 @@ class SessionAuthenticator {
       this.endpoints = env.ENDPOINTS
       this._loginUrl = env.LOGIN_URL
       this._logoutUrl = env.LOGOUT_URL
-      console.log("Created SessionAuthenticator",this)
   }
 
   /**
@@ -730,7 +731,6 @@ class SessionAuthenticator {
    * Respond to a logout request
    */
   logout() {
-    console.error("Logout called from Server Side Authenticator")
     return
   }
 
