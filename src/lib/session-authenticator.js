@@ -18,7 +18,6 @@ export default class SessionAuthenticator {
       this.endpoints = env.ENDPOINTS
       this._loginUrl = env.LOGIN_URL
       this._logoutUrl = env.LOGOUT_URL
-      console.log("Created SessionAuthenticator",this)
   }
 
   /**
@@ -85,7 +84,6 @@ export default class SessionAuthenticator {
    * Respond to a logout request
    */
   logout() {
-    console.error("Logout called from Server Side Authenticator")
     return
   }
 
