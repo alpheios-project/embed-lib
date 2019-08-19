@@ -101,6 +101,7 @@ class Embedded {
     // Disable text selection on mobile devices
     disableTextSelection = false,
     textLangCode = null,
+    overrideHelp = false
     } = {}) {
     this.clientId = clientId
 
@@ -134,7 +135,8 @@ class Embedded {
       clientId: this.clientId,
       // Disable text selection on mobile devices
       disableTextSelection: disableTextSelection,
-      textLangCode: textLangCode
+      textLangCode: textLangCode,
+      overrideHelp: overrideHelp
     })
     // Environment-specific initializations
     if (this.authEnv) {
