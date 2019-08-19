@@ -45,13 +45,11 @@ export function importDependencies (options) {
       /* webpackIgnore: true */
       libs.components
     ).then(() => {
-      console.info(`Components library has been imported successfully`)
       components = window.AlpheiosComponents
     })
     imports.push(componentsImport)
 
     Promise.all(imports).then(() => {
-      console.info(`All promises have been imported successfully`)
       resolve (Embedded)
     }).catch((e) => {
       reject(e)
@@ -149,7 +147,6 @@ class Embedded {
         this.ui.registerModule(components.AuthModule, { auth: new SessionAuthenticator(authEnv) })
       }
     } else {
-      console.log("No authentication environment supplied")
       this.ui.registerModule(components.AuthModule, { auth: null })
     }
     // Register UI modules
@@ -222,7 +219,7 @@ class Embedded {
       this.ui.setEmbedLibActive(true)
 
     } catch (error) {
-      console.error(`Cannot activate a UI controller: ${error}`)
+      console.error(`Unexpected error activating Alpheios: ${error}`)
       return
     }
 
@@ -236,7 +233,7 @@ class Embedded {
       // it could be that we want to activate Alpheios for lookups via the
       // tools even if there isn't any text on the page to activate to on
       // so just print a warning here.
-      console.log(`No elements matching ${activateOn}`)
+      console.warn(`Alpheios was activated for the page but not any content (no elements matching ${activateOn}).`)
     }
     if (this.enabledClass) {
       for (let elem of activateOn) {

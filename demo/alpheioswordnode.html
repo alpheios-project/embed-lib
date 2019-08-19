@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../dist/style/style-components.css"/>
+    <link href="styles/auth.css" rel="stylesheet">
+</head>
+
+<body>
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function(event) {
+      import ('../dist/alpheios-embedded.js').then(embedLib => {
+        console.info(`Embedded library has been imported successfully`)
+
+        window.AlpheiosEmbed.importDependencies({ mode: 'development' }).then(Embedded => {
+          new Embedded(
+            { clientId: 'alpheios-dev-parent',
+              authEnv: null,
+            }).activate();
+        }).catch(e => {
+          console.error(`Import of an embedded library dependencies failed: ${e}`)
+        })
+
+      }).catch(e => {
+        console.error(`Import of an embedded library failed: ${e}`)
+      })
+    });
+</script>
+
+<div class="alpheios-enabled">
+    <h4 lang="eng" data-alpheios-ignore="all">Latin</h4>
+    <div lang="lat">
+        <p><span data-alpheios-word-node="default"><b>f</b>ero</span> ferre tuli latus ferant</p>
+        <p>sum sunt</p>
+        <p>mare <span data-alpheios-word-node="default">cu[pidinibus</span> cepit differ</p>
+        <p>a bene <span data-alpheios-word-node="exact">p[lacito</span></p>
+        <p>ab ovo usque ad mala</p>
+        <p>caeli  beatum</p>
+    </div>
+
+</div>
+
+</body>
+</html>
