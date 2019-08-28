@@ -82,6 +82,23 @@ class Embedded {
    *     triggerPreCallback: a callback function which is called when the trigger event handler is invoked, prior to initiating
    *                         Alpheios functionality. It should return true to proceed with lookup or false to abort.
    *                         Default: no-op, returns true
+   *     popupInitialPos: object containing initial css positioning properties for the popup
+   *                      Default { top: 10vh, right: 10vw}
+   *     toolbarInitialPos: object containing initial css positioning properties for the toolbar
+   *                        Default { top: 10px, right: 15px}
+   *     actionPanelInitialPos: object containing initial css positioning properties for the action panel (mobile)
+   *                            Default { bottom: 120px, right: 20px}
+   *     layoutType: 'default' or 'readingTools' (readingTools is used for the Alpheios Reader UI)
+   *                 Default: 'default'
+   *     disableTextSelection: set to true to disable default browser text selection behavior (not recommended)
+   *                           Default: false
+   *     textLangCode: default language for lookups via the toolbar
+   *                   Default: null (which will result in the user preferred page language being used)
+   *     overrideHelp: set to true to disable the default alpheios behavior for the help icon
+   *                   (client code must attach their own handler to the ".alpheios-toolbar__help-control" element)
+   *                   Default: false
+   *     simpleMode: set to true to restrict the UI to the popup/morphology panel (with grammar links) and lookup but no other features
+   *                 Default: false
    */
   constructor ({
     clientId = null,
@@ -101,7 +118,8 @@ class Embedded {
     // Disable text selection on mobile devices
     disableTextSelection = false,
     textLangCode = null,
-    overrideHelp = false
+    overrideHelp = false,
+    simpleMode = false
     } = {}) {
     this.clientId = clientId
 
@@ -120,6 +138,7 @@ class Embedded {
     this.desktopTriggerEvent = desktopTriggerEvent
     this.mobileTriggerEvent = mobileTriggerEvent
     this.triggerPreCallback = triggerPreCallback
+    this.simpleMode = simpleMode
 
     // Set an initial UI Controller state for activation
     this.state.setPanelClosed() // A default state of the panel is CLOSED
@@ -150,11 +169,18 @@ class Embedded {
       this.ui.registerModule(components.AuthModule, { auth: null })
     }
     // Register UI modules
-    this.ui.registerModule(components.PanelModule, {})
+    let panelParams = {}
+    if (this.simpleMode) {
+      panelParams.showNav = false
+    }
+    this.ui.registerModule(components.PanelModule, panelParams)
 
     let popupParams = {}
     if (popupInitialPos && Object.values(popupInitialPos).filter(value => Boolean(value)).length > 0) {
       popupParams.initialPos = popupInitialPos
+    }
+    if (this.simpleMode) {
+      popupParams.showNav = false
     }
     this.ui.registerModule(components.PopupModule, popupParams)
 
@@ -162,19 +188,24 @@ class Embedded {
     if (actionPanelInitialPos && Object.values(actionPanelInitialPos).filter(value => Boolean(value)).length > 0) {
       actionPanelParams.initialPos = actionPanelInitialPos
     }
+    if (this.simpleMode) {
+      actionPanelParams.showNav = false
+    }
 
+    let toolbarParams = {}
+    if (this.simpleMode) {
+      toolbarParams.showNav = false
+    }
     if (layoutType === 'default') {
-      let toolbarParams = {}
       if (toolbarInitialPos && Object.values(toolbarInitialPos).filter(value => Boolean(value)).length > 0) {
         toolbarParams.initialPos = toolbarInitialPos
       }
 
       this.ui.registerModule(components.ToolbarModule, toolbarParams)
-      this.ui.registerModule(components.ActionPanelModule)
+      this.ui.registerModule(components.ActionPanelModule, { showNav: actionPanelParams.showNav })
     } else if (layoutType === 'readingTools') {
       // This is a special configuration for Alpheios Reading Tools
       if (this.ui.platform.isDesktop) {
-        let toolbarParams = {}
         if (toolbarInitialPos && Object.values(toolbarInitialPos).filter(value => Boolean(value)).length > 0) {
           toolbarParams.initialPos = toolbarInitialPos
         }
@@ -183,7 +214,8 @@ class Embedded {
       } else if (this.ui.platform.isMobile) {
         this.ui.registerModule(components.ActionPanelModule, {
           lookupResultsIn: 'panel',
-          initialPos: actionPanelParams.initialPos
+          initialPos: actionPanelParams.initialPos,
+          showNav: actionPanelParams.showNav
         })
       }
     }
