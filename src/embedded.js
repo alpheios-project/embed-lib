@@ -190,6 +190,8 @@ class Embedded {
     }
     if (this.simpleMode) {
       actionPanelParams.showNav = false
+    } else {
+      actionPanelParams.showNav = true
     }
 
     let toolbarParams = {}
