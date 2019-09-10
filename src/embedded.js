@@ -151,6 +151,7 @@ class Embedded {
       textQuerySelector: this.enabledSelector,
       triggerPreCallback: this.triggerPreCallback,
       app: { version:`${packageVersion}.${packageBuild}`, name: packageDescription },
+      appType: components.Platform.appTypes.EMBEDDED_LIBRARY,
       clientId: this.clientId,
       // Disable text selection on mobile devices
       disableTextSelection: disableTextSelection,
