@@ -25,12 +25,12 @@ Following is a list of the Alpheios CSS variable names that can be customized, a
 Variable name | Default | Description
 ------------ | ------------- | -------------
 `--alpheios-toolbar-bg-color` | #0E2233 | The background color used for Alpheios toolbars (popup, and panel and floating).
-`--alpheios-border-color` | #757575 | Toolbar and Lookup component border color. 
+`--alpheios-border-color` | #757575 | Border color for different components (panel, tooltip, wordList panel, wordUsage panel and etc.). 
  |  | 
-`--alpheios-icon-color` | #FFF | Stroke color for the Alpheios icons. 
-`--alpheios-icon-color-hover` | #FFD27D | Fill and stroke color for the Alpheios icons when in the __hover__ state.
-`--alpheios-icon-color-active` | #FFC24F | Fill and stroke color the Alpheios icons when in  the __active__ state.
-`--alpheios-icon-color-disabled` | #757575 | Fill and stroke color for the Alpheios icons when in the __disabled__ state.
+`--alpheios-icon-color` | #FFF | Stroke\fill color for the Alpheios icons. 
+`--alpheios-icon-color-hover` | #FFD27D | Stroke\fill color for the Alpheios icons when in the __hover__ state.
+`--alpheios-icon-color-active` | #FFC24F | Stroke\fill color the Alpheios icons when in  the __active__ state.
+`--alpheios-icon-color-disabled` | #757575 | Stroke\fill color for the Alpheios icons when in the __disabled__ state.
  |  | 
 `--alpheios-link-color` | #185F6D | Primary link color (used in the popup for grammar links, among other places)
 `--alpheios-link-color-hover` | #124D59 | Primary link color in __hover__ state
@@ -87,12 +87,15 @@ Variable name | Default | Description
  `--alpheios-desktop-popup-icon-color-hover` | `--alpheios-icon-color-hover` | Popup header icons color - __hover__ state
  `--alpheios-desktop-popup-icon-bg-hover` | `--alpheios-toolbar-bg-color` | Popup header - icon background - __hover__ state
  `--alpheios-desktop-popup-icon-color-active` | `--alpheios-icon-color-active` |  Popup header - icons color - __active__ state
+ `--alpheios-desktop-popup-icon-color-disabled` | `--alpheios-icon-color-disabled` |  Popup header - icons color - __disabled__ state
+ `--alpheios-desktop-popup-icon-color-pressed` | `--alpheios-icon-color-pressed` |  Popup header - icons color - __pressed__ state
+`--alpheios-desktop-popup-icon-bg-disabled` | `--alpheios-toolbar-bg-color` |  Popup header - icons color - __disabled__ state
   | | 
  `--alpheios-desktop-popup-progress-bar-line` | `--alpheios-toolbar-bg-color` | Popup progress bar color
   `--alpheios-desktop-popup-link-color` | `--alpheios-link-color` | Popup link color (grammar links)
  `--alpheios-desktop-popup-link-color-hover` | `--alpheios-link-color-hover` | Popup link color (grammar links) - __hover__ state
- `--alpheios-desktop-popup-credit-link-color` | `--alpheios-link-special-color` | Popup - color for credits link
- `--alpheios-desktop-popup-credit-link-color-hover` | `--alpheios-link-special-color-hover` | Popup - color for credits link - __hover__ state
+ `--alpheios-desktop-popup-credit-link-color` | `#FFC24F` | Popup - color for credits link
+ `--alpheios-desktop-popup-credit-link-color-hover` | `#FFD27D` | Popup - color for credits link - __hover__ state
  `--alpheios-desktop-popup-credit-providers-color` | `--alpheios-text-color` | Popup - color for credits block, provider text color
   Panel (Desktop) |  | 
  `--alpheios-desktop-panel-header-bg` | `--alpheios-toolbar-bg-color` | Desktop panel header background color
@@ -100,18 +103,24 @@ Variable name | Default | Description
  `--alpheios-desktop-panel-icon-color` | `--alpheios-icon-color` | Desktop panel header icons color
  `--alpheios-desktop-panel-icon-bg` | `--alpheios-toolbar-bg-color` |  Desktop panel header icons background color
  `--alpheios-desktop-panel-icon-color-hover` | `--alpheios-icon-color-hover` |  Desktop panel header icons color - __hover__ state
+`--alpheios-desktop-panel-icon-bg-hover` | `--alpheios-toolbar-bg-color-hover` |  Desktop panel header icons background  color - __hover__ state
+ 
  `--alpheios-desktop-panel-icon-color-active` | `--alpheios-icon-color-active` |  Desktop panel header icons color - __active__ state
  `--alpheios-desktop-panel-icon-bg-active` | `--alpheios-toolbar-bg-color` |  Desktop panel header icons background color - __active__ state
  `--alpheios-desktop-panel-icon-color-disabled` | `--alpheios-icon-color-disabled` |   Desktop panel header icons background color - __disabled__ state
+ `--alpheios-desktop-panel-icon-color-pressed` | `--alpheios-icon-color-disabled` |   Desktop panel header icons background color - __pressed__ state
+
  Panel (Mobile) |  | 
  `--alpheios-compact-panel-header-bg` | `--alpheios-toolbar-bg-color` | Mobile panel header background color
  `--alpheios-compact-panel-content-bg` | `--alpheios-text-bg-color` | Mobile panel content background color
  | | 
  `--alpheios-compact-panel-icon-color` | `--alpheios-icon-color` | Mobile panel header icons color
  `--alpheios-compact-panel-icon-bg` | `--alpheios-toolbar-bg-color` |  Mobile panel header icons background color
- `--alpheios-compact-panel-icon-color-hover` | `--alpheios-icon-color-hover` | Mobile panel header icons color - hover state
- `--alpheios-compact-panel-icon-bg-hover` | `--alpheios-toolbar-bg-color` | Mobile panel header icons background color - hover state
- `--alpheios-compact-panel-icon-color-active` | `--alpheios-icon-color-active` | Mobile panel header icons color - active state
+ `--alpheios-compact-panel-icon-color-hover` | `--alpheios-icon-color-hover` | Mobile panel header icons color - __hover__ state
+ `--alpheios-compact-panel-icon-bg-hover` | `--alpheios-toolbar-bg-color` | Mobile panel header icons background color - __hover__ state
+ `--alpheios-compact-panel-icon-color-active` | `--alpheios-icon-color-active` | Mobile panel header icons color - __active__ state
+ `--alpheios-compact-panel-icon-color-pressed` | `--alpheios-icon-color-pressed` | Mobile panel header icons color - __pressed__ state
+ `--alpheios-compact-panel-icon-color-disabled` | `--alpheios-icon-color-disabled` | Mobile panel header icons color - __disabled__ state
  Lookup |  | 
  `--alpheios-lookup-border-color` | `--alpheios-border-color` | Lookup panel border color (in toolbar)
  `--alpheios-lookup-bg` |  `--alpheios-text-bg-color` | Lookup panel panel background (in toolbar)
@@ -122,6 +131,10 @@ Variable name | Default | Description
  `--alpheios-lookup-button-color-hover` | `--alpheios-btn-primary-font-color-hover` | Lookup main button - font color - __hover__ state
  `--alpheios-lookup-button-bg-hover` | `--alpheios-btn-primary-bg-color-hover` | Lookup main button - background color - __hover__ state
  `--alpheios-lookup-button-border-color-hover` | `--alpheios-btn-primary-border-color-hover` | Lookup main button - border color - __hover__ state
+ `--alpheios-lookup-link-color` | `--alpheios-link-special-color` | Lookup link text color
+ `--alpheios-lookup-link-color-hover` | `--alpheios-link-special-color-hover` | Lookup link text color - __hover__ state
+ Definitions |  |  
+ `--alpheios-definition-short-color` | `#0E2233` | Text color of short definitions
  Inflections Browser |  | 
  `--alpheios-inflect-title-color` | `--alpheios-link-color-on-light` | Inflections Browser - main title - font color
  `--alpheios-inflect-button-control-color` | `--alpheios-btn-secondary-font-color` | Inflections Browser - expand/collapse button - font color
@@ -149,7 +162,8 @@ Variable name | Default | Description
  `--alpheios-grammar-back-button-border-color-hover` | `--alpheios-btn-primary-border-color-hover` | Grammar tab - back button - border color - __hover__ state
  Settings |  | 
  `--alpheios-settings-font-size-dark-color` | `--alpheios-btn-primary-bg-color` | Settings tab - font size select background color (dark)
- `--alpheios-settings-font-size-light-color` | `--alpheios-color-neutral-lightest`  | Settings tab - font size select font color (on dark) `--alpheios-settings-font-multiselect-bg` | `--alpheios-btn-primary-bg-color`  | Settings tab - multiselect - background color for selected 
+ `--alpheios-settings-font-size-light-color` | `--alpheios-color-neutral-lightest`  | Settings tab - font size select font color (on dark) 
+ `--alpheios-settings-font-multiselect-bg` | `--alpheios-btn-primary-bg-color`  | Settings tab - multiselect - background color for selected 
  `--alpheios-settings-font-multiselect-font-color` | `--alpheios-btn-primary-font-color`  | Settings tab - multiselect - font color for selected
   | | 
  `--alpheios-settings-reset-button-color` | `--alpheios-btn-primary-font-color` | Settings tab - Reset all button - font color
@@ -175,8 +189,12 @@ Variable name | Default | Description
  `--alpheios-word-list-context-incontext-bg` | `--alpheios-highlight-color` | Wordlist tab - matched part on context block - background
  Notifications | | 
  `--alpheios-notification-color` | `--alpheios-text-color` | Notification - font color
- `--alpheios-notification-bg` | `rgba(255, 193, 77, 0.5` | Notification - background color
+ `--alpheios-notification-bg` | `rgba(255, 193, 77, 0.5)` | Notification - background color
  `--alpheios-notification-border-color` | `--alpheios-notification-color` | Notification - border color
  `--alpheios-notification-important-color` | `--alpheios-important-notification-color` | Important notification - font color
- `--alpheios-notification-important-bg` | `rgba(198, 73, 6, 0.31` | Important notification - background color
+ `--alpheios-notification-important-bg` | `rgba(198, 73, 6, 0.31)` | Important notification - background color
  `--alpheios-notification-important-border-color` | `--alpheios-important-notification-color` | Important notification - border color
+Hint | |
+`--alpheios-hint-color` | `--alpheios-text-color` | Hint notification (orientation) - font color
+`--alpheios-hint-bg` | `#BCE5F0` | Hint notification (orientation) - background color
+`--alpheios-hint-border-color` | `--alpheios-hint-color` | Hint notification (orientation) - border color
