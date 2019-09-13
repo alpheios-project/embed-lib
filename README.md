@@ -2,50 +2,50 @@
 
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
-The Alpheios Embedded Library is a javascript library that provides complete Alpheios functionality on any page to which it has been added without the need for the user to install the Alpheios browser extensions. It provides clickable access to dictionary entries, morphological analyses, inflection tables and grammars for Latin and Ancient Greek. A subset of these resources are available for Classical Arabic with additional languages and resources currently under development.
+The Alpheios Embedded Library is a javascript library that provides complete Alpheios functionality on any page to which it has been added without the need for the user to install the Alpheios browser extensions. It provides clickable access to dictionary entries, morphological analyses, inflection tables and grammars for Latin and Ancient Greek. A subset of these resources are available for Classical Arabic and Persian with additional languages and resources currently under development.
 
 The library is fully open source under [ISC License](https://opensource.org/licenses/ISC) and can be easily extended with support for additional languages if web services adhering to Alpheios service APIs are or can be made available.  Documentation on how to do so is forthcoming. In the meantime please contact us (contact info available at https://alpheios.net/) if you are interested in extending the language support.
 
 Use of this library is governed by the [Alpheios API Terms of Service](http://www.alpheios.net/pages/apiterms/). Please review those terms before using it.
 
-The functionality currently works best in the browser on laptops and desktops. Support for mobile devices is under active development.
+The library has been tested under the latest releases (as of September 2019) of the Chrome, Firefox and Safari browsers on desktops/laptops and mobile. Internet Explorer and proprietary mobile device browsers are not supported.
 
 ## Including alpheios-embedded
 
 See also sample files `sample.html` and `sample-cdn.html` at the root of this repository.
 
-**1. Add the stylesheets and script to your HTML page:**
 
-**Via jsdelivr CDN**
+**1. Add Alpheios to your page (CDN)
 
-```
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-embedded/dist/style/style.min.css"/>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-embedded/dist/style/style-embedded.min.css"/>
-<script src="https://cdn.jsdelivr.net/npm/alpheios-embedded/dist/alpheios-embedded.min.js"></script>
-```
+For most websites, we recommend that you use Alpheios directly from the CDN. This is the least complicated setup.
 
-**Or install from NPM**
+First link the stylesheet in the `<head>` of your page:
 
 ```
-npm install alpheios-embedded
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-embedded@3.0.0/dist/style/style.min.css"/>
 ```
 
-```
-<link rel="stylesheet" href="path_to_node_modules/alpheios-embedded/dist/style/style.min.css"/>
-<link rel="stylesheet" href="path_to_node_modules/alpheios-embedded/dist/style/style-embedded.min.css"/>
-<script src="path_to_node_modules/alpheios-embedded/dist/alpheios-embedded.min.js"></script>
-```
-**2. Activate Alpheios**
-
-Add the following Javascript to your page activate Alpheios:
+Next, add the following Javascript to your page to import the Embedded Library code and dependencies and activate it.
 
 ```
 <script type="text/javascript">
-  document.addEventListener("DOMContentLoaded", function(event) {
-      new Alpheios.Embedded({clientId:"yourclientname"}).activate();
+    document.addEventListener("DOMContentLoaded", function(event) {
+      import ("{{'https://cdn.jsdelivr.net/npm/alpheios-embedded@3.0.0/dist/alpheios-embedded.min.js' | relative_url}}").then(embedLib => {
+        window.AlpheiosEmbed.importDependencies({ 
+          mode: 'cdn'
+        }).then(Embedded => {
+          new Embedded({clientId: 'balmas-gh-demo', authEnv: null }).activate();
+        }).catch(e => {
+          console.error(`Import of Alpheios embedded library dependencies failed: ${e}`)
+        })
+
+      }).catch(e => {
+        console.error(`Import of Alpheios Embedded library failed: ${e}`)
+      })
     });
 </script>
 ```
+
 
 This will activate the Alpheios functionality for any elements on your page (including their child elements) which have the class `alpheios-enabled`.  
 You must include a string identifier for the embedding site as a property of the configuration object which gets
@@ -93,7 +93,9 @@ other aspects can be customized by additional optional properties in the configu
 
 ## Customizing Alpheios Functionality
 
-**1. Precise Elements to Include**
+**1. Installing from NPM**
+
+**2. Precise Elements to Include**
 By default Alpheios will be enabled on all elements (and their children) matching the CSS selector ".alpheios-enabled". You can use a different CSS selector by including the `enabledSelector` property in the `activate` configuration object.
 
 ```
@@ -109,7 +111,7 @@ By default Alpheios will be enabled on all elements (and their children) matchin
 </script>
 ```
 
-**2. Precise Elements to Ignore**
+**3. Precise Elements to Ignore**
 
 By default, Alpheios will deactivate itself for any elements on the page, even if they are children of the activated elements, if they have the attribute `data-alpheios-ignore="all"`. You can specifiy additional elements to ignore by including the `disabledSelector` property in the `activate` configuration object:
 
@@ -126,7 +128,7 @@ By default, Alpheios will deactivate itself for any elements on the page, even i
 </script>
 ```
 
-**3. Specifying Language**
+**4. Specifying Language**
 
 Indicate to Alpheios which language text is by using the `lang` attribute on a parent or ancestor element of the text. The attribute value should be the ISO 639-2 3-character language code:
 
@@ -137,13 +139,11 @@ Indicate to Alpheios which language text is by using the `lang` attribute on a p
 <div lang="per" dir="rtl">به نام خداوند جان و خرد</div>
 ```
 
-**4. Use a different trigger event**
-
-**NB: This is experimental functionality. Instructions and syntax for configuration, etc. are currently in flux.**
+**5. Use a different trigger event**
 
 By default, the `dblclick` event triggers Alpheios functionality. If this conflicts with your site's features, you can choose a different event by including the `triggerEvents` property in the `activate` configuration object. You may find you need to use this in combination with the `triggerPreCallback` argument which specificies a callback which is executed prior to executing the Alpheios trigger. For example, if you wanted to use a `Ctrl+Click` to activate Alpheios, you would have to have code in a `triggerPreCallback` function which kept track of whether or not the user had pressed the `Ctrl` key prior to clicking.
 
-**5. Connect a Treebank**
+**6. Connect a Treebank**
 
 **NB: This is experimental functionality. Instructions and syntax for configuration, etc. are currently in flux.**
 
@@ -212,7 +212,7 @@ https://alpheios.net/alpheios-treebanks/1999.02.0066.html?chunk=1&w=2
 The above steps also trigger activation of the use of the treebank data for disamibugating the morphological parser results in the Alpheios popup.  If the `documentIdentifier` is one which is configured as available via webservice for the `AlpheiosTreebankAdapter` in the [alpheios-morph-client](https://github.com/alpheios-project/morph-client) library, then the treebank morphology tag will be used to disambiguate the morphological parser results.
 
 
-**6. Add an Aligned Translation**
+**7. Add an Aligned Translation**
 
 **NB: This is experimental functionality. Instructions and syntax for configuration, etc. are currently in flux.**
 
@@ -311,3 +311,4 @@ information (a user consent). As a workaround for this, to simplify testing, a `
 `127.0.0.1    appname.example`
 
 An app should be accessed then trough `appname.example`, not `localhost`.
+
