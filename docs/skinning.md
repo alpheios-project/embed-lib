@@ -103,13 +103,11 @@ Variable name | Default | Description
  `--alpheios-desktop-panel-icon-color` | `--alpheios-icon-color` | Desktop panel header icons color
  `--alpheios-desktop-panel-icon-bg` | `--alpheios-toolbar-bg-color` |  Desktop panel header icons background color
  `--alpheios-desktop-panel-icon-color-hover` | `--alpheios-icon-color-hover` |  Desktop panel header icons color - __hover__ state
-`--alpheios-desktop-panel-icon-bg-hover` | `--alpheios-toolbar-bg-color-hover` |  Desktop panel header icons background  color - __hover__ state
- 
+`--alpheios-desktop-panel-icon-bg-hover` | `--alpheios-toolbar-bg-color-hover` |  Desktop panel header icons background  color - __hover__ state 
  `--alpheios-desktop-panel-icon-color-active` | `--alpheios-icon-color-active` |  Desktop panel header icons color - __active__ state
  `--alpheios-desktop-panel-icon-bg-active` | `--alpheios-toolbar-bg-color` |  Desktop panel header icons background color - __active__ state
  `--alpheios-desktop-panel-icon-color-disabled` | `--alpheios-icon-color-disabled` |   Desktop panel header icons background color - __disabled__ state
  `--alpheios-desktop-panel-icon-color-pressed` | `--alpheios-icon-color-disabled` |   Desktop panel header icons background color - __pressed__ state
-
  Panel (Mobile) |  | 
  `--alpheios-compact-panel-header-bg` | `--alpheios-toolbar-bg-color` | Mobile panel header background color
  `--alpheios-compact-panel-content-bg` | `--alpheios-text-bg-color` | Mobile panel content background color
