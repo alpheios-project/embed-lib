@@ -15,7 +15,7 @@ The library has been tested under the latest releases (as of September 2019) of 
 See also sample files `sample.html` and `sample-cdn.html` at the root of this repository.
 
 
-**1. Add Alpheios to your page (CDN)
+**1. Add Alpheios to your page**
 
 For most websites, we recommend that you use Alpheios directly from the CDN. This is the least complicated setup.
 
@@ -48,8 +48,8 @@ Next, add the following Javascript to your page to import the Embedded Library c
 
 
 This will activate the Alpheios functionality for any elements on your page (including their child elements) which have the class `alpheios-enabled`.  
-You must include a string identifier for the embedding site as a property of the configuration object which gets
-passed to the `activate` function. The class used to identify which elements to activate for Alpheios, as well as
+
+You must include at least the `clientId` paramater as a property of the configuration object which gets passed to the `activate` function, with a string which can be used to identify your site. a string identifier for the embedding site . The class used to identify which elements to activate for Alpheios, as well as
 other aspects can be customized by additional optional properties in the configuration object:
 
 ```
