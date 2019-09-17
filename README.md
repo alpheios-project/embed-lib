@@ -16,14 +16,21 @@ For most websites, we recommend that you use Alpheios by referencing the library
 
 The [sample-cdn.html](sample-cdn.html) file at the root of this directory uses this setup.
 
+1. Make sure you include the following `meta` elements in the `<head>` of your page
 
-1. First link the stylesheet for the alpheios components library in the `<head>` of your page:
+```
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+```
+
+2. Add the link the stylesheet for the alpheios components library to the `<head>` of your page:
 
 ```
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-embedded@3.0.0/dist/style/style-components.min.css"/>
 ```
 
-2. Next, add the following Javascript to your page to import the Embedded Library code and dependencies and activate it. 
+3. Add the following Javascript to your page to import the Embedded Library code and dependencies and activate it. Normally a good place to put this is at the end of the `<body>` element.
+
 ```
 <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function(event) {
