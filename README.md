@@ -2,25 +2,25 @@
 
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
-The Alpheios Embedded Library is a javascript library that provides complete Alpheios functionality on any page to which it has been added without the need for the user to install the Alpheios browser extensions. It provides clickable access to dictionary entries, morphological analyses, inflection tables and grammars for Latin and Ancient Greek. A subset of these resources are available for Classical Arabic and Persian with additional languages and resources currently under development.
+The Alpheios Embedded Library is a javascript library that provides complete Alpheios functionality on any page to which it has been added without the need for the end-users of the page to install the Alpheios browser extensions. It provides clickable access to dictionary entries, morphological analyses, inflection tables and grammars for Latin and Ancient Greek. A subset of these resources are available for Classical Arabic and Persian with additional languages and resources currently under development.
 
 The library is fully open source under [ISC License](https://opensource.org/licenses/ISC) and can be easily extended with support for additional languages if web services adhering to Alpheios service APIs are or can be made available.  Documentation on how to do so is forthcoming. In the meantime please contact us (contact info available at https://alpheios.net/) if you are interested in extending the language support.
 
 Use of this library is governed by the [Alpheios API Terms of Service](http://www.alpheios.net/pages/apiterms/). Please review those terms before using it.
 
-The library has been tested under the latest releases (as of September 2019) of the Chrome, Firefox and Safari browsers on desktops/laptops and mobile. Internet Explorer and proprietary mobile device browsers are not supported.
+The library has been tested under the latest releases (as of September 2019) of the Chrome, Firefox and Safari browsers on desktops/laptops and mobile devices. Internet Explorer and proprietary mobile device browsers are not supported.
 
 ## Adding Alpheios to your page
 
-For most websites, we recommend that you use Alpheios directly from the CDN. This is the least complicated setup.  The following steps are the bare minimum needed to activate the default Alpheios functionality for your page, pulling the Alpheios code from the CDN.
+For most websites, we recommend that you use Alpheios by referencing the library and its related files from the Content Delivery Network (CDN). This is the least complicated setup.  The following steps are the bare minimum needed to activate the default Alpheios functionality for your page, pulling the Alpheios code from the CDN. Later sections describe alternate configurations using the library from a local installation.
 
-(See also sample files `sample.html` and `sample-cdn.html` at the root of this repository)
+The [sample-cdn.html](sample-cdn.html) file at the root of this directory uses this setup.
 
 
-1. First link the stylesheet in the `<head>` of your page:
+1. First link the stylesheet for the alpheios components library in the `<head>` of your page:
 
 ```
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-embedded@3.0.0/dist/style/style.min.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-embedded@3.0.0/dist/style/style-components.min.css"/>
 ```
 
 2. Next, add the following Javascript to your page to import the Embedded Library code and dependencies and activate it. 
@@ -43,14 +43,20 @@ For most websites, we recommend that you use Alpheios directly from the CDN. Thi
 </script>
 ```
  
-3. **VERY IMPORTANT** in the copied activation code, replace the `null` value for the clientId parameter with a unique string identifying your site. For now, this can be any string you choose. In the future we may assign clientIds to registered users of the Alpheios Embedded Library.
+3. **VERY IMPORTANT** in your copy of the above activation code, replace the `null` value for the clientId parameter with a unique string identifying your site. For now, this can be any string you choose. In the future we may assign clientIds to registered users of the Alpheios Embedded Library.
 
 
-4. Add the CSS class `alpheios-enabled` to any elements on your site's page(s) for which you would like Alpheios to be active. 
+4. Add the CSS class `alpheios-enabled` to any elements on your site's page(s) for which you would like Alpheios to be active. E.g.
+
+```
+<div class="alpheios-enabled">
+<p lang="lat">Arma virumque canō...</p>
+</div>
+```
 
 5. Add the `lang` attribute identifying the language of your text. 
 
-When a user looks up a word by double-clicking or tapping on it on the page, Alpheios looks for the presence of a `lang` attribute on the enclosing element and its parent and ancestor elements. If it does not find it, it will use the user's default preferred language. To be sure Alpheios identifies the correct language for your text, add the `lang` attribute on a parent or ancestor element of the text. The attribute value should be the ISO 639-2 3-character language code. The following languages are currently supported:
+When a user looks up a word by double-clicking or tapping on it on the page, Alpheios looks for the presence of a `lang` attribute on the enclosing element and its parent and ancestor elements. If it does not find it, it will use the user's default preferred language. To be sure Alpheios identifies the correct language for your text, particularly if your page contains text in multiple languages, add the `lang` attribute on a parent or ancestor element of the text. The attribute value should be the ISO 639-2 3-character language code. The following languages are currently supported:
 
 Language|ISO Code
 --------|--------
@@ -64,12 +70,26 @@ Ancient Ethiopic | gez
 
 Example:
 
-<div lang="grc">Ὅμηρος, ὁ ποιητὴς</div>
-<div lang="lat>Tunc fletibus eius adsuspirans anus sic incipit</div>
-<div lang="ara" dir="rtl">هوأبوالفرجعليبنالحسین</div>
-<div lang="per" dir="rtl">به نام خداوند جان و خرد</div>
+<div class="alpheios-enabled">
+  <p lang="grc">μῆνιν ἄειδε θεὰ Πηληϊάδεω Ἀχιλῆος</p>
+  <p lang="lat>Arma virumque canō</p>
+  <p lang="ara" dir="rtl">بسماللهالرحمنالرحيم</p>
+  <p lang="per" dir="rtl">الا یا ایها الساقی ادر کاساً و ناولها</p>
+</div>
 ```
 
+6. Add the `data-alpheios-ignore=all` attribute to any subsections that you don't wish Alpheios to be active on.
+By default, Alpheios will be active for the entire contents and children elements of any element with the `alpheios-enabled` class. If your page is made up of more than just the Latin (or Greek, etc.) text that you want your users to read, then it can sometimes be necessary to tell Alpheios to ignore subset of the page. The following example tells Alpheios to be inactive for the instructional text in English, but active for everything else in the parent `div` element.
+
+```
+<div class="alpheios-enabled" lang="lat">
+<p>Arma virumque canō...</p>
+<p lang="eng">(You can double-click on any Latin word on the page to see the Alpheios features)</p>
+<p>...Trōiae quī prīmus ab ōrīs</p>
+</div>
+```
+
+Upon completion of the above steps, when you reload your page in the browser, the Alpheios toolbar should appear and the sections of text you specified should have Alpheios activated for them.  On a desktop/laptop computer, double-clicking on an enabled word should produce the popup and on a mobile device, doing a long tap on a word should produce the panel.
 
 ## Customizing Alpheios Functionality
 
