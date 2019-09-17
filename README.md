@@ -10,23 +10,20 @@ Use of this library is governed by the [Alpheios API Terms of Service](http://ww
 
 The library has been tested under the latest releases (as of September 2019) of the Chrome, Firefox and Safari browsers on desktops/laptops and mobile. Internet Explorer and proprietary mobile device browsers are not supported.
 
-## Including alpheios-embedded
+## Adding Alpheios to your page
 
-See also sample files `sample.html` and `sample-cdn.html` at the root of this repository.
+For most websites, we recommend that you use Alpheios directly from the CDN. This is the least complicated setup.  The following steps are the bare minimum needed to activate the default Alpheios functionality for your page, pulling the Alpheios code from the CDN.
+
+(See also sample files `sample.html` and `sample-cdn.html` at the root of this repository)
 
 
-**1. Add Alpheios to your page**
-
-For most websites, we recommend that you use Alpheios directly from the CDN. This is the least complicated setup.
-
-First link the stylesheet in the `<head>` of your page:
+1. First link the stylesheet in the `<head>` of your page:
 
 ```
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-embedded@3.0.0/dist/style/style.min.css"/>
 ```
 
-Next, add the following Javascript to your page to import the Embedded Library code and dependencies and activate it.
-
+2. Next, add the following Javascript to your page to import the Embedded Library code and dependencies and activate it. 
 ```
 <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function(event) {
@@ -34,7 +31,7 @@ Next, add the following Javascript to your page to import the Embedded Library c
         window.AlpheiosEmbed.importDependencies({ 
           mode: 'cdn'
         }).then(Embedded => {
-          new Embedded({clientId: 'balmas-gh-demo', authEnv: null }).activate();
+          new Embedded({clientId: null }).activate();
         }).catch(e => {
           console.error(`Import of Alpheios embedded library dependencies failed: ${e}`)
         })
@@ -45,53 +42,78 @@ Next, add the following Javascript to your page to import the Embedded Library c
     });
 </script>
 ```
+ 
+3. **VERY IMPORTANT** in the copied activation code, replace the `null` value for the clientId parameter with a unique string identifying your site. For now, this can be any string you choose. In the future we may assign clientIds to registered users of the Alpheios Embedded Library.
 
 
-This will activate the Alpheios functionality for any elements on your page (including their child elements) which have the class `alpheios-enabled`.  
+4. Add the CSS class `alpheios-enabled` to any elements on your site's page(s) for which you would like Alpheios to be active. 
 
-You must include at least the `clientId` paramater as a property of the configuration object which gets passed to the `activate` function, with a string which can be used to identify your site. a string identifier for the embedding site . The class used to identify which elements to activate for Alpheios, as well as
-other aspects can be customized by additional optional properties in the configuration object:
+
+## Customizing Alpheios Functionality
+
+In addition to the clientId, the object that is passed to the Alpheios `Embedded` constructor can contain a number of other optional properties to customize the behavior of the library for your page.
+
+```
+        new Embedded({ clientId:null }).activate();
+```
+
+
+The full available list of properties is as follows:
 
 ```
    {
-     clientId:           a unique identifier string for the embedding site or client
-                         Required.
-     documentObject:     the parent document.
-                         Optional.
-                         Default: window.document
-     enabledSelector:    a CSS Selector string identifying the page elements for which Alpheios should be activated.
-                         Optional.
-                         Default: ".alpheios-enabled"
-     disabledSelector:   a CSS Selector string identifying the page elements for which Alpheios should be deactivated
-                         Optional.
-                         Default: "[data-alpheios-ignore=all]"
-     enabledClass:       a CSS class to apply to alpheios enabled elements
-                         Optional.
-                         Default: ""
-     disabledClass:      a CSS class to apply to alpheios disabled elements
-                         Optional.
-                         Default: ""
-     eventTriggers:      a comma-separated list of DOM events to which Alpheios functionality should be attached
-                         Optional.
-                         Default: "dblclick"
-     triggerPreCallback: a callback function which is called when the trigger event handler is invoked, prior to initiating
-                         Optional.
-                         Alpheios functionality. It should return true to proced with lookup or false to abort.
-                         Default: no-op, returns true
-      popupData:         popup data overrides (currently only positioning properties supported, top and left)
-                         Optional.
-                         Default: { top: '10vh', left: '10vw'}
-      panelData:         panel data overrides (none currently supported. reserved for future use)
-                         Optional.
-                         Default: {}
-      mobileRedirectUrl  A URL to which requests for the page from mobile devices can be redirected
-                         Optional.
-                         Default: null
-  }
+     clientId:               a unique identifier string for the embedding site or client
+                             Required.
+     documentObject:         the parent document.
+                             Optional.
+                             Default: window.document
+     enabledSelector:        a CSS Selector string identifying the page elements for which Alpheios should be activated.
+                             Optional.
+                             Default: ".alpheios-enabled"
+     disabledSelector:       a CSS Selector string identifying the page elements for which Alpheios should be deactivated
+                             Optional.
+                             Default: "[data-alpheios-ignore=all]"
+     enabledClass:           a CSS class to apply to alpheios enabled elements
+                             Optional.
+                             Default: ""
+     disabledClass:          a CSS class to apply to alpheios disabled elements
+                             Optional.
+                             Default: ""
+     mobileTriggerEvent:     the DOM event to which Alpheios functionality should be attached on mobile devices
+                             Optional.
+                             Default: longtap
+     desktopTriggerEvent:    the DOM event to which the Alpheios functionality should be attached on desktop/laptop browsers
+                             Optional.
+                             Default: dblclick
+     triggerPreCallback:     a callback function which is called when the trigger event handler is invoked, prior to initiating
+                             Optional.
+                             Alpheios functionality. It should return true to proced with lookup or false to abort.
+                             Default: no-op, returns true
+      popupInitialPos:       The initial position of the Alpheios popup (on desktop/laptop devices)
+                             Optional.
+                             Default: { top: '10vh', left: '10vw'}
+      toolbarInitialPos      The initial position of the Alpheios panel (on desktop/laptop devices)
+                             Optional.
+                             Default: { top: '10px', right: '15px'}
+      actionPanelInitialPos: The initial position of the Alpheios action panel (on mobilde devices)
+                             Optional.
+                             Default: { bottom: '120px', right: '20px'}
+      layoutType:            a preconfigured layout (currently the only supported values are 'default' and 'readingTools' 
+                             Optional.
+                             Default: 'default' ('readingTools' is used for the Alpheios Mobile Reader)
+      disableTextSelection:  can be used to disable default browser text selection behavior (not recommended)
+                             Optional.
+                             Default: false
+      overrideHelp:          Set this to true if you want to replace the Alpheios default help function with your own.
+                             Optional.
+                             Default: false
+      simpleMode:            Set this to true if you want the Alpheios UI to default to Simple Mode.
+                             Optional.
+                             Default: false
+  } 
 
 ```
 
-## Customizing Alpheios Functionality
 
 **1. Installing from NPM**
 
