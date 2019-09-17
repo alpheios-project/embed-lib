@@ -72,7 +72,7 @@ Example:
 
 <div class="alpheios-enabled">
   <p lang="grc">μῆνιν ἄειδε θεὰ Πηληϊάδεω Ἀχιλῆος</p>
-  <p lang="lat>Arma virumque canō</p>
+  <p lang="lat">Arma virumque canō</p>
   <p lang="ara" dir="rtl">بسماللهالرحمنالرحيم</p>
   <p lang="per" dir="rtl">الا یا ایها الساقی ادر کاساً و ناولها</p>
 </div>
