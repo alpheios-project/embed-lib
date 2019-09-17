@@ -26,7 +26,7 @@ The [sample-cdn.html](sample-cdn.html) file at the root of this directory uses t
 2. Add the link the stylesheet for the alpheios components library to the `<head>` of your page:
 
 ```
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-embedded@3.0.0/dist/style/style-components.min.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-components@1.2.44/dist/style/style-components.min.css"/>
 ```
 
 3. Add the following Javascript to your page to import the Embedded Library code and dependencies and activate it. Normally a good place to put this is at the end of the `<body>` element.
@@ -34,7 +34,7 @@ The [sample-cdn.html](sample-cdn.html) file at the root of this directory uses t
 ```
 <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function(event) {
-      import ("{{'https://cdn.jsdelivr.net/npm/alpheios-embedded@3.0.0/dist/alpheios-embedded.min.js' | relative_url}}").then(embedLib => {
+      import ("https://cdn.jsdelivr.net/npm/alpheios-embedded@3.0.0/dist/alpheios-embedded.min.js").then(embedLib => {
         window.AlpheiosEmbed.importDependencies({ 
           mode: 'cdn'
         }).then(Embedded => {
