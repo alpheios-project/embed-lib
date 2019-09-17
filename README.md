@@ -31,7 +31,7 @@ For most websites, we recommend that you use Alpheios directly from the CDN. Thi
         window.AlpheiosEmbed.importDependencies({ 
           mode: 'cdn'
         }).then(Embedded => {
-          new Embedded({clientId: null }).activate();
+          new Embedded({clientId: null}).activate();
         }).catch(e => {
           console.error(`Import of Alpheios embedded library dependencies failed: ${e}`)
         })
@@ -48,17 +48,39 @@ For most websites, we recommend that you use Alpheios directly from the CDN. Thi
 
 4. Add the CSS class `alpheios-enabled` to any elements on your site's page(s) for which you would like Alpheios to be active. 
 
+5. Add the `lang` attribute identifying the language of your text. 
+
+When a user looks up a word by double-clicking or tapping on it on the page, Alpheios looks for the presence of a `lang` attribute on the enclosing element and its parent and ancestor elements. If it does not find it, it will use the user's default preferred language. To be sure Alpheios identifies the correct language for your text, add the `lang` attribute on a parent or ancestor element of the text. The attribute value should be the ISO 639-2 3-character language code. The following languages are currently supported:
+
+Language|ISO Code
+--------|--------
+Latin | lat 
+Ancient Greek | grc
+Classical Arabic | ara
+Persian | per 
+Ancient Ethiopic | gez 
+
+```
+
+Example:
+
+<div lang="grc">Ὅμηρος, ὁ ποιητὴς</div>
+<div lang="lat>Tunc fletibus eius adsuspirans anus sic incipit</div>
+<div lang="ara" dir="rtl">هوأبوالفرجعليبنالحسین</div>
+<div lang="per" dir="rtl">به نام خداوند جان و خرد</div>
+```
+
 
 ## Customizing Alpheios Functionality
 
 In addition to the clientId, the object that is passed to the Alpheios `Embedded` constructor can contain a number of other optional properties to customize the behavior of the library for your page.
 
 ```
-        new Embedded({ clientId:null }).activate();
+        new Embedded({}).activate();
 ```
 
 
-The full available list of properties is as follows:
+The full available list of properties for this configuration object are as follows:
 
 ```
    {
@@ -104,6 +126,9 @@ The full available list of properties is as follows:
       disableTextSelection:  can be used to disable default browser text selection behavior (not recommended)
                              Optional.
                              Default: false
+      textLangCode:          Can be used to specify which language should be used for lookups from the toolbar
+                             Optional.
+                             Default: null
       overrideHelp:          Set this to true if you want to replace the Alpheios default help function with your own.
                              Optional.
                              Default: false
@@ -114,15 +139,15 @@ The full available list of properties is as follows:
 
 ```
 
+Some common scenarios which motivate use of one or more of these optional configuration properties are described further below
 
-**1. Installing from NPM**
 
-**2. Precise Elements to Include**
-By default Alpheios will be enabled on all elements (and their children) matching the CSS selector ".alpheios-enabled". You can use a different CSS selector by including the `enabledSelector` property in the `activate` configuration object.
+**1. Tell Alpheios which language to use for toolbar lookups**
+
+**2. Tell Alpheios the page elements for which it should be active**
+By default Alpheios will be only be enabled on elements (and their children) matching the CSS selector ".alpheios-enabled". You can use a different CSS selector by including the `enabledSelector` property in the `activate` configuration object.
 
 ```
-<script type="text/javascript">
-  document.addEventListener("DOMContentLoaded", function(event) {
       new Alpheios.Embedded(
          {
            clientId: "myclientid",
@@ -130,12 +155,11 @@ By default Alpheios will be enabled on all elements (and their children) matchin
          }
       ).activate();
     });
-</script>
 ```
 
-**3. Precise Elements to Ignore**
+**3.Tell Alpheios to ignore certain page elements**
 
-By default, Alpheios will deactivate itself for any elements on the page, even if they are children of the activated elements, if they have the attribute `data-alpheios-ignore="all"`. You can specifiy additional elements to ignore by including the `disabledSelector` property in the `activate` configuration object:
+By default, Alpheios will deactivate itself for any elements on the page, even if they are children of the activated elements, if they have the attribute `data-alpheios-ignore="all"`. So the simplest way to tell Alpheios to ignore an element is to add the `data-alpheios-ignore="all"` attribute name/value pair to the element. However, if you prefer, you can specifiy additional elements to ignore by including the `disabledSelector` property in the `activate` configuration object:
 
 ```
 <script type="text/javascript">
@@ -148,17 +172,6 @@ By default, Alpheios will deactivate itself for any elements on the page, even i
       ).activate();
     });
 </script>
-```
-
-**4. Specifying Language**
-
-Indicate to Alpheios which language text is by using the `lang` attribute on a parent or ancestor element of the text. The attribute value should be the ISO 639-2 3-character language code:
-
-```
-<div lang="grc">Ὅμηρος, ὁ ποιητὴς</div>
-<div lang="lat>Tunc fletibus eius adsuspirans anus sic incipit</div>
-<div lang="ara" dir="rtl">هوأبوالفرجعليبنالحسین</div>
-<div lang="per" dir="rtl">به نام خداوند جان و خرد</div>
 ```
 
 **5. Use a different trigger event**
@@ -267,6 +280,9 @@ In the following example, the Latin word `cupidinibus` in a child of the element
   ...
 </div>
 ```
+
+**1. Installing from NPM**
+
 
 ## Authentication
 
