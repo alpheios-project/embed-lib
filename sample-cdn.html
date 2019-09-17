@@ -2,76 +2,59 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Alpheios Embedded Sample Page</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-embedded/dist/style/style.min.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-embedded/dist/style/style-embedded.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-components@latest/dist/style/style-components.min.css"/>
 </head>
 
 <body>
-    <script src="https://cdn.jsdelivr.net/npm/alpheios-embedded/dist/alpheios-embedded.min.js"></script>
-    <script type="text/javascript">
-        document.addEventListener("DOMContentLoaded", function(event) {
-          new Alpheios.Embedded({clientId:'alpheios-sample-file-cdn'}).activate();
-        });
-    </script>
+    <p>This is a sample file which shows how to use the alpheios-embedded library from the CDN</p>
 
-    <p>This is a sample file which shows how to use the alpheios-embedded library. Code is pulled from the local installation.</p>
+    <div class="alpheios-enabled" style="max-width:400px;">
 
-    <div class="alpheios-enabled">
-      <h4 lang="eng" data-alpheios-ignore="all">Greek</h4>
-      <div xml:lang="grc">
-        <p data-alpheios-ignore="all">This is a block of English text which Alpheios is instructed to ignore,
-          inside a block of Greek text for which Alpheios is instructed to be enabled.</p>
-        <p>τά ταῖν ταῖν τοῦ</p>
-        <p>εγώ εμένα ἐμαυτοῦ ταύταις</p>
-        <p>ένα δύο τρία</p>
-        <p>όμορφος νέος γλυκός</p>
-        <p>συνεχής πλατύς οξύς</p>
-        <p>ἄνδρα μοι ἔννεπε, μοῦσα, πολύτροπον</p>
-        <p>πρόσφυμα ξηρή </p>
-        <p>σκληρή ζώνη ινώδους συνδετικού ιστού που συνδέει συνήθως μύες με οστά</p>
-      </div>
-
-      <h4 lang="eng" data-alpheios-ignore="all">Latin</h4>
       <div lang="lat">
-        <p>fero ferre tuli latus ferant</p>
-        <p>sum sunt</p>
-        <p>mare cupidinibus cepit differ</p>
-        <p>a bene placito</p>
-        <p>ab ovo usque ad mala</p>
-        <p>caeli  beatum</p>
+        <p lang="eng" data-alpheios-ignore="all">(Latin)</p>
+        <p lang="lat">Arma virumque canō</p>
       </div>
 
-      <h4 lang="eng" data-alpheios-ignore="all">Arabic</h4>
+      <div xml:lang="grc">
+        <p lang="eng" data-alpheios-ignore="all">(Greek)</p>
+        <p lang="grc">μῆνιν ἄειδε θεὰ Πηληϊάδεω Ἀχιλῆος</p>
+      </div>
+
       <div lang="ara" dir="rtl">
-         1 اَلدٌّنيَا دَارُ مَمَرٍ لاَ دَارُ مَقَرٍ * سُلطَان بِلاَ عَدلٍ كَنَهرٍ
+        <p lang="eng" data-alpheios-ignore="all">(Arabic)</p>
+        <p lang="ara" dir="rtl">بسم الله</p>
       </div>
 
-      <h4 lang="eng" data-alpheios-ignore="all">Persian</h4>
       <div lang="per" dir="rtl">
-                  آبادائیدن
-                  به نام خداوند جان و خرد
-                  کزین برتر اندیشه برنگذرد
-                  خداوند نام و خداوند جای
-                  خداوند روزی ده رهنمای
-                  خداوند کیوان و گردان سپهر
-                  فروزنده ماه و ناهید و مهر
-                  ز نام و نشان و گمان برترست
-                  نگارندهٔ بر شده پیکرست
-                  به بینندگان آفریننده را
-                  نبینی مرنجان دو بیننده را
-                  نیابد بدو نیز اندیشه راه
-                  که او برتر از نام و از جایگاه
-                  سخن هر چه زین گوهران بگذرد
-                  نیابد بدو راه جان و خرد
+        <p lang="eng" data-alpheios-ignore="all">(Persian)</p>
+        <p lang="per" dir="rtl">صلاح کار کجا و من خراب کجا</p>
       </div>
 
-      <h4 lang="eng" data-alpheios-ignore="all">Ge'ez</h4>
       <div lang="gez" dir="ltr">
+        <p lang="eng" data-alpheios-ignore="all">(Ancient Ethiopic)</p>
         ይትባረክ፡ እግዚአብሔር፡ አምላከ፡ እስራኤል፡ አምላክ፡ ለኵሉ፡ መንፈስ፡ ወለኵሉ፡ ዘሥጋ፡ ወይቤሎ፡ እግዚአብሔር፡ ለእዝራ፡ አእምር፡ ወጠይቅ፡
       </div>
     </div>
 
   </div>
+
+  <script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function(event) {
+      import ("https://cdn.jsdelivr.net/npm/alpheios-embedded@latest/dist/alpheios-embedded.min.js").then(embedLib => {
+        window.AlpheiosEmbed.importDependencies({
+          mode: 'cdn'
+        }).then(Embedded => {
+          new Embedded({clientId: 'alpheios-sample-cdn'}).activate();
+        }).catch(e => {
+          console.error(`Import of Alpheios embedded library dependencies failed: ${e}`)
+        })
+
+      }).catch(e => {
+        console.error(`Import of Alpheios Embedded library failed: ${e}`)
+      })
+    });
+  </script>
 </body>
 </html>
