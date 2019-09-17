@@ -26,7 +26,7 @@ The [sample-cdn.html](sample-cdn.html) file at the root of this directory uses t
 2. Add the link the stylesheet for the alpheios components library to the `<head>` of your page:
 
 ```
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-components@1.2.44/dist/style/style-components.min.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-components@latest/dist/style/style-components.min.css"/>
 ```
 
 3. Add the following Javascript to your page to import the Embedded Library code and dependencies and activate it. Normally a good place to put this is at the end of the `<body>` element.
@@ -34,7 +34,7 @@ The [sample-cdn.html](sample-cdn.html) file at the root of this directory uses t
 ```
 <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function(event) {
-      import ("https://cdn.jsdelivr.net/npm/alpheios-embedded@3.0.0/dist/alpheios-embedded.min.js").then(embedLib => {
+      import ("https://cdn.jsdelivr.net/npm/alpheios-embedded@latest/dist/alpheios-embedded.min.js").then(embedLib => {
         window.AlpheiosEmbed.importDependencies({ 
           mode: 'cdn'
         }).then(Embedded => {
@@ -97,6 +97,7 @@ By default, Alpheios will be active for the entire contents and children element
 ```
 
 Upon completion of the above steps, when you reload your page in the browser, the Alpheios toolbar should appear and the sections of text you specified should have Alpheios activated for them.  On a desktop/laptop computer, double-clicking on an enabled word should produce the popup and on a mobile device, doing a long tap on a word should produce the panel.
+
 
 ## Customizing Alpheios Functionality
 
@@ -308,44 +309,20 @@ In the following example, the Latin word `cupidinibus` in a child of the element
 </div>
 ```
 
-**1. Installing from NPM**
+**... Installing from NPM**
 
 
-## Authentication
 
-For tasks related to authentication and authorization, embedded lib relies on an Auth0 Lock widget. Its script must
-be loaded by the page that integrates the embedded lib, before the script of an embedded lib itself. 
-It can be loaded from an Auth0 CDN:
-`<script src="https://cdn.auth0.com/js/lock/xx.yy.z/lock.js"></script>`
-Here xx, yy, and z are major, minor, and patch versions correspondingly. see more details in 
-[Lock v11 for Web](https://auth0.com/docs/libraries/lock/v11).
+## Outstanding Issues
 
-Authentication module also requires an Auth0 configuration file to be loaded before the embedded library script.
-
-## Outstanding Issues/Future Plans
-
-**Mobile DeviceSupport**: Currently the displays and user interface elements provided by the Alpheios Embedded Library are optimized for online use with desktop/laptop screens and keyboards. We are actively working on adding our Progressive Web Application prototype functionality to the library so that Alpheios will seamlessly transition for use on mobile devices. In the meantime, if you want to redirect users to an alternative page for use with mobile devices, you can pass the `mobileRedirectUrl` property to the `activate` function.
-
-See also our open [issues](https://github.com/alpheios-project/embed-lib).
-
-# Pre-release Features
-
-## Protected User Data Retrieval
-
-Embedded lib can pull user information from remote protected storage. This require user to be authenticated with Auth0.
-Embedded lib includes functions for logging in, out, and for making user info retrieval. Use `auth.html` located in `demo`
-directory for testing and as an example of code to handle such functionality.
-
-**Attention:** Protected user data retrieval requires `env-embed.js` configuration file to be installed into
-`dist\auth0` directory. In a development environment you can use `npm run auth0-env-update` command to copy
-or update this file to `dist\auth0`.
+See our [FAQ pages](http://www-test.alpheios.net/pages/faq/)
 
 
 # Developer Instructions
 
-## Prerequisites
+## Prerequisites to build the Alpheios Embedded Library from source:
 
-  * Node 10.5.0 or higher
+  * Node 12.8.1 or higher
 
 ## Install Dependencies
 
@@ -366,14 +343,5 @@ npm run build
 npm run dev
 ```
 
-runs a local web server on port 8888. Load the sample.html file at the root of the directory. Changes made to the 
+Runs a local web server on port 8888. Load the sample.html file at the root of the directory. Changes made to the 
 code will be dynamically rebuilt.
-
-## Testing authentication on a local host
-
-As localhost is not a verifiable first-party, Auth0 will require a user's approval for an app to access user
-information (a user consent). As a workaround for this, to simplify testing, a `hosts` file can be modified as below:
-`127.0.0.1    appname.example`
-
-An app should be accessed then trough `appname.example`, not `localhost`.
-
