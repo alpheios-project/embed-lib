@@ -12,7 +12,7 @@ The library has been tested under the latest releases (as of September 2019) of 
 
 ## Adding Alpheios to your page
 
-For most websites, we recommend that you use Alpheios by referencing the library and its related files from the Content Delivery Network (CDN). This is the least complicated setup.  The following steps are the bare minimum needed to activate the default Alpheios functionality for your page, pulling the Alpheios code from the CDN. Later sections describe alternate configurations using the library from a local installation.
+For most websites, we recommend that you include Alpheios by referencing the library and its related files from the Content Delivery Network (CDN). This is the least complicated setup.  The following steps are the minimum needed to activate the default Alpheios functionality for your page, pulling the Alpheios code from the CDN. Later sections describe alternate configurations using the library from a local installation.
 
 The [sample-cdn.html](sample-cdn.html) file at the root of this directory uses this setup.
 
@@ -63,7 +63,7 @@ The [sample-cdn.html](sample-cdn.html) file at the root of this directory uses t
 
 5. Add the `lang` attribute identifying the language of your text. 
 
-When a user looks up a word by double-clicking or tapping on it on the page, Alpheios looks for the presence of a `lang` attribute on the enclosing element and its parent and ancestor elements. If it does not find it, it will use the user's default preferred language. To be sure Alpheios identifies the correct language for your text, particularly if your page contains text in multiple languages, add the `lang` attribute on a parent or ancestor element of the text. The attribute value should be the ISO 639-2 3-character language code. The following languages are currently supported:
+When a user looks up a word by double-clicking or tapping on it on the page, Alpheios looks for the presence of a `lang` attribute on the enclosing element and its parent and ancestor elements. If it does not find it, it will use the user's default preferred language. To ensure Alpheios identifies the correct language for your text, particularly if your page contains text in multiple languages, add the `lang` attribute on a parent or ancestor element of the text. The attribute value should be the ISO 639-2 3-character language code. The following languages are currently supported:
 
 Language|ISO Code
 --------|--------
@@ -85,8 +85,8 @@ Example:
 </div>
 ```
 
-6. Add the `data-alpheios-ignore=all` attribute to any subsections that you don't wish Alpheios to be active on.
-By default, Alpheios will be active for the entire contents and children elements of any element with the `alpheios-enabled` class. If your page is made up of more than just the Latin (or Greek, etc.) text that you want your users to read, then it can sometimes be necessary to tell Alpheios to ignore subset of the page. The following example tells Alpheios to be inactive for the instructional text in English, but active for everything else in the parent `div` element.
+6. Add the `data-alpheios-ignore=all` attribute to any subsections of your page on which Alpheios should NOT be active.
+By default, Alpheios will be active for the entire contents, including children elements, of any element with the `alpheios-enabled` class. If your page is made up of more than just the Latin (or Greek, etc.) text that you want your users to read, then it can sometimes be necessary to tell Alpheios to ignore subset of the page. The following example tells Alpheios to be inactive for the instructional text in English, but active for everything else in the parent `div` element.
 
 ```
 <div class="alpheios-enabled" lang="lat">
@@ -96,12 +96,12 @@ By default, Alpheios will be active for the entire contents and children element
 </div>
 ```
 
-Upon completion of the above steps, when you reload your page in the browser, the Alpheios toolbar should appear and the sections of text you specified should have Alpheios activated for them.  On a desktop/laptop computer, double-clicking on an enabled word should produce the popup and on a mobile device, doing a long tap on a word should produce the panel.
+After you have made the above changes to your website page(s), when you load your page in the browser, the Alpheios toolbar should appear and the sections of text you specified should have Alpheios activated for them.  On a desktop/laptop computer, double-clicking on an enabled word should produce the popup and on a mobile device, doing a long tap on a word should produce the panel.
 
 
 ## Customizing Alpheios Functionality
 
-In addition to the clientId, the object that is passed to the Alpheios `Embedded` constructor can contain a number of other optional properties to customize the behavior of the library for your page.
+In addition to the required clientId property, the object that is passed to the Alpheios `Embedded` constructor can contain a number of other optional properties to customize the behavior of the library for your page.
 
 ```
         new Embedded({}).activate();
@@ -171,42 +171,83 @@ Some common scenarios which motivate use of one or more of these optional config
 
 
 **1. Tell Alpheios which language to use for toolbar lookups**
-
-**2. Tell Alpheios the page elements for which it should be active**
-By default Alpheios will be only be enabled on elements (and their children) matching the CSS selector ".alpheios-enabled". You can use a different CSS selector by including the `enabledSelector` property in the `activate` configuration object.
+Users can enter words they want to look up directly into the lookup field on the Alpheios toolbar. By default, Alpheios will use the user's preferred page language to interpret these lookups.  You can override this behavior and identify the default language for lookups from the toolbar by specifying the `textLangCode` property, set to the ISO 639-2 3-character language code for the language.  For example, to configure Alpheios to default to Greek for lookups on your page:
 
 ```
-      new Alpheios.Embedded(
-         {
-           clientId: "myclientid",
-           enabledSelector: ".myalpheioselements"
-         }
-      ).activate();
-    });
+new Embedded({
+    clientId: 'myclientid',
+    textLangCode: 'grc'
+}).activate();
+```
+
+
+**2. Tell Alpheios the page elements for which it should be active**
+By default Alpheios will be only be enabled on elements (and their children) matching the CSS selector ".alpheios-enabled". You can use a different CSS selector by including the `enabledSelector` property in the `Embedded` constructor configuration object.
+
+For example, to configure Alpheios to be enabled on all elements which have the class `myalpheioselements`:
+
+```
+new Embedded({
+    clientId: "myclientid",
+    enabledSelector: ".myalpheioselements"
+})
 ```
 
 **3.Tell Alpheios to ignore certain page elements**
 
-By default, Alpheios will deactivate itself for any elements on the page, even if they are children of the activated elements, if they have the attribute `data-alpheios-ignore="all"`. So the simplest way to tell Alpheios to ignore an element is to add the `data-alpheios-ignore="all"` attribute name/value pair to the element. However, if you prefer, you can specifiy additional elements to ignore by including the `disabledSelector` property in the `activate` configuration object:
+By default, Alpheios will deactivate itself for any elements on the page, even if they are children of the activated elements, if they have the attribute `data-alpheios-ignore="all"`. So the simplest way to tell Alpheios to ignore an element is to add the `data-alpheios-ignore="all"` attribute name/value pair to the element. However, if you prefer, you can specifiy additional elements to ignore by including the `disabledSelector` property in the `Embedded` constructor configuration object.
+
+For example, to configure Alpheios to be disabled on all elements which have the class `mydisabledelements`:
 
 ```
-<script type="text/javascript">
-  document.addEventListener("DOMContentLoaded", function(event) {
-      new Alpheios.Embedded(
-         {
-           clientId: "myclientid",
-           disabledSelector: ".mydisabledelements"
-         }
-      ).activate();
-    });
-</script>
+new Embedded({
+    clientId: "myclientid",
+    disabledSelector: ".mydisabledelements"
+})
 ```
 
-**5. Use a different trigger event**
+**4. Tell Alpheios to use a different trigger event**
 
-By default, the `dblclick` event triggers Alpheios functionality. If this conflicts with your site's features, you can choose a different event by including the `triggerEvents` property in the `activate` configuration object. You may find you need to use this in combination with the `triggerPreCallback` argument which specificies a callback which is executed prior to executing the Alpheios trigger. For example, if you wanted to use a `Ctrl+Click` to activate Alpheios, you would have to have code in a `triggerPreCallback` function which kept track of whether or not the user had pressed the `Ctrl` key prior to clicking.
+By default, the `dblclick` event triggers Alpheios functionality on desktop/laptop devices, and a `longtap` event triggers Alpheios functionality on mobile devices. If this conflicts with your site's features, you can choose a different event by including the `desktopTriggerEvent` and/or `mobileTriggerEvent` property in the `Embedded` constructor configuration object. You may find you need to use this in combination with the `triggerPreCallback` argument which specificies a callback which is executed prior to executing the Alpheios trigger. For example, if you wanted to use a `Ctrl+Click` to activate Alpheios on the desktop, you would have to have code in a `triggerPreCallback` function which kept track of whether or not the user had pressed the `Ctrl` key prior to clicking.
 
-**6. Connect a Treebank**
+**5. Use your own Help function**
+
+The Alpheios toolbar has a help icon which opens our standard help panel (desktop)/popup (mobile). You may wish to write your own help instructions for users of your site. You can override the default Alpheios help behavior by setting `overrideHelp:true` in the `Embedded` constructor configuration object.  This will disable the Alpheios handler for user clicks/taps on the Alpheios help icon. You will then need to write your own Javascript function and add a handler to the Alpheio help icon, which is identified by the css class `alpheios-toolbar__help-control`.  
+
+
+```
+new Embedded({
+    clientId: "myclientid",
+    overrideHelp: true
+})
+
+...
+
+let helpControl = document.querySelector(".alpheios-toolbar__help-control")
+if (helpControl) {
+    helpControl.addEventListener('click', function() { alert('This is a custom help popup.') })
+}
+```
+
+**6. Simplify the Alpheios interface -- BETA FEATURE**
+
+If you do not wish to expose your site's users to the full Alpheios feature set, but still would like to give them access to the morphological details and short definitions for words, you can set `simpleMode:true` in the `Embedded` constructor configuration object.  This will reduce the Alpheios interface to just the morphology popup/panel.  We recommend you use this feature in combination with `overrideHelp:true` (described above) because the default help screen describes the full Alpheios feature set.
+
+```
+new Embedded({
+    clientId: "myclientid",
+    overrideHelp: true
+    simpleMode: true
+})
+```
+
+**7. Use your own branding on the Alpheios interface -- BETA FEATURE**
+
+You may wish to rebrand the Alpheios interface with different colors and fonts.  This feature is still experimental. See our [skinning documentation](docs/skinning.md) for further details.
+
+## Advanced Alpheios Functionality
+
+**1. Connect a Treebank**
 
 **NB: This is experimental functionality. Instructions and syntax for configuration, etc. are currently in flux.**
 
@@ -275,7 +316,7 @@ https://alpheios.net/alpheios-treebanks/1999.02.0066.html?chunk=1&w=2
 The above steps also trigger activation of the use of the treebank data for disamibugating the morphological parser results in the Alpheios popup.  If the `documentIdentifier` is one which is configured as available via webservice for the `AlpheiosTreebankAdapter` in the [alpheios-morph-client](https://github.com/alpheios-project/morph-client) library, then the treebank morphology tag will be used to disambiguate the morphological parser results.
 
 
-**7. Add an Aligned Translation**
+**2. Add an Aligned Translation**
 
 **NB: This is experimental functionality. Instructions and syntax for configuration, etc. are currently in flux.**
 
@@ -310,8 +351,6 @@ In the following example, the Latin word `cupidinibus` in a child of the element
 ```
 
 **... Installing from NPM**
-
-
 
 ## Outstanding Issues
 
