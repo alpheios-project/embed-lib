@@ -171,6 +171,7 @@ Some common scenarios which motivate use of one or more of these optional config
 
 
 **1. Tell Alpheios which language to use for toolbar lookups**
+
 Users can enter words they want to look up directly into the lookup field on the Alpheios toolbar. By default, Alpheios will use the user's preferred page language to interpret these lookups.  You can override this behavior and identify the default language for lookups from the toolbar by specifying the `textLangCode` property, set to the ISO 639-2 3-character language code for the language.  For example, to configure Alpheios to default to Greek for lookups on your page:
 
 ```
@@ -182,6 +183,7 @@ new Embedded({
 
 
 **2. Tell Alpheios the page elements for which it should be active**
+
 By default Alpheios will be only be enabled on elements (and their children) matching the CSS selector ".alpheios-enabled". You can use a different CSS selector by including the `enabledSelector` property in the `Embedded` constructor configuration object.
 
 For example, to configure Alpheios to be enabled on all elements which have the class `myalpheioselements`:
@@ -244,6 +246,67 @@ new Embedded({
 **7. Use your own branding on the Alpheios interface -- BETA FEATURE**
 
 You may wish to rebrand the Alpheios interface with different colors and fonts.  This feature is still experimental. See our [skinning documentation](docs/skinning.md) for further details.
+
+## Alternate Installation Configurations
+
+Although we recommend you include the Alpheios Embedded Library by referencing the latest version from the CDN, if you have a need to use a specific version or to install it as part of your web application, you can do so.
+
+**1. Use a different CDN version**
+
+We will update the Alpheios Embedded Library and its dependencies from time to time, and if you use the `@latest` tag to include Alpheios, your page will automatically get the latest code.  If you wish to insulate your page from releases of the Alpheios functionality, you can do so by referencing the specific version of the code you wish to include.
+
+For example, to freeze your installation at the `3.0.0` version of the Alpheios Embedded Library, and the `1.2.44` version of the Alpheios Components Library dependency, you would use the following code. Note that instead of using the `cdn` mode when importing the dependencies, you need to use `custom` and also specify the explicit versioned url for the `alpheios-components.min.js` via the `libs` object.
+
+```
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-components@1.2.44/dist/style/style-components.min.css"/>
+
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function(event) {
+      import ("https://cdn.jsdelivr.net/npm/alpheios-embedded@3.0.0/dist/alpheios-embedded.min.js").then(embedLib => {
+        window.AlpheiosEmbed.importDependencies({ 
+          mode: 'custom',
+          libs: { components: "https://cdn.jsdelivr.net/npm/alpheios-components@1.2.44/dist/alpheios-components.min.js" }
+        }).then(Embedded => {
+          new Embedded({clientId: null}).activate();
+        }).catch(e => {
+          console.error(`Import of Alpheios embedded library dependencies failed: ${e}`)
+        })
+
+      }).catch(e => {
+        console.error(`Import of Alpheios Embedded library failed: ${e}`)
+      })
+    });
+</script>
+```
+
+**2. Use a local installation **
+
+If your web site is a web application using its own javascript libraries, you may prefer to install Alpheios as part of your own environment.  You can install the Alpheios Embedded library using NPM, via `npm install` and then you can configure a custom path to the library and its dependencies.
+
+For example, if your environment installs its javascript npm dependencies at the path `/assets/node_modules` you would use the following configuration:
+
+```
+<link rel="stylesheet" href="/assets/node_modules/alpheios-components/dist/style/style-components.min.css"/>
+
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function(event) {
+      import ("/assets/node_modules/alpheios-embedded/dist/alpheios-embedded.min.js").then(embedLib => {
+        window.AlpheiosEmbed.importDependencies({ 
+          mode: 'custom',
+          libs: { components: "/assets/node_modules/alpheios-components/dist/alpheios-components.min.js" }
+        }).then(Embedded => {
+          new Embedded({clientId: null}).activate();
+        }).catch(e => {
+          console.error(`Import of Alpheios embedded library dependencies failed: ${e}`)
+        })
+
+      }).catch(e => {
+        console.error(`Import of Alpheios Embedded library failed: ${e}`)
+      })
+    });
+</script>
+```
+
 
 ## Advanced Alpheios Functionality
 
@@ -350,33 +413,31 @@ In the following example, the Latin word `cupidinibus` in a child of the element
 </div>
 ```
 
-**... Installing from NPM**
-
 ## Outstanding Issues
 
 See our [FAQ pages](http://www-test.alpheios.net/pages/faq/)
 
 
-# Developer Instructions
+## Developer Instructions
 
-## Prerequisites to build the Alpheios Embedded Library from source:
+### Prerequisites to build the Alpheios Embedded Library from source:
 
   * Node 12.8.1 or higher
 
-## Install Dependencies
+### Install Dependencies
 
 ```
 npm install
 ```
 
-## Build
+### Build
 
 ```
 npm run test
 npm run build
 ```
 
-## Develop
+### Develop
 
 ```
 npm run dev
