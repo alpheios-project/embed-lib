@@ -83,7 +83,7 @@ class Embedded {
    *                         Alpheios functionality. It should return true to proceed with lookup or false to abort.
    *                         Default: no-op, returns true
    *     popupInitialPos: object containing initial css positioning properties for the popup
-   *                      Default { top: 10vh, right: 10vw}
+   *                      Default { top: 10vh, left: 10vw}
    *     toolbarInitialPos: object containing initial css positioning properties for the toolbar
    *                        Default { top: 10px, right: 15px}
    *     actionPanelInitialPos: object containing initial css positioning properties for the action panel (mobile)
