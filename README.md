@@ -255,14 +255,14 @@ Although we recommend you include the Alpheios Embedded Library by referencing t
 
 We will update the Alpheios Embedded Library and its dependencies from time to time, and if you use the `@latest` tag to include Alpheios, your page will automatically get the latest code.  If you wish to insulate your page from releases of the Alpheios functionality, you can do so by referencing the specific version of the code you wish to include.
 
-For example, to freeze your installation at the `3.0.0` version of the Alpheios Embedded Library, and the `1.2.45` version of the Alpheios Components Library dependency, you would use the following code. Note that instead of using the `cdn` mode when importing the dependencies, you need to use `custom` and also specify the explicit versioned url for the `alpheios-components.min.js` via the `libs` object.
+For example, to freeze your installation at the `3.0.0-rc.2` version of the Alpheios Embedded Library, and the `1.2.45` version of the Alpheios Components Library dependency, you would use the following code. Note that instead of using the `cdn` mode when importing the dependencies, you need to use `custom` and also specify the explicit versioned url for the `alpheios-components.min.js` via the `libs` object.
 
 ```
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alpheios-components@1.2.44/dist/style/style-components.min.css"/>
 
 <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function(event) {
-      import ("https://cdn.jsdelivr.net/npm/alpheios-embedded@3.0.0/dist/alpheios-embedded.min.js").then(embedLib => {
+      import ("https://cdn.jsdelivr.net/npm/alpheios-embedded@3.0.0-rc.2/dist/alpheios-embedded.min.js").then(embedLib => {
         window.AlpheiosEmbed.importDependencies({ 
           mode: 'custom',
           libs: { components: "https://cdn.jsdelivr.net/npm/alpheios-components@1.2.44/dist/alpheios-components.min.js" }
