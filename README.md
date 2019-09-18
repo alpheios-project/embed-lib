@@ -279,7 +279,7 @@ For example, to freeze your installation at the `3.0.0` version of the Alpheios 
 </script>
 ```
 
-**2. Use a local installation **
+**2. Use a local installation**
 
 If your web site is a web application using its own javascript libraries, you may prefer to install Alpheios as part of your own environment.  You can install the Alpheios Embedded library using NPM, via `npm install` and then you can configure a custom path to the library and its dependencies.
 
