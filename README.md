@@ -376,7 +376,7 @@ Alpheios will convert this to the following URL request to retrieve Arethusa and
 https://alpheios.net/alpheios-treebanks/1999.02.0066.html?chunk=1&w=2
 ```
 
-The above steps also trigger activation of the use of the treebank data for disamibugating the morphological parser results in the Alpheios popup.  If the `documentIdentifier` is one which is configured as available via webservice for the `AlpheiosTreebankAdapter` in the [alpheios-morph-client](https://github.com/alpheios-project/morph-client) library, then the treebank morphology tag will be used to disambiguate the morphological parser results.
+The above steps also trigger activation of the use of the treebank data for disamibugating the morphological parser results in the Alpheios popup.  If the `documentIdentifier` is one which is configured as available via webservice for the `AlpheiosTreebankAdapter` in the [alpheios-client-adapters](https://github.com/alpheios-project/client-adapters) library, then the treebank morphology tag will be used to disambiguate the morphological parser results.
 
 
 **2. Add an Aligned Translation**
@@ -415,7 +415,7 @@ In the following example, the Latin word `cupidinibus` in a child of the element
 
 ## Outstanding Issues
 
-See our [FAQ pages](http://www-test.alpheios.net/pages/faq/)
+See our [FAQ pages](http://www.alpheios.net/pages/faq/)
 
 
 ## Developer Instructions
