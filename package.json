@@ -1,7 +1,7 @@
 {
   "name": "alpheios-embedded",
-  "version": "3.0.0-rc.2",
-  "build": "39",
+  "version": "3.0.1",
+  "build": "40",
   "description": "Alpheios Embedded Library",
   "main": "dist/alpheios-embedded.js",
   "directories": {
@@ -30,8 +30,8 @@
   },
   "homepage": "https://github.com/alpheios-project/wordsvc#readme",
   "devDependencies": {
-    "alpheios-components": "github:alpheios-project/components#v1.2.45",
-    "alpheios-node-build": "github:alpheios-project/node-build#v0.6.3",
+    "alpheios-components": "github:alpheios-project/components",
+    "alpheios-node-build": "github:alpheios-project/node-build",
     "copy-webpack-plugin": "^5.0.4",
     "coveralls": "^3.0.6",
     "css-loader": "^3.2.0",
