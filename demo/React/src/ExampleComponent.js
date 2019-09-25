@@ -20,11 +20,19 @@ class ExampleComponent extends Component {
   render() {
     return (
       <div>
-        Greek text:
-        <span lang="grc">χαῖρε ὦ κόσμε</span>
+        <p>
+          Greek text:
+          <span lang="grc">χαῖρε ὦ κόσμε</span>
+        </p>
       
-        Latin text:
-        <span lang="lat">aue munde</span>
+        <p>
+          Latin text:
+          <span lang="lat">aue munde</span>
+        </p>
       </div>
     );
   }
+}
+
+
+export default ExampleComponent;
