@@ -35,7 +35,7 @@ The [sample-cdn.html](sample-cdn.html) file at the root of this directory uses t
 <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function(event) {
       import ("https://cdn.jsdelivr.net/npm/alpheios-embedded@latest/dist/alpheios-embedded.min.js").then(embedLib => {
-        window.AlpheiosEmbed.importDependencies({ 
+        window.AlpheiosEmbed.importDependencies({
           mode: 'cdn'
         }).then(Embedded => {
           new Embedded({clientId: null}).activate();
@@ -49,7 +49,7 @@ The [sample-cdn.html](sample-cdn.html) file at the root of this directory uses t
     });
 </script>
 ```
- 
+
 3. **VERY IMPORTANT** in your copy of the above activation code, replace the `null` value for the clientId parameter with a unique string identifying your site. For now, this can be any string you choose. In the future we may assign clientIds to registered users of the Alpheios Embedded Library.
 
 
@@ -61,17 +61,17 @@ The [sample-cdn.html](sample-cdn.html) file at the root of this directory uses t
 </div>
 ```
 
-5. Add the `lang` attribute identifying the language of your text. 
+5. Add the `lang` attribute identifying the language of your text.
 
 When a user looks up a word by double-clicking or tapping on it on the page, Alpheios looks for the presence of a `lang` attribute on the enclosing element and its parent and ancestor elements. If it does not find it, it will use the user's default preferred language. To ensure Alpheios identifies the correct language for your text, particularly if your page contains text in multiple languages, add the `lang` attribute on a parent or ancestor element of the text. The attribute value should be the ISO 639-2 3-character language code. The following languages are currently supported:
 
 Language|ISO Code
 --------|--------
-Latin | lat 
+Latin | lat
 Ancient Greek | grc
 Classical Arabic | ara
-Persian | per 
-Ancient Ethiopic | gez 
+Persian | per
+Ancient Ethiopic | gez
 
 ```
 
@@ -148,7 +148,7 @@ The full available list of properties for this configuration object are as follo
       actionPanelInitialPos: The initial position of the Alpheios action panel (on mobilde devices)
                              Optional.
                              Default: { bottom: '120px', right: '20px'}
-      layoutType:            a preconfigured layout (currently the only supported values are 'default' and 'readingTools' 
+      layoutType:            a preconfigured layout (currently the only supported values are 'default' and 'readingTools'
                              Optional.
                              Default: 'default' ('readingTools' is used for the Alpheios Mobile Reader)
       disableTextSelection:  can be used to disable default browser text selection behavior (not recommended)
@@ -163,7 +163,7 @@ The full available list of properties for this configuration object are as follo
       simpleMode:            Set this to true if you want the Alpheios UI to default to Simple Mode.
                              Optional.
                              Default: false
-  } 
+  }
 
 ```
 
@@ -195,6 +195,8 @@ new Embedded({
 })
 ```
 
+See also the [demo/index.html](index.html) file in the demos directory.
+
 **3.Tell Alpheios to ignore certain page elements**
 
 By default, Alpheios will deactivate itself for any elements on the page, even if they are children of the activated elements, if they have the attribute `data-alpheios-ignore="all"`. So the simplest way to tell Alpheios to ignore an element is to add the `data-alpheios-ignore="all"` attribute name/value pair to the element. However, if you prefer, you can specifiy additional elements to ignore by including the `disabledSelector` property in the `Embedded` constructor configuration object.
@@ -208,9 +210,13 @@ new Embedded({
 })
 ```
 
+See also the [demo/index.html](index.html) file in the demos directory.
+
 **4. Tell Alpheios to use a different trigger event**
 
 By default, the `dblclick` event triggers Alpheios functionality on desktop/laptop devices, and a `longtap` event triggers Alpheios functionality on mobile devices. If this conflicts with your site's features, you can choose a different event by including the `desktopTriggerEvent` and/or `mobileTriggerEvent` property in the `Embedded` constructor configuration object. You may find you need to use this in combination with the `triggerPreCallback` argument which specificies a callback which is executed prior to executing the Alpheios trigger. For example, if you wanted to use a `Ctrl+Click` to activate Alpheios on the desktop, you would have to have code in a `triggerPreCallback` function which kept track of whether or not the user had pressed the `Ctrl` key prior to clicking.
+
+See also the [demo/ctrlclick.html](ctrlclick.html) file in the demos directory.
 
 **5. Use your own Help function**
 
@@ -243,9 +249,13 @@ new Embedded({
 })
 ```
 
+See also the [demo/simple.html](simple.html) file in the demos directory.
+
 **7. Use your own branding on the Alpheios interface -- BETA FEATURE**
 
 You may wish to rebrand the Alpheios interface with different colors and fonts.  This feature is still experimental. See our [skinning documentation](docs/skinning.md) for further details.
+
+See also the [demo/skinned.html](skinned.html) file in the demos directory.
 
 ## Alternate Installation Configurations
 
@@ -263,7 +273,7 @@ For example, to freeze your installation at the `3.0.0-rc.2` version of the Alph
 <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function(event) {
       import ("https://cdn.jsdelivr.net/npm/alpheios-embedded@3.0.0-rc.2/dist/alpheios-embedded.min.js").then(embedLib => {
-        window.AlpheiosEmbed.importDependencies({ 
+        window.AlpheiosEmbed.importDependencies({
           mode: 'custom',
           libs: { components: "https://cdn.jsdelivr.net/npm/alpheios-components@1.2.44/dist/alpheios-components.min.js" }
         }).then(Embedded => {
@@ -291,7 +301,7 @@ For example, if your environment installs its javascript npm dependencies at the
 <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function(event) {
       import ("/assets/node_modules/alpheios-embedded/dist/alpheios-embedded.min.js").then(embedLib => {
-        window.AlpheiosEmbed.importDependencies({ 
+        window.AlpheiosEmbed.importDependencies({
           mode: 'custom',
           libs: { components: "/assets/node_modules/alpheios-components/dist/alpheios-components.min.js" }
         }).then(Embedded => {
@@ -313,6 +323,8 @@ For example, if your environment installs its javascript npm dependencies at the
 **1. Connect a Treebank**
 
 **NB: This is experimental functionality. Instructions and syntax for configuration, etc. are currently in flux.**
+
+See also the [demo/treebank-translation.html](treebank-translation.html) file in the demos directory.
 
 If your text has been aligned with a treebank annotation, Alpheios can be instructed to display the corresponding treebank data using the [Arethusa Treebank Viewer](https://alpheios.net/pages/tools/#alpheios-treebank-editor) and/or use the treebank data to disambiguate morphological parser results.
 
@@ -383,6 +395,8 @@ The above steps also trigger activation of the use of the treebank data for disa
 
 **NB: This is experimental functionality. Instructions and syntax for configuration, etc. are currently in flux.**
 
+See also the [demo/treebank-translation.html](treebank-translation.html) file in the demos directory.
+
 You can include an aligned translation in your page and have Alpheios activate mouseover highlighting of the aligned words or phrases. Use the `data-alpheios_align_ref` attribute on elements which have been aligned.
 
 The attribute value should be is a space separated list of CSS selectors for the elements within the same page which contain the aligned translation. It can be bi-directional or uni-directional.
@@ -443,5 +457,5 @@ npm run build
 npm run dev
 ```
 
-Runs a local web server on port 8888. Load the sample.html file at the root of the directory. Changes made to the 
+Runs a local web server on port 8888. Load the sample.html file at the root of the directory. Changes made to the
 code will be dynamically rebuilt.

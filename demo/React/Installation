@@ -1,2 +1,0 @@
-yarn add alpheios-embedded
-ln -s `pwd`/node_modules/alpheios-embedded/dist `pwd`/public/alpheios-embedded

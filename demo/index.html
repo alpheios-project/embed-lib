@@ -1,9 +1,10 @@
+<!-- Basic Development demo, using Components from the CDN -->
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Alpheios Embedded Developer Test Page</title>
+    <title>Alpheios Embedded Library Developer Test Page</title>
     <link rel="stylesheet" href="../dist/style/style-components.css"/>
     <script src="https://cdn.auth0.com/js/lock/11.14.0/lock.js"></script>
     <script src="../dist/auth0/env-embed.js"></script>
@@ -20,20 +21,12 @@
 
 <body>
     <script type="text/javascript">
-        let cb = function(evt) {
-          evt.stopPropagation()
-          return true
-        }
         document.addEventListener("DOMContentLoaded", function(event) {
           import ('../dist/alpheios-embedded.js').then(embedLib => {
-            console.info(`Embedded library has been imported successfully`)
-
             window.AlpheiosEmbed.importDependencies({ mode: 'cdn' }).then(Embedded => {
               new Embedded(
                 {
-                  clientId: 'alpheios-dev',
-                  //triggerEvents: "dblclick",
-                  //triggerPreCallback: cb,
+                  clientId: 'embed-lib-index-demo',
                   disabledSelector:".customignore",
                   enabledClass: 'customenabled',
                   disabledClass: 'customdisabled',
@@ -45,12 +38,10 @@
                     top: '5vh',
                     right: '5vw'
                   },
-                  disableTextSelection: true
                 }).activate();
             }).catch(e => {
               console.error(`Import of an embedded library dependencies failed: ${e}`)
             })
-
           }).catch(e => {
             console.error(`Import of an embedded library failed: ${e}`)
           })
