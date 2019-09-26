@@ -249,6 +249,8 @@ new Embedded({
 })
 ```
 
+See also the [demo/simple.html](simple.html) file in the demos directory.
+
 **7. Use your own branding on the Alpheios interface -- BETA FEATURE**
 
 You may wish to rebrand the Alpheios interface with different colors and fonts.  This feature is still experimental. See our [skinning documentation](docs/skinning.md) for further details.
