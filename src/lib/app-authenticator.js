@@ -1,3 +1,4 @@
+import AuthData from '../../node_modules/alpheios-components/src/lib/auth/auth-data.js'
 /* global Auth0Lock */
 /**
  * Encapsulates Authentication Functionality For a Client Side Application
@@ -63,6 +64,9 @@ export default class AppAuthenticator {
           localStorage.setItem('access_token', this.env.TEST_ID)
           localStorage.setItem('id_token', this.env.TEST_ID)
           localStorage.setItem('is_test_user', true)
+          const sessionDuration = 3600000 /* One hour */
+          const expirationDateTime = new Date(Date.now() + sessionDuration)
+          localStorage.setItem('expiration_date_time', expirationDateTime.toJSON())
           resolve("Authenticated")
         } else {
           // initialize auth0 lock
@@ -92,6 +96,8 @@ export default class AppAuthenticator {
             this.auth0Lock.hide()
             localStorage.setItem('access_token', authResult.accessToken)
             localStorage.setItem('id_token', authResult.idToken)
+            const expirationDateTime = new Date(Date.now() + authResult.expiresIn * 1000)
+            localStorage.setItem('expiration_date_time', expirationDateTime.toJSON())
             //localStorage.setItem('profile', JSON.stringify(profile))
             resolve("Authenticated")
           })
@@ -126,6 +132,10 @@ export default class AppAuthenticator {
        console.error('You must login to call this protected endpoint!')
        reject('Login required')
       }
+      const expirationDateTimeStr = localStorage.getItem('expiration_date_time')
+      let authData = new AuthData() // eslint-disable-line prefer-const
+      authData.setAuthStatus(true)
+      authData.expirationDateTime = new Date(expirationDateTimeStr)
       if (localStorage.getItem('is_test_user')) {
           let testProfile =  {
             name: 'Alpheios Test User',
@@ -133,14 +143,20 @@ export default class AppAuthenticator {
             sub: 'testuser'
           }
           localStorage.setItem('profile', JSON.stringify(testProfile))
-          resolve(testProfile)
+          authData.userId = testProfile.sub
+          authData.userName = testProfile.name
+          authData.userNickname = testProfile.nickname
+          resolve(authData)
       } else {
         this.auth0Lock.getUserInfo(token, (error, profile) => {
           if (error) {
             reject(error)
           } else {
             localStorage.setItem('profile', JSON.stringify(profile))
-            resolve(profile)
+            authData.userId = profile.sub
+            authData.userName = profile.name
+            authData.userNickname = profile.nickname
+            resolve(authData)
           }
         })
       }

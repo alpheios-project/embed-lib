@@ -87,6 +87,148 @@ window["AlpheiosEmbed"] =
 /************************************************************************/
 /******/ ({
 
+/***/ "../../components/src/lib/auth/auth-data.js":
+/*!*********************************************************************!*\
+  !*** C:/uds/projects/alpheios/components/src/lib/auth/auth-data.js ***!
+  \*********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return AuthData; });
+/**
+ * Definition of an AuthData class.
+ *
+ * @module AuthData
+ */
+
+/**
+ * A class representing an authentication data in a format that is provider agnostic.
+ *
+ * Not all props must necessarily be populated all the time. What props data is present depends
+ * on the state of the authentication and on what data is available and what data
+ * was presented by the holder of auth data.
+ */
+class AuthData {
+  constructor () {
+    /**
+     * Whether a user has been authenticated or not.
+     *
+     * @type {boolean}
+     * @public
+     */
+    this.isAuthenticated = false
+
+    /**
+     * An access token string
+     *
+     * @type {string}
+     * @public
+     */
+    this.accessToken = undefined
+
+    /**
+     * An expiration date and time of an access token.
+     *
+     * @type {Date}
+     * @public
+     */
+    this.expirationDateTime = undefined
+
+    /**
+     * A user id (in Auth0 it is `sub`).
+     *
+     * @type {string}
+     * @public
+     */
+    this.userId = undefined
+
+    /**
+     * A user name.
+     *
+     * @type {string}
+     * @public
+     */
+    this.userName = undefined
+
+    /**
+     * A user nickname.
+     *
+     * @type {string}
+     * @public
+     */
+    this.userNickname = undefined
+  }
+
+  /**
+   * Creates an instance of an AuthData object out of a serializable one.
+   *
+   * @param {object} serializable - A serializable version of an AuthData object.
+   * @returns {AuthData} - An AuthData object populated with data from serializable.
+   */
+  static fromSerializable (serializable) {
+    let authData = new AuthData() // eslint-disable-line prefer-const
+    Object.assign(authData, serializable)
+    authData.expirationDateTime = serializable.expirationDateTime ? new Date(serializable.expirationDateTime) : undefined
+    return authData
+  }
+
+  /**
+   * Creates a serializable copy of an AuthData object.
+   *
+   * @returns {object} - A serializable copy of an AuthData object.
+   */
+  serializable () {
+    let serializable = Object.assign({}, this) // eslint-disable-line prefer-const
+    serializable.expirationDateTime = this.expirationDateTime.toJSON()
+    return serializable
+  }
+
+  /**
+   * Sets an authentication status
+   *
+   * @param {boolean} authStatus - Authentication status: true if user is authenticated, false otherwise.
+   * @returns {AuthData} - A self reference for chaining.
+   */
+  setAuthStatus (authStatus) {
+    this.isAuthenticated = authStatus
+    return this
+  }
+
+  /**
+   * Sets an expiration date and time from a duration provided.
+   *
+   * @param {number} interval - An expiration interval, in milliseconds.
+   * @returns {AuthData} - A self reference for chaining.
+   */
+  setSessionDuration (interval) {
+    this.expirationDateTime = new Date(Date.now() + interval)
+    return this
+  }
+
+  /**
+   * Checks if the user session has been expired.
+   *
+   * @returns {boolean} - True if expired, false otherwise.
+   */
+  get isExpired () {
+    return (this.expirationDateTime.getTime() <= Date.now())
+  }
+
+  /**
+   * Returns a remaining duration of a user session.
+   *
+   * @returns {number} - Remaining duration of user session, in milliseconds, or zero if session has been expired.
+   */
+  get expirationInterval () {
+    return !this.isExpired ? this.expirationDateTime.getTime() - Date.now() : 0
+  }
+}
+
+
+/***/ }),
+
 /***/ "../package.json":
 /*!***********************!*\
   !*** ../package.json ***!
@@ -94,7 +236,7 @@ window["AlpheiosEmbed"] =
 /*! exports provided: name, version, build, description, main, directories, scripts, repository, author, license, bugs, homepage, devDependencies, engines, jest, eslintConfig, eslintIgnore, dependencies, default */
 /***/ (function(module) {
 
-module.exports = JSON.parse("{\"name\":\"alpheios-embedded\",\"version\":\"3.0.1\",\"build\":\"40\",\"description\":\"Alpheios Embedded Library\",\"main\":\"dist/alpheios-embedded.js\",\"directories\":{\"doc\":\"doc\"},\"scripts\":{\"test\":\"npm run lint && jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js\",\"build\":\"npm run build-dev && npm run build-prod\",\"build-prod\":\"npm run lint && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all production app config.mjs\",\"build-dev\":\"npm run lint && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all development app config.mjs\",\"auth0-env-update\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/prod --t=dist/auth0 --f=env-embed.js\",\"auth0-env-dev-update\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/dev --t=dist/auth0 --f=env-embed.js\",\"lint\":\"eslint --fix src/**/*.js\",\"update-dependencies\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/ --t=dist/lib && node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/style --t=dist/style\",\"build-experimental\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs webpack development app config.mjs\",\"dev\":\"npm run build-experimental && http-server -c-1 -p 8888 & onchange src -- npm run build-experimental\"},\"repository\":{\"type\":\"git\",\"url\":\"git+https://github.com/alpheios-project/wordsvc.git\"},\"author\":\"The Alpheios Project, Ltd.\",\"license\":\"ISC\",\"bugs\":{\"url\":\"https://github.com/alpheios-project/wordsvc/issues\"},\"homepage\":\"https://github.com/alpheios-project/wordsvc#readme\",\"devDependencies\":{\"alpheios-components\":\"github:alpheios-project/components\",\"alpheios-node-build\":\"github:alpheios-project/node-build\",\"copy-webpack-plugin\":\"^5.0.4\",\"coveralls\":\"^3.0.6\",\"css-loader\":\"^3.2.0\",\"eslint\":\"^6.3.0\",\"eslint-config-standard\":\"^12.0.0\",\"eslint-plugin-import\":\"^2.18.2\",\"eslint-plugin-node\":\"^9.2.0\",\"eslint-plugin-promise\":\"^4.2.1\",\"eslint-plugin-standard\":\"^4.0.1\",\"eslint-plugin-vue\":\"^5.2.3\",\"html-loader\":\"^0.5.5\",\"html-loader-jest\":\"^0.2.1\",\"http-server\":\"^0.11.1\",\"interactjs\":\"^1.6.1\",\"intl-messageformat\":\"^2.2.0\",\"jest\":\"^24.9.0\",\"jest-fetch-mock\":\"^2.1.2\",\"onchange\":\"^6.1.0\",\"raw-loader\":\"^3.1.0\",\"sass-loader\":\"^7.3.1\",\"source-map-loader\":\"^0.2.4\",\"style-loader\":\"^0.23.1\",\"url-loader\":\"^2.1.0\",\"vue-loader\":\"^15.7.1\",\"vue-style-loader\":\"^4.1.2\",\"vue-svg-loader\":\"^0.12.0\",\"webpack-dev-server\":\"^3.8.0\"},\"engines\":{\"node\":\">= 9.10.1\",\"npm\":\">= 5.6.0\"},\"jest\":{\"verbose\":true,\"transform\":{\"^.+\\\\.htmlf$\":\"html-loader-jest\",\"^.+\\\\.jsx?$\":\"babel-jest\"},\"transformIgnorePatterns\":[\"node_modules/alpheios-components/\"]},\"eslintConfig\":{\"env\":{\"browser\":true,\"node\":true},\"parser\":\"babel-eslint\",\"parserOptions\":{\"sourceType\":\"module\",\"ecmaVersion\":2019,\"allowImportExportEverywhere\":true}},\"eslintIgnore\":[\"**/dist\"],\"dependencies\":{}}");
+module.exports = JSON.parse("{\"name\":\"alpheios-embedded\",\"version\":\"3.0.1\",\"build\":\"40\",\"description\":\"Alpheios Embedded Library\",\"main\":\"dist/alpheios-embedded.js\",\"directories\":{\"doc\":\"doc\"},\"scripts\":{\"test\":\"npm run lint && jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js\",\"build\":\"npm run build-dev && npm run build-prod\",\"build-prod\":\"npm run lint && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all production app config.mjs\",\"build-dev\":\"npm run lint && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all development app config.mjs\",\"auth0-env-update\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/prod --t=dist/auth0 --f=env-embed.js\",\"auth0-env-dev-update\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/dev --t=dist/auth0 --f=env-embed.js\",\"lint\":\"eslint --fix src/**/*.js\",\"update-dependencies\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/ --t=dist/lib && node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/style --t=dist/style\",\"build-experimental\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs webpack development app config.mjs\",\"dev\":\"npm run build-experimental && http-server -c-1 -p 8888 & onchange src -- npm run build-experimental\"},\"repository\":{\"type\":\"git\",\"url\":\"git+https://github.com/alpheios-project/wordsvc.git\"},\"author\":\"The Alpheios Project, Ltd.\",\"license\":\"ISC\",\"bugs\":{\"url\":\"https://github.com/alpheios-project/wordsvc/issues\"},\"homepage\":\"https://github.com/alpheios-project/wordsvc#readme\",\"devDependencies\":{\"alpheios-components\":\"file:../components\",\"alpheios-node-build\":\"github:alpheios-project/node-build\",\"copy-webpack-plugin\":\"^5.0.4\",\"coveralls\":\"^3.0.6\",\"css-loader\":\"^3.2.0\",\"eslint\":\"^6.5.1\",\"eslint-config-standard\":\"^14.1.0\",\"eslint-plugin-import\":\"^2.18.2\",\"eslint-plugin-node\":\"^10.0.0\",\"eslint-plugin-promise\":\"^4.2.1\",\"eslint-plugin-standard\":\"^4.0.1\",\"eslint-plugin-vue\":\"^5.2.3\",\"html-loader\":\"^0.5.5\",\"html-loader-jest\":\"^0.2.1\",\"http-server\":\"^0.11.1\",\"interactjs\":\"^1.6.2\",\"intl-messageformat\":\"^2.2.0\",\"jest\":\"^24.9.0\",\"jest-fetch-mock\":\"^2.1.2\",\"onchange\":\"^6.1.0\",\"raw-loader\":\"^3.1.0\",\"sass-loader\":\"^7.3.1\",\"source-map-loader\":\"^0.2.4\",\"style-loader\":\"^1.0.0\",\"url-loader\":\"^2.1.0\",\"vue-loader\":\"^15.7.1\",\"vue-style-loader\":\"^4.1.2\",\"vue-svg-loader\":\"^0.12.0\",\"webpack-dev-server\":\"^3.8.1\"},\"engines\":{\"node\":\">= 9.10.1\",\"npm\":\">= 5.6.0\"},\"jest\":{\"verbose\":true,\"transform\":{\"^.+\\\\.htmlf$\":\"html-loader-jest\",\"^.+\\\\.jsx?$\":\"babel-jest\"},\"transformIgnorePatterns\":[\"node_modules/alpheios-components/\"]},\"eslintConfig\":{\"env\":{\"browser\":true,\"node\":true},\"parser\":\"babel-eslint\",\"parserOptions\":{\"sourceType\":\"module\",\"ecmaVersion\":2019,\"allowImportExportEverywhere\":true}},\"eslintIgnore\":[\"**/dist\"],\"dependencies\":{}}");
 
 /***/ }),
 
@@ -476,6 +618,8 @@ class Embedded {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return AppAuthenticator; });
+/* harmony import */ var _node_modules_alpheios_components_src_lib_auth_auth_data_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../node_modules/alpheios-components/src/lib/auth/auth-data.js */ "../../components/src/lib/auth/auth-data.js");
+
 /* global Auth0Lock */
 /**
  * Encapsulates Authentication Functionality For a Client Side Application
@@ -541,6 +685,9 @@ class AppAuthenticator {
           localStorage.setItem('access_token', this.env.TEST_ID)
           localStorage.setItem('id_token', this.env.TEST_ID)
           localStorage.setItem('is_test_user', true)
+          const sessionDuration = 3600000 /* One hour */
+          const expirationDateTime = new Date(Date.now() + sessionDuration)
+          localStorage.setItem('expiration_date_time', expirationDateTime.toJSON())
           resolve("Authenticated")
         } else {
           // initialize auth0 lock
@@ -570,6 +717,8 @@ class AppAuthenticator {
             this.auth0Lock.hide()
             localStorage.setItem('access_token', authResult.accessToken)
             localStorage.setItem('id_token', authResult.idToken)
+            const expirationDateTime = new Date(Date.now() + authResult.expiresIn * 1000)
+            localStorage.setItem('expiration_date_time', expirationDateTime.toJSON())
             //localStorage.setItem('profile', JSON.stringify(profile))
             resolve("Authenticated")
           })
@@ -604,6 +753,10 @@ class AppAuthenticator {
        console.error('You must login to call this protected endpoint!')
        reject('Login required')
       }
+      const expirationDateTimeStr = localStorage.getItem('expiration_date_time')
+      let authData = new _node_modules_alpheios_components_src_lib_auth_auth_data_js__WEBPACK_IMPORTED_MODULE_0__["default"]() // eslint-disable-line prefer-const
+      authData.setAuthStatus(true)
+      authData.expirationDateTime = new Date(expirationDateTimeStr)
       if (localStorage.getItem('is_test_user')) {
           let testProfile =  {
             name: 'Alpheios Test User',
@@ -611,14 +764,20 @@ class AppAuthenticator {
             sub: 'testuser'
           }
           localStorage.setItem('profile', JSON.stringify(testProfile))
-          resolve(testProfile)
+          authData.userId = testProfile.sub
+          authData.userName = testProfile.name
+          authData.userNickname = testProfile.nickname
+          resolve(authData)
       } else {
         this.auth0Lock.getUserInfo(token, (error, profile) => {
           if (error) {
             reject(error)
           } else {
             localStorage.setItem('profile', JSON.stringify(profile))
-            resolve(profile)
+            authData.userId = profile.sub
+            authData.userName = profile.name
+            authData.userNickname = profile.nickname
+            resolve(authData)
           }
         })
       }
