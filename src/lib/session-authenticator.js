@@ -1,4 +1,4 @@
-/* global Auth0Lock */
+import AuthData from '../../node_modules/alpheios-components/src/lib/auth/auth-data.js'
 /**
  * Encapsulates Authentication Functionality For a Client Side Application
  */
@@ -18,6 +18,7 @@ export default class SessionAuthenticator {
       this.endpoints = env.ENDPOINTS
       this._loginUrl = env.LOGIN_URL
       this._logoutUrl = env.LOGOUT_URL
+      this._authData = new AuthData()
   }
 
   /**
@@ -42,7 +43,22 @@ export default class SessionAuthenticator {
         if (! resp.ok) {
           reject(resp.code)
         } else {
-          resolve(resp.json())
+          resp.json().then(data => {
+            /*
+            The following data will be provided by the server:
+            sub - A user ID
+            name - A user name
+            nickname - A user nickname
+            expires_in - A user session expiration interval, in seconds
+             */
+            this._authData.setAuthStatus(true).setSessionDuration(data.expires_in * 1000)
+            this._authData.userId = data.sub
+            this._authData.userName = data.name
+            this._authData.userNickname = data.nickname
+            resolve(this._authData)
+          }).catch(e => {
+            reject(new Error('Unable to decode a session response from a remote server'))
+          })
         }
       }).catch((error) => {
         reject(`Session request failed ${error}`)
@@ -84,7 +100,10 @@ export default class SessionAuthenticator {
    * Respond to a logout request
    */
   logout() {
-    return
+    this._authData.setAuthStatus(false)
+    this._authData.userId = ''
+    this._authData.name = ''
+    this._authData.nickname = ''
   }
 
 }

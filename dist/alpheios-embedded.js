@@ -836,7 +836,8 @@ class AppAuthenticator {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return SessionAuthenticator; });
-/* global Auth0Lock */
+/* harmony import */ var _node_modules_alpheios_components_src_lib_auth_auth_data_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../node_modules/alpheios-components/src/lib/auth/auth-data.js */ "../node_modules/alpheios-components/src/lib/auth/auth-data.js");
+
 /**
  * Encapsulates Authentication Functionality For a Client Side Application
  */
@@ -856,6 +857,7 @@ class SessionAuthenticator {
       this.endpoints = env.ENDPOINTS
       this._loginUrl = env.LOGIN_URL
       this._logoutUrl = env.LOGOUT_URL
+      this._authData = new _node_modules_alpheios_components_src_lib_auth_auth_data_js__WEBPACK_IMPORTED_MODULE_0__["default"]()
   }
 
   /**
@@ -880,7 +882,22 @@ class SessionAuthenticator {
         if (! resp.ok) {
           reject(resp.code)
         } else {
-          resolve(resp.json())
+          resp.json().then(data => {
+            /*
+            The following data will be provided by the server:
+            sub - A user ID
+            name - A user name
+            nickname - A user nickname
+            expires_in - A user session expiration interval, in seconds
+             */
+            this._authData.setAuthStatus(true).setSessionDuration(data.expires_in * 1000)
+            this._authData.userId = data.sub
+            this._authData.userName = data.name
+            this._authData.userNickname = data.nickname
+            resolve(this._authData)
+          }).catch(e => {
+            reject(new Error('Unable to decode a session response from a remote server'))
+          })
         }
       }).catch((error) => {
         reject(`Session request failed ${error}`)
@@ -922,7 +939,10 @@ class SessionAuthenticator {
    * Respond to a logout request
    */
   logout() {
-    return
+    this._authData.setAuthStatus(false)
+    this._authData.userId = ''
+    this._authData.name = ''
+    this._authData.nickname = ''
   }
 
 }
