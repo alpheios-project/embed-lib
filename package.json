@@ -1,7 +1,7 @@
 {
   "name": "alpheios-embedded",
-  "version": "3.0.1",
-  "build": "40",
+  "version": "3.1.0",
+  "build": "41",
   "description": "Alpheios Embedded Library",
   "main": "dist/alpheios-embedded.js",
   "directories": {
@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/alpheios-project/wordsvc#readme",
   "devDependencies": {
-    "alpheios-components": "github:alpheios-project/components#webext-i244-token-expiration",
+    "alpheios-components": "github:alpheios-project/components",
     "alpheios-node-build": "github:alpheios-project/node-build",
     "copy-webpack-plugin": "^5.0.4",
     "coveralls": "^3.0.6",
@@ -58,7 +58,7 @@
     "vue-loader": "^15.7.1",
     "vue-style-loader": "^4.1.2",
     "vue-svg-loader": "^0.12.0",
-    "webpack-dev-server": "^3.8.1"
+    "webpack-dev-server": "^3.8.2"
   },
   "engines": {
     "node": ">= 9.10.1",
