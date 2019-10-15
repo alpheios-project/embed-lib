@@ -1,7 +1,7 @@
 {
   "name": "alpheios-embedded",
   "version": "3.1.1",
-  "build": "42",
+  "build": "43",
   "description": "Alpheios Embedded Library",
   "main": "dist/alpheios-embedded.js",
   "directories": {
@@ -33,7 +33,7 @@
     "alpheios-components": "github:alpheios-project/components",
     "alpheios-node-build": "github:alpheios-project/node-build",
     "copy-webpack-plugin": "^5.0.4",
-    "coveralls": "^3.0.6",
+    "coveralls": "^3.0.7",
     "css-loader": "^3.2.0",
     "eslint": "^6.5.1",
     "eslint-config-standard": "^14.1.0",
@@ -54,7 +54,7 @@
     "sass-loader": "^7.3.1",
     "source-map-loader": "^0.2.4",
     "style-loader": "^1.0.0",
-    "url-loader": "^2.1.0",
+    "url-loader": "^2.2.0",
     "vue-loader": "^15.7.1",
     "vue-style-loader": "^4.1.2",
     "vue-svg-loader": "^0.12.0",
