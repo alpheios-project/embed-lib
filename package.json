@@ -1,7 +1,7 @@
 {
   "name": "alpheios-embedded",
   "version": "3.1.2",
-  "build": "43",
+  "build": "44",
   "description": "Alpheios Embedded Library",
   "main": "dist/alpheios-embedded.js",
   "directories": {
@@ -30,12 +30,12 @@
   },
   "homepage": "https://github.com/alpheios-project/wordsvc#readme",
   "devDependencies": {
-    "alpheios-components": "github:alpheios-project/components",
+    "alpheios-components": "github:alpheios-project/components#v1.4.7",
     "alpheios-node-build": "github:alpheios-project/node-build",
-    "copy-webpack-plugin": "^5.0.4",
+    "copy-webpack-plugin": "^5.0.5",
     "coveralls": "^3.0.7",
     "css-loader": "^3.2.0",
-    "eslint": "^6.5.1",
+    "eslint": "^6.6.0",
     "eslint-config-standard": "^14.1.0",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-node": "^10.0.0",
@@ -45,7 +45,7 @@
     "html-loader": "^0.5.5",
     "html-loader-jest": "^0.2.1",
     "http-server": "^0.11.1",
-    "interactjs": "^1.6.2",
+    "interactjs": "^1.7.0",
     "intl-messageformat": "^2.2.0",
     "jest": "^24.9.0",
     "jest-fetch-mock": "^2.1.2",
@@ -55,10 +55,10 @@
     "source-map-loader": "^0.2.4",
     "style-loader": "^1.0.0",
     "url-loader": "^2.2.0",
-    "vue-loader": "^15.7.1",
+    "vue-loader": "^15.7.2",
     "vue-style-loader": "^4.1.2",
     "vue-svg-loader": "^0.12.0",
-    "webpack-dev-server": "^3.8.2"
+    "webpack-dev-server": "^3.9.0"
   },
   "engines": {
     "node": ">= 9.10.1",
