@@ -126,7 +126,7 @@ class AuthData {
      * @type {string}
      * @public
      */
-    this.accessToken = undefined
+    this.accessToken = ''
 
     /**
      * An expiration date and time of an access token.
@@ -134,7 +134,15 @@ class AuthData {
      * @type {Date}
      * @public
      */
-    this.expirationDateTime = undefined
+    this.expirationDateTime = new Date(0)
+
+    /**
+     * Whether the user has been logged in previously and the session has been expired.
+     *
+     * @type {boolean}
+     * @public
+     */
+    this.hasSessionExpired = false
 
     /**
      * A user id (in Auth0 it is `sub`).
@@ -142,7 +150,7 @@ class AuthData {
      * @type {string}
      * @public
      */
-    this.userId = undefined
+    this.userId = ''
 
     /**
      * A user name.
@@ -150,7 +158,7 @@ class AuthData {
      * @type {string}
      * @public
      */
-    this.userName = undefined
+    this.userName = ''
 
     /**
      * A user nickname.
@@ -158,7 +166,20 @@ class AuthData {
      * @type {string}
      * @public
      */
-    this.userNickname = undefined
+    this.userNickname = ''
+  }
+
+  /**
+   * Deletes all user data from the AuthData object.
+   */
+  erase () {
+    this.isAuthenticated = false
+    this.accessToken = ''
+    this.expirationDateTime = new Date(0)
+    this.hasSessionExpired = false
+    this.userId = ''
+    this.userName = ''
+    this.userNickname = ''
   }
 
   /**
@@ -176,12 +197,26 @@ class AuthData {
 
   /**
    * Creates a serializable copy of an AuthData object.
+   * Dates are stored as JSON strings.
    *
    * @returns {object} - A serializable copy of an AuthData object.
    */
   serializable () {
     let serializable = Object.assign({}, this) // eslint-disable-line prefer-const
     serializable.expirationDateTime = this.expirationDateTime.toJSON()
+    return serializable
+  }
+
+  /**
+   * Creates a serializable copy of an AuthData object that is
+   * interoperable with other languages (i.e. Swift).
+   * Dates are stored as a Unix Time number (in whole seconds), in UTC.
+   *
+   * @returns {object} - A serializable copy of an AuthData object.
+   */
+  interopSerializable () {
+    let serializable = Object.assign({}, this) // eslint-disable-line prefer-const
+    serializable.expirationDateTime = Math.round(this.expirationDateTime.getTime() / 1000)
     return serializable
   }
 
@@ -208,12 +243,12 @@ class AuthData {
   }
 
   /**
-   * Checks if the user session has been expired.
+   * Checks if the user has been authenticated and the session is still valid.
    *
    * @returns {boolean} - True if expired, false otherwise.
    */
-  get isExpired () {
-    return (this.expirationDateTime.getTime() <= Date.now())
+  get isSessionActive () {
+    return (this.isAuthenticated && this.expirationDateTime.getTime() > Date.now())
   }
 
   /**
@@ -222,7 +257,17 @@ class AuthData {
    * @returns {number} - Remaining duration of user session, in milliseconds, or zero if session has been expired.
    */
   get expirationInterval () {
-    return !this.isExpired ? this.expirationDateTime.getTime() - Date.now() : 0
+    return this.isSessionActive ? this.expirationDateTime.getTime() - Date.now() : 0
+  }
+
+  /**
+   * Sets session as expired.
+   * @returns {AuthData} - A self reference for chaining.
+   */
+  expireSession () {
+    this.erase()
+    this.hasSessionExpired = true
+    return this
   }
 }
 
@@ -236,7 +281,7 @@ class AuthData {
 /*! exports provided: name, version, build, description, main, directories, scripts, repository, author, license, bugs, homepage, devDependencies, engines, jest, eslintConfig, eslintIgnore, dependencies, default */
 /***/ (function(module) {
 
-module.exports = JSON.parse("{\"name\":\"alpheios-embedded\",\"version\":\"3.1.2\",\"build\":\"43\",\"description\":\"Alpheios Embedded Library\",\"main\":\"dist/alpheios-embedded.js\",\"directories\":{\"doc\":\"doc\"},\"scripts\":{\"test\":\"npm run lint && jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js\",\"build\":\"npm run build-dev && npm run build-prod\",\"build-prod\":\"npm run lint && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all production app config.mjs\",\"build-dev\":\"npm run lint && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all development app config.mjs\",\"auth0-env-update\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/prod --t=dist/auth0 --f=env-embed.js\",\"auth0-env-dev-update\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/dev --t=dist/auth0 --f=env-embed.js\",\"lint\":\"eslint --fix src/**/*.js\",\"update-dependencies\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/ --t=dist/lib && node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/style --t=dist/style\",\"build-experimental\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs webpack development app config.mjs\",\"dev\":\"npm run build-experimental && http-server -c-1 -p 8888 & onchange src -- npm run build-experimental\"},\"repository\":{\"type\":\"git\",\"url\":\"git+https://github.com/alpheios-project/wordsvc.git\"},\"author\":\"The Alpheios Project, Ltd.\",\"license\":\"ISC\",\"bugs\":{\"url\":\"https://github.com/alpheios-project/wordsvc/issues\"},\"homepage\":\"https://github.com/alpheios-project/wordsvc#readme\",\"devDependencies\":{\"alpheios-components\":\"github:alpheios-project/components\",\"alpheios-node-build\":\"github:alpheios-project/node-build\",\"copy-webpack-plugin\":\"^5.0.4\",\"coveralls\":\"^3.0.7\",\"css-loader\":\"^3.2.0\",\"eslint\":\"^6.5.1\",\"eslint-config-standard\":\"^14.1.0\",\"eslint-plugin-import\":\"^2.18.2\",\"eslint-plugin-node\":\"^10.0.0\",\"eslint-plugin-promise\":\"^4.2.1\",\"eslint-plugin-standard\":\"^4.0.1\",\"eslint-plugin-vue\":\"^5.2.3\",\"html-loader\":\"^0.5.5\",\"html-loader-jest\":\"^0.2.1\",\"http-server\":\"^0.11.1\",\"interactjs\":\"^1.6.2\",\"intl-messageformat\":\"^2.2.0\",\"jest\":\"^24.9.0\",\"jest-fetch-mock\":\"^2.1.2\",\"onchange\":\"^6.1.0\",\"raw-loader\":\"^3.1.0\",\"sass-loader\":\"^7.3.1\",\"source-map-loader\":\"^0.2.4\",\"style-loader\":\"^1.0.0\",\"url-loader\":\"^2.2.0\",\"vue-loader\":\"^15.7.1\",\"vue-style-loader\":\"^4.1.2\",\"vue-svg-loader\":\"^0.12.0\",\"webpack-dev-server\":\"^3.8.2\"},\"engines\":{\"node\":\">= 9.10.1\",\"npm\":\">= 5.6.0\"},\"jest\":{\"verbose\":true,\"transform\":{\"^.+\\\\.htmlf$\":\"html-loader-jest\",\"^.+\\\\.jsx?$\":\"babel-jest\"},\"transformIgnorePatterns\":[\"node_modules/alpheios-components/\"]},\"eslintConfig\":{\"env\":{\"browser\":true,\"node\":true},\"parser\":\"babel-eslint\",\"parserOptions\":{\"sourceType\":\"module\",\"ecmaVersion\":2019,\"allowImportExportEverywhere\":true}},\"eslintIgnore\":[\"**/dist\"],\"dependencies\":{}}");
+module.exports = JSON.parse("{\"name\":\"alpheios-embedded\",\"version\":\"3.1.4\",\"build\":\"45\",\"description\":\"Alpheios Embedded Library\",\"main\":\"dist/alpheios-embedded.js\",\"directories\":{\"doc\":\"doc\"},\"scripts\":{\"test\":\"npm run lint && jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js\",\"build\":\"npm run build-dev && npm run build-prod\",\"build-prod\":\"npm run lint && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all production app config.mjs\",\"build-dev\":\"npm run lint && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all development app config.mjs\",\"auth0-env-update\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/prod --t=dist/auth0 --f=env-embed.js\",\"auth0-env-dev-update\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/dev --t=dist/auth0 --f=env-embed.js\",\"lint\":\"eslint --fix src/**/*.js\",\"update-dependencies\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/ --t=dist/lib && node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/style --t=dist/style\",\"build-experimental\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs webpack development app config.mjs\",\"dev\":\"npm run build-experimental && http-server -c-1 -p 8888 & onchange src -- npm run build-experimental\"},\"repository\":{\"type\":\"git\",\"url\":\"git+https://github.com/alpheios-project/wordsvc.git\"},\"author\":\"The Alpheios Project, Ltd.\",\"license\":\"ISC\",\"bugs\":{\"url\":\"https://github.com/alpheios-project/wordsvc/issues\"},\"homepage\":\"https://github.com/alpheios-project/wordsvc#readme\",\"devDependencies\":{\"alpheios-components\":\"github:alpheios-project/components#v1.4.7\",\"alpheios-node-build\":\"github:alpheios-project/node-build\",\"copy-webpack-plugin\":\"^5.0.5\",\"coveralls\":\"^3.0.7\",\"css-loader\":\"^3.2.0\",\"eslint\":\"^6.6.0\",\"eslint-config-standard\":\"^14.1.0\",\"eslint-plugin-import\":\"^2.18.2\",\"eslint-plugin-node\":\"^10.0.0\",\"eslint-plugin-promise\":\"^4.2.1\",\"eslint-plugin-standard\":\"^4.0.1\",\"eslint-plugin-vue\":\"^5.2.3\",\"html-loader\":\"^0.5.5\",\"html-loader-jest\":\"^0.2.1\",\"http-server\":\"^0.11.1\",\"interactjs\":\"^1.7.0\",\"intl-messageformat\":\"^2.2.0\",\"jest\":\"^24.9.0\",\"jest-fetch-mock\":\"^2.1.2\",\"onchange\":\"^6.1.0\",\"raw-loader\":\"^3.1.0\",\"sass-loader\":\"^7.3.1\",\"source-map-loader\":\"^0.2.4\",\"style-loader\":\"^1.0.0\",\"url-loader\":\"^2.2.0\",\"vue-loader\":\"^15.7.2\",\"vue-style-loader\":\"^4.1.2\",\"vue-svg-loader\":\"^0.12.0\",\"webpack-dev-server\":\"^3.9.0\"},\"engines\":{\"node\":\">= 9.10.1\",\"npm\":\">= 5.6.0\"},\"jest\":{\"verbose\":true,\"transform\":{\"^.+\\\\.htmlf$\":\"html-loader-jest\",\"^.+\\\\.jsx?$\":\"babel-jest\"},\"transformIgnorePatterns\":[\"node_modules/alpheios-components/\"]},\"eslintConfig\":{\"env\":{\"browser\":true,\"node\":true},\"parser\":\"babel-eslint\",\"parserOptions\":{\"sourceType\":\"module\",\"ecmaVersion\":2019,\"allowImportExportEverywhere\":true}},\"eslintIgnore\":[\"**/dist\"],\"dependencies\":{}}");
 
 /***/ }),
 
