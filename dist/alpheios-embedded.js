@@ -87,10 +87,10 @@ window["AlpheiosEmbed"] =
 /************************************************************************/
 /******/ ({
 
-/***/ "../node_modules/alpheios-components/src/lib/auth/auth-data.js":
-/*!*********************************************************************!*\
-  !*** ../node_modules/alpheios-components/src/lib/auth/auth-data.js ***!
-  \*********************************************************************/
+/***/ "../../components/src/lib/auth/auth-data.js":
+/*!*******************************************************************!*\
+  !*** /home/balmas/workspace/components/src/lib/auth/auth-data.js ***!
+  \*******************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -384,6 +384,7 @@ class Embedded {
    *     triggerPreCallback: a callback function which is called when the trigger event handler is invoked, prior to initiating
    *                         Alpheios functionality. It should return true to proceed with lookup or false to abort.
    *                         Default: no-op, returns true
+   *     enableMouseMoveOverride: override the desktop trigger with a mousemove handler
    *     popupInitialPos: object containing initial css positioning properties for the popup
    *                      Default { top: 10vh, left: 10vw}
    *     toolbarInitialPos: object containing initial css positioning properties for the toolbar
@@ -413,6 +414,7 @@ class Embedded {
     mobileTriggerEvent = null,
     desktopTriggerEvent = null,
     triggerPreCallback = (evt) => { return true }, // Not used at the moment but can be set as a filter for `this.ui.getSelectedText()` calls
+    enableMouseMoveOverride = false,
     popupInitialPos = {},
     toolbarInitialPos = {},
     actionPanelInitialPos = {},
@@ -440,6 +442,7 @@ class Embedded {
     this.desktopTriggerEvent = desktopTriggerEvent
     this.mobileTriggerEvent = mobileTriggerEvent
     this.triggerPreCallback = triggerPreCallback
+    this.enableMouseMoveOverride = enableMouseMoveOverride
     this.simpleMode = simpleMode
 
     // Set an initial UI Controller state for activation
@@ -452,6 +455,7 @@ class Embedded {
       textQueryTriggerMobile: this.mobileTriggerEvent,
       textQuerySelector: this.enabledSelector,
       triggerPreCallback: this.triggerPreCallback,
+      enableMouseMoveOverride: this.enableMouseMoveOverride,
       app: { version:`${_package_json__WEBPACK_IMPORTED_MODULE_1__["version"]}.${_package_json__WEBPACK_IMPORTED_MODULE_1__["build"]}`, name: _package_json__WEBPACK_IMPORTED_MODULE_1__["description"] },
       appType: components.Platform.appTypes.EMBEDDED_LIBRARY,
       clientId: this.clientId,
@@ -663,7 +667,7 @@ class Embedded {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return AppAuthenticator; });
-/* harmony import */ var _node_modules_alpheios_components_src_lib_auth_auth_data_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../node_modules/alpheios-components/src/lib/auth/auth-data.js */ "../node_modules/alpheios-components/src/lib/auth/auth-data.js");
+/* harmony import */ var _node_modules_alpheios_components_src_lib_auth_auth_data_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../node_modules/alpheios-components/src/lib/auth/auth-data.js */ "../../components/src/lib/auth/auth-data.js");
 
 /* global Auth0Lock */
 /**
@@ -881,7 +885,7 @@ class AppAuthenticator {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return SessionAuthenticator; });
-/* harmony import */ var _node_modules_alpheios_components_src_lib_auth_auth_data_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../node_modules/alpheios-components/src/lib/auth/auth-data.js */ "../node_modules/alpheios-components/src/lib/auth/auth-data.js");
+/* harmony import */ var _node_modules_alpheios_components_src_lib_auth_auth_data_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../node_modules/alpheios-components/src/lib/auth/auth-data.js */ "../../components/src/lib/auth/auth-data.js");
 
 /**
  * Encapsulates Authentication Functionality For a Client Side Application
