@@ -82,6 +82,7 @@ class Embedded {
    *     triggerPreCallback: a callback function which is called when the trigger event handler is invoked, prior to initiating
    *                         Alpheios functionality. It should return true to proceed with lookup or false to abort.
    *                         Default: no-op, returns true
+   *     enableMouseMoveOverride: override the desktop trigger with a mousemove handler
    *     popupInitialPos: object containing initial css positioning properties for the popup
    *                      Default { top: 10vh, left: 10vw}
    *     toolbarInitialPos: object containing initial css positioning properties for the toolbar
@@ -111,6 +112,7 @@ class Embedded {
     mobileTriggerEvent = null,
     desktopTriggerEvent = null,
     triggerPreCallback = (evt) => { return true }, // Not used at the moment but can be set as a filter for `this.ui.getSelectedText()` calls
+    enableMouseMoveOverride = false,
     popupInitialPos = {},
     toolbarInitialPos = {},
     actionPanelInitialPos = {},
@@ -138,6 +140,7 @@ class Embedded {
     this.desktopTriggerEvent = desktopTriggerEvent
     this.mobileTriggerEvent = mobileTriggerEvent
     this.triggerPreCallback = triggerPreCallback
+    this.enableMouseMoveOverride = enableMouseMoveOverride
     this.simpleMode = simpleMode
 
     // Set an initial UI Controller state for activation
@@ -150,6 +153,7 @@ class Embedded {
       textQueryTriggerMobile: this.mobileTriggerEvent,
       textQuerySelector: this.enabledSelector,
       triggerPreCallback: this.triggerPreCallback,
+      enableMouseMoveOverride: this.enableMouseMoveOverride,
       app: { version:`${packageVersion}.${packageBuild}`, name: packageDescription },
       appType: components.Platform.appTypes.EMBEDDED_LIBRARY,
       clientId: this.clientId,
