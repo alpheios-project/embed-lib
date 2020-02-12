@@ -60,7 +60,7 @@ export function importDependencies (options) {
 /**
  * Encapsulation of Alpheios functionality which can be embedded in a webpage
  */
-class Embedded {
+export class Embedded {
   /**
    * @constructor
    * @param {Object} arguments - object with the following properties:

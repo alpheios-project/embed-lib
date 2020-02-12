@@ -9,16 +9,21 @@ const webpack = {
       libraryTarget: 'window',
       library: 'AlpheiosEmbed'
     },
+    resolve: {
+      alias: {
+        'alpheios-components': path.join(projectRoot, 'node_modules/alpheios-core/packages/components/dist/alpheios-components.js')
+      }
+    },
     plugins: [
       // Paths are relative to the output directory, i.e. `dist`
       new copyPlugin([
         {
-          from: '../node_modules/alpheios-components/dist/',
+          from: '../node_modules/alpheios-core/packages/components/dist/',
           to: 'lib',
           ignore: ['style/**']
         },
           {
-            from: '../node_modules/alpheios-components/dist/style',
+            from: '../node_modules/alpheios-core/packages/components/dist/style',
             to: 'style',
           }
       ],

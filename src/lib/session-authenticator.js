@@ -1,4 +1,4 @@
-import AuthData from '../../node_modules/alpheios-components/src/lib/auth/auth-data.js'
+import AuthData from 'alpheios-components'
 /**
  * Encapsulates Authentication Functionality For a Client Side Application
  */
