@@ -18,7 +18,14 @@
     "lint": "eslint --fix src/**/*.js",
     "update-dependencies": "node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-core/packages/components/dist/ --t=dist/lib && node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-core/packages/components/dist/style --t=dist/style",
     "build-experimental": "node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs webpack development app config.mjs",
-    "dev": "npm run build-experimental && http-server -c-1 -p 8888 & onchange src -- npm run build-experimental"
+    "dev": "npm run build-experimental && http-server -c-1 -p 8888 & onchange src -- npm run build-experimental",
+    "version-set-major-dev": "npm version premajor --preid dev",
+    "version-set-minor-dev": "npm version preminor --preid dev",
+    "version-set-patch-dev": "npm version prepatch --preid dev",
+    "version-increase-prerelease-dev": "npm version prerelease --preid dev",
+    "version-increase-prerelease-qa": "npm version prerelease --preid qa",
+    "version-increase-prerelease": "npm version prerelease --preid rel",
+    "version-graduate": "echo Not implemented yet"
   },
   "repository": {
     "type": "git",
