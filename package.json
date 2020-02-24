@@ -9,7 +9,7 @@
   },
   "scripts": {
     "set-node-build-deps": "npx install-peerdeps alpheios-node-build --dev --only-peers",
-    "test": "npm run lint && jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "test": "jest --coverage && shx cat ./coverage/lcov.info | coveralls",
     "build": "npm run build-dev && npm run build-prod",
     "build-prod": "npm run lint && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all production app config.mjs",
     "build-dev": "npm run lint && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all development app config.mjs",
@@ -35,9 +35,9 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.8.3",
     "@babel/plugin-transform-modules-commonjs": "^7.8.3",
     "@babel/plugin-transform-runtime": "^7.8.3",
-    "@babel/runtime": "^7.8.4",
     "@babel/preset-env": "^7.8.4",
     "@babel/register": "^7.8.3",
+    "@babel/runtime": "^7.8.4",
     "alpheios-core": "github:alpheios-project/alpheios-core",
     "alpheios-node-build": "github:alpheios-project/node-build#v2.0.0",
     "archiver": "^3.1.1",
@@ -55,12 +55,10 @@
     "eslint-plugin-node": "^11.0.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
-    "eslint-plugin-vue": "^5.2.3",
+    "eslint-plugin-vue": "^6.2.1",
     "fibers": "^4.0.2",
     "fs-extra": "^8.1.0",
-    "html-loader": "^0.5.5",
-    "html-loader-jest": "^0.2.1",
-    "http-server": "^0.11.1",
+    "http-server": "^0.12.1",
     "imagemin": "^7.0.1",
     "imagemin-jpegtran": "^6.0.0",
     "imagemin-optipng": "^7.1.0",
@@ -78,7 +76,7 @@
     "postcss-loader": "^3.0.0",
     "postcss-safe-important": "^1.2.0",
     "postcss-scss": "^2.0.0",
-    "raw-loader": "^3.1.0",
+    "raw-loader": "^4.0.0",
     "sass": "^1.25.0",
     "sass-loader": "^8.0.2",
     "source-map-loader": "^0.2.4",
@@ -102,7 +100,6 @@
   "jest": {
     "verbose": true,
     "transform": {
-      "^.+\\.htmlf$": "html-loader-jest",
       "^.+\\.jsx?$": "babel-jest"
     },
     "transformIgnorePatterns": [
@@ -124,5 +121,7 @@
   "eslintIgnore": [
     "**/dist"
   ],
-  "dependencies": {}
+  "dependencies": {
+    "shx": "^0.3.2"
+  }
 }
