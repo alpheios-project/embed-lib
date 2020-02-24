@@ -25,7 +25,7 @@
     "version-increase-prerelease-dev": "npm version prerelease --preid dev",
     "version-increase-prerelease-qa": "npm version prerelease --preid qa",
     "version-increase-prerelease": "npm version prerelease --preid rel",
-    "version-graduate": "echo Not implemented yet"
+    "version-graduate": "echo Not implemented yet. You have to manually remove a prerelease postfix from a version number in package.json"
   },
   "repository": {
     "type": "git",
