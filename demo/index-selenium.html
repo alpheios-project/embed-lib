@@ -1,0 +1,112 @@
+<!-- Basic Development demo, using Components from the CDN -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Alpheios Embedded Library Developer Test Page</title>
+    <link rel="stylesheet" href="../dist/style/style-components.css"/>
+    <script src="https://cdn.auth0.com/js/lock/11.14.0/lock.js"></script>
+    <script src="../dist/auth0/env-embed.js"></script>
+
+    <meta name="alpheios-treebank-url" content="http://tools.alpheios.net/exist/rest/db/xq/treebank-getmorph.xq?f=tlg0085.tlg001.alpheios-text-grc1&amp;w=WORD">
+    <meta name="alpheios-treebank-diagram-url" content="version=1.0;http://tools.alpheios.net/exist/rest/db/app/treebank-editsentence.xhtml?doc=tlg0085.tlg001.alpheios-text-grc1&amp;app=viewer&amp;id=SENTENCE&amp;w=WORD">
+    <meta name="alpheios-v2-treebank-diagram-url" data-alpheios_tb_src="https://alpheios.net/alpheios-treebanks/DOC.html?chunk=SENTENCE&amp;w=WORD">
+    
+    <style>
+      .customenabled {
+        color: green;
+      }
+      .customdisabled {
+        color: red;
+      }
+
+    </style>
+</head>
+
+<body>
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function(event) {
+          import ('../dist/alpheios-embedded.js').then(embedLib => {
+            window.AlpheiosEmbed.importDependencies({ mode: 'development' }).then(Embedded => {
+              new Embedded(
+                {
+                  clientId: 'embed-lib-index-demo',
+                  authEnv: auth0Env,
+                  disabledSelector:".customignore",
+                  enabledClass: 'customenabled',
+                  disabledClass: 'customdisabled',
+                  desktopTriggerEvent: 'click',
+                  popupInitialPos: {
+                    left: '150px',
+                    top: '150px'
+                  },
+                  toolbarInitialPos: {
+                    top: '5vh',
+                    right: '5vw'
+                  },
+                }).activate();
+            }).catch(e => {
+              console.error(`Import of an embedded library dependencies failed: ${e}`)
+            })
+          }).catch(e => {
+            console.error(`Import of an embedded library failed: ${e}`)
+          })
+        });
+    </script>
+    <h4>Greek</h4>
+    <div class="alpheios-enabled" id="greek-text" xml:lang="grc">
+      <p>τά ταῖν ταῖν τοῦ</p>
+      <p>εγώ εμένα ἐμαυτοῦ ταύταις</p>
+      <p>ένα δύο τρία</p>
+      <p>όμορφος νέος γλυκός</p>
+      <p>συνεχής πλατύς οξύς</p>
+      <p><span id="greek-text-andra">ἄνδρα</span> μοι ἔννεπε, μοῦσα, πολύτροπον</p>
+      <p>πρόσφυμα ξηρή </p>
+      <p>σκληρή ζώνη ινώδους συνδετικού ιστού που συνδέει συνήθως μύες με οστά</p>
+      <p><span class="w alpheios-word " id="" nrefs="" tbref="2198020-30" data-alpheios_tb_ref="tlg0085.tlg001.alpheios-text-grc1#2198020-30">οἰστροδόνου</span></p>
+    </div>
+
+    <h4>Latin</h4>
+    <div class="alpheios-enabled" id="latin-text" lang="lat">
+      <p><span id="latin-text-fero">fero</span> ferre tuli latus ferant missing-word</p>
+      <p>sum sunt</p>
+      <p>mare <span id="latin-text-cupidinibus">cupidinibus</span> cepit differ</p>
+      <p>a bene placito</p>
+      <p>ab ovo usque ad mala</p>
+      <p>caeli  beatum</p>
+      <p class="customignore">Ignore This</p>
+    </div>
+
+    <h4>Arabic</h4>
+    <div class="alpheios-enabled" id="ara-text" lang="ara" dir="rtl">
+       1 اَلدٌّنيَا دَارُ مَمَرٍ لاَ دَارُ مَقَرٍ * 
+    <span id="ara-text-sultan">سُلطَان</span>
+        بِلاَ عَدلٍ كَنَهرٍ
+    </div>
+
+    <h4>Persian</h4>
+    <div class="alpheios-enabled" id="per-text" lang="per" dir="rtl">
+                آبادائیدن
+                به نام خداوند جان و خرد
+                کزین برتر اندیشه برنگذرد
+                خداوند نام و خداوند جای
+                خداوند روزی ده رهنمای
+                خداوند کیوان و گردان سپهر
+                فروزنده ماه و ناهید و مهر
+                ز نام و نشان و گمان برترست
+                نگارندهٔ بر شده پیکرست
+                به بینندگان آفریننده را
+                نبینی مرنجان دو بیننده را
+                نیابد بدو نیز اندیشه راه
+                که او برتر از نام و از جایگاه
+                سخن هر چه زین گوهران بگذرد
+                نیابد بدو راه جان و خرد
+    </div>
+
+    <h4>Ge'ez</h4>
+    <div class="alpheios-enabled" id="gez-text" lang="gez" dir="ltr">
+      ይትባረክ፡ <span id="gez-text-igizi">እግዚአብሔር፡</span> አምላከ፡ እስራኤል፡ አምላክ፡ ለኵሉ፡ መንፈስ፡ ወለኵሉ፡ ዘሥጋ፡ ወይቤሎ፡ እግዚአብሔር፡ ለእዝራ፡ አእምር፡ ወጠይቅ፡
+    </div>
+</body>
+</html>
