@@ -1,7 +1,7 @@
 /* eslint-env jest */
-/* global Event */
+/* global Event, BUILD_NUMBER */
 import State from './state'
-import { version as packageVersion, build as packageBuild, description as packageDescription } from '../package.json'
+import { version as packageVersion, description as packageDescription } from '../package.json'
 import AppAuthenticator from './lib/app-authenticator'
 import SessionAuthenticator from './lib/session-authenticator'
 // A variable that will store an instance of the imported components module
@@ -154,7 +154,7 @@ export class Embedded {
       textQuerySelector: this.enabledSelector,
       triggerPreCallback: this.triggerPreCallback,
       enableMouseMoveOverride: this.enableMouseMoveOverride,
-      app: { version:`${packageVersion}.${packageBuild}`, name: packageDescription },
+      app: { version:`${packageVersion}.${packageBuild}`, buildNumber: BUILD_NUMBER, name: packageDescription },
       appType: components.Platform.appTypes.EMBEDDED_LIBRARY,
       clientId: this.clientId,
       // Disable text selection on mobile devices

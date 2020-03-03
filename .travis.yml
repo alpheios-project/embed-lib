@@ -1,0 +1,35 @@
+language: node_js
+node_js:
+- 13.2
+cache: npm
+script:
+- npm run test
+before_deploy:
+  - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" >> $HOME/.npmrc 2> /dev/null
+deploy:
+  - provider: script
+    script: "npm publish --tag dev"
+    on:
+      branch: master
+      tags: true
+  - provider: script
+    script: "npm publish --tag qa"
+    on:
+      branch: qa
+      tags: true
+  - provider: script
+    script: "npm publish --tag ftqa"
+    on:
+      branch: ftqa
+      tags: true
+  - provider: script
+    script: "npm publish --tag latest"
+    on:
+      branch: production
+  - provider: releases
+    api_key:
+      secure: BUD1xHEhUTzY28546mMtwHhKR0551+GAzNUxYbtyocMyhq1Bq9bF4d2c5sJ6DpzKxemBb5pzXB49BeGGeXAfxZhP0mHG2nVB76ybmC+Ak6cAayz8Y1duZlIFdJSYJ4UpVeP5f8RLRWE2kqakS1fzPWRVljQ9rbM/7zpf3wVU2Iut4X1ZuUDvfyWf2g/859B8RMIgFQDaFgZIbnna7C//Gh3/o7J9pq3tpNmuCjVd49bNG/a3ZGMNTDJFHYJb+GFsrISyduTzawO+VbpX8MlH4cqzjoAKM9tXUnc33kjbPM/Q6nfrYz8v58qOGEgeQdBMXsKatNQFnE87ZK6LoYRlKmFumUVaeu00nfS4Ff2Hvx/5sixzz0j4S6a6HAJLwEtopxhI0npoFAsm6qARLNrGWwZWOpLBg2mC/U0HFEwFauEMMHe0OKGdvDXG79UkaG0Mpvy3j6WWwYY1/ldnNP+EwmwkR4TxtNu1GGE5OKg+hIGFoBsF+4cVJOsZmFEt/ro4pxSTwMQy9DiN+95BSBz/vR/RCwTLrxuDAv7fRabXG7ua+QYNyTNCAa2PVUoPZMpDVAEeXaawrt1UJViLsw07ByGszjXizdbgsV7AzUQh3nKR8xSHOKhk4YCO2idOqGMKQQQfYC0DEEwwBL2e7TSq5ZrhBx6/bqTfOhues0z7W5Y=
+    on:
+      repo: alpheios-project/embed-lib
+      all_branches: true
+      tags: true
