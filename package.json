@@ -8,7 +8,7 @@
   },
   "scripts": {
     "set-node-build-deps": "npx install-peerdeps alpheios-node-build --dev --only-peers",
-    "test": "jest --coverage && shx cat ./coverage/lcov.info | coveralls",
+    "test": "jest",
     "build": "npm run build-dev && npm run build-prod",
     "build-prod": "npm run lint && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs -m all -M production -p app -c config.mjs",
     "build-dev": "npm run lint && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs -m all -M development -p app -c config.mjs",
