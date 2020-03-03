@@ -1,7 +1,7 @@
 /* eslint-env jest */
 /* global Event, BUILD_NUMBER */
 import State from './state'
-import { version as packageVersion, build as packageBuild, description as packageDescription } from '../package.json'
+import { version as packageVersion, description as packageDescription } from '../package.json'
 import AppAuthenticator from './lib/app-authenticator'
 import SessionAuthenticator from './lib/session-authenticator'
 // A variable that will store an instance of the imported components module

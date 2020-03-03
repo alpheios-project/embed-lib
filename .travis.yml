@@ -10,21 +10,18 @@ deploy:
   - provider: script
     script: "npm publish --tag dev"
     on:
-      all_branches: true
-      tags: on
-      condition: $TRAVIS_TAG =~ ^v[0-9]+.[0-9]+.[0-9]+-dev
+      branch: master
+      tags: true
   - provider: script
     script: "npm publish --tag qa"
     on:
-      all_branches: true
-      tags: on
-      condition: $TRAVIS_TAG =~ ^v[0-9]+.[0-9]+.[0-9]+-qa
+      branch: qa
+      tags: true
   - provider: script
     script: "npm publish --tag ftqa"
     on:
-      all_branches: true
-      tags: on
-      condition: $TRAVIS_TAG =~ ^v[0-9]+.[0-9]+.[0-9]+-ftqa
+      branch: ftqa
+      tags: true
   - provider: script
     script: "npm publish --tag latest"
     on:
@@ -35,5 +32,4 @@ deploy:
     on:
       repo: alpheios-project/embed-lib
       all_branches: true
-      tags: on
-      condition: $TRAVIS_TAG =~ ^v[0-9]+.[0-9]+.[0-9]+
+      tags: true

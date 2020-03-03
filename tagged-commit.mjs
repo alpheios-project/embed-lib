@@ -14,7 +14,7 @@ try {
 }
 console.info('Rebuilding of an embedded library has been completed')
 
-/*console.info('Committing distributables')
+console.info('Committing distributables')
 try {
   output = execFileSync('git', ['add', 'dist'])
 } catch (error) {
@@ -31,5 +31,5 @@ try {
   output = execSync(`git tag ${build}"`)
 } catch (error) {
   console.log('Tag process failed:', error)
-}*/
+}
 console.info(`Commit has been completed`)
