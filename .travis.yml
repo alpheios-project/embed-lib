@@ -4,7 +4,7 @@ node_js:
 cache: npm
 script:
   - env
-- npm run test
+  - npm run test
 before_deploy:
   - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" >> $HOME/.npmrc 2> /dev/null
 deploy:
