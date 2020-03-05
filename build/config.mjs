@@ -18,7 +18,7 @@ const webpack = {
       // Paths are relative to the output directory, i.e. `dist`
       new copyPlugin([
         {
-          from: '../node_modules/alpheios-core/packages/components/dist/',
+          from: '../node_modules/alpheios-components/dist/',
           to: 'lib',
           ignore: ['style/**']
         },

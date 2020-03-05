@@ -1,6 +1,6 @@
 {
   "name": "alpheios-embedded",
-  "version": "3.1.6-qa.20200305332-qa.20200305413",
+  "version": "3.1.6",
   "description": "Alpheios Embedded Library",
   "main": "dist/alpheios-embedded.js",
   "directories": {
@@ -8,14 +8,14 @@
   },
   "scripts": {
     "set-node-build-deps": "npx install-peerdeps alpheios-node-build --dev --only-peers",
-    "test": "jest",
+    "test": "echo No tests",
     "build": "npm run build-dev && npm run build-prod",
     "build-prod": "npm run lint && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs -m all -M production -p app -c config.mjs",
     "build-dev": "npm run lint && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs -m all -M development -p app -c config.mjs",
     "auth0-env-update": "node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/prod --t=dist/auth0 --f=env-embed.js",
     "auth0-env-dev-update": "node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/dev --t=dist/auth0 --f=env-embed.js",
     "lint": "eslint --fix src/**/*.js",
-    "update-dependencies": "node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-core/packages/components/dist/ --t=dist/lib && node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-core/packages/components/dist/style --t=dist/style",
+    "update-dependencies": "node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/ --t=dist/lib && node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-components/dist/style --t=dist/style",
     "build-experimental": "node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs -m webpack -M development -p app -c config.mjs",
     "dev": "npm run build-experimental && http-server -c-1 -p 8888 & onchange src -- npm run build-experimental",
     "conventional-commit": "npx git-cz",
@@ -111,7 +111,7 @@
       "^.+\\.jsx?$": "babel-jest"
     },
     "transformIgnorePatterns": [
-      "node_modules/alpheios-core/packages/components/"
+      "node_modules/alpheios-components/"
     ]
   },
   "eslintConfig": {
