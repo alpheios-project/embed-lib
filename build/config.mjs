@@ -11,7 +11,7 @@ const webpack = {
     },
     resolve: {
       alias: {
-        'alpheios-components': path.join(projectRoot, 'node_modules/alpheios-core/packages/components/dist/alpheios-components.js')
+        'alpheios-components': path.join(projectRoot, 'node_modules/alpheios-components/dist/alpheios-components.js')
       }
     },
     plugins: [
@@ -23,7 +23,7 @@ const webpack = {
           ignore: ['style/**']
         },
           {
-            from: '../node_modules/alpheios-core/packages/components/dist/style',
+            from: '../node_modules/alpheios-components/dist/style',
             to: 'style',
           }
       ],
