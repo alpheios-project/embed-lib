@@ -1,6 +1,6 @@
 {
   "name": "alpheios-embedded",
-  "version": "3.1.6-qa.20200305423",
+  "version": "3.1.6-qa.20200309403",
   "description": "Alpheios Embedded Library",
   "main": "dist/alpheios-embedded.js",
   "directories": {
@@ -129,7 +129,9 @@
   "eslintIgnore": [
     "**/dist"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "alpheios-core": "git+https://github.com/alpheios-project/alpheios-core.git#qa"
+  },
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
