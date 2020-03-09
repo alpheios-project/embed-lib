@@ -2,8 +2,6 @@
 /* global Event, BUILD_NUMBER */
 import State from './state'
 import { version as packageVersion, description as packageDescription } from '../package.json'
-import AppAuthenticator from './lib/app-authenticator'
-import SessionAuthenticator from './lib/session-authenticator'
 // A variable that will store an instance of the imported components module
 let components
 
@@ -166,9 +164,9 @@ export class Embedded {
     if (this.authEnv) {
       if (authEnv.CLIENT_ID) {
         // Register an authentication module only with authentication environment is loaded
-        this.ui.registerModule(components.AuthModule, { auth: new AppAuthenticator(authEnv) })
+        this.ui.registerModule(components.AuthModule, { auth: new components.AppAuthenticator(authEnv) })
       } else if (authEnv.LOGIN_URL) {
-        this.ui.registerModule(components.AuthModule, { auth: new SessionAuthenticator(authEnv) })
+        this.ui.registerModule(components.AuthModule, { auth: new components.SessionAuthenticator(authEnv) })
       }
     } else {
       this.ui.registerModule(components.AuthModule, { auth: null })
