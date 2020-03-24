@@ -23,7 +23,7 @@
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function(event) {
           import ('../dist/alpheios-embedded.js').then(embedLib => {
-            window.AlpheiosEmbed.importDependencies({ mode: 'cdn' }).then(Embedded => {
+            window.AlpheiosEmbed.importDependencies({ mode: 'development' }).then(Embedded => {
               new Embedded(
                 {
                   clientId: 'embed-lib-index-demo',
@@ -98,6 +98,21 @@
     <h4>Ge'ez</h4>
     <div class="alpheios-enabled" id="block5" lang="gez" dir="ltr">
       ይትባረክ፡ እግዚአብሔር፡ አምላከ፡ እስራኤል፡ አምላክ፡ ለኵሉ፡ መንፈስ፡ ወለኵሉ፡ ዘሥጋ፡ ወይቤሎ፡ እግዚአብሔር፡ ለእዝራ፡ አእምር፡ ወጠይቅ፡
+    </div>
+
+    <h4>Traditional Chinese</h4>
+    <div class="alpheios-enabled" id="block6" lang=" zh-Hant" dir="ltr">
+      天地玄黃，宇宙洪荒。日月盈昃，辰宿列張。寒來暑往，秋收冬藏。閏余成歲，律呂調陽。
+    </div>
+
+    <h4>Simplified Chinese</h4>
+    <div class="alpheios-enabled" id="block7" lang=" zh-Hans" dir="ltr">
+      天地玄黄，宇宙洪荒。日月盈昃，辰宿列张。寒来暑往，秋收冬藏。闰余成岁，律吕调阳。
+    </div>
+
+    <h4>Chinese Test cases</h4>
+    <div class="alpheios-enabled" lang=" zh-Hant" dir="ltr">
+      子曰學
     </div>
 </body>
 </html>

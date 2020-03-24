@@ -1,0 +1,36 @@
+<!-- This demo shows how to enable aligned treebanks and translations -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Alpheios Embedded Library Treebank Translation Demo (V3)</title>
+    <link rel="stylesheet" href="../dist/style/style-components.css"/>
+</head>
+
+<body data-alpheios_tb_version="3" data-alpheios_tb_src="https://alpheios-project.github.io/treebank-template/embed/DOC/SENTENCE?w=WORD" data-alpheios_tb_ref="on-the-murder-of-eratosthenes-1-50#1-1">
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function(event) {
+          import ('../dist/alpheios-embedded.js').then(embedLib => {
+            window.AlpheiosEmbed.importDependencies({ mode: 'development' }).then(Embedded => {
+              new Embedded({clientId: 'embed-lib-demo-treebanks', authEnv: null}).activate();
+            }).catch(e => {
+              console.error(`Import of an embedded library dependencies failed: ${e}`)
+            })
+          }).catch(e => {
+            console.error(`Import of an embedded library failed: ${e}`)
+          })
+        });
+    </script>
+    <div lang="grc" class="alpheios-enabled">
+      <span data-alpheios_tb_ref="on-the-murder-of-eratosthenes-1-50#1-1">περὶ</span>
+      <span data-alpheios_tb_ref="on-the-murder-of-eratosthenes-1-50#1-2">πολλοῦ</span>
+      <span data-alpheios_tb_ref="on-the-murder-of-eratosthenes-1-50#1-3">ἂν</span>
+      <span data-alpheios_tb_ref="on-the-murder-of-eratosthenes-1-50#1-4">ποιησαίμην</span>
+
+      <span data-alpheios_tb_ref="on-the-murder-of-eratosthenes-1-50#2-1">εὖ</span>
+      <span data-alpheios_tb_ref="on-the-murder-of-eratosthenes-1-50#2-2">γὰρ</span>
+      <span data-alpheios_tb_ref="on-the-murder-of-eratosthenes-1-50#2-3">οἶδʼ</span>
+      <span data-alpheios_tb_ref="on-the-murder-of-eratosthenes-1-50#2-4">ὅτι</span>
+    </div>
+</body>
+</html>
