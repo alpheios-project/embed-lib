@@ -1,13 +1,25 @@
 import pkg from './package.json'
 import generateBuildNumber from './node_modules/alpheios-node-build/dist/support/build-number.mjs'
 import { execFileSync, execSync } from 'child_process'
+import branch from 'git-branch'
 
 const build = generateBuildNumber()
+const branchName = branch.sync()
 console.log(`Starting a ${build} commit`)
 
-const version = `${pkg.version}-${build}`
+const baseVersion = pkg.version.split('-')[0]
+const version = `${baseVersion}-${build}`
 console.log(`Setting a package version to ${version}`)
 let output
+try {
+  if (branchName !== 'master') {
+    console.info(`Installing alpheios-core`)
+    output = execSync(`npm install https://github.com/alpheios-project/alpheios-core#${branchName}`)
+  }
+} catch (error) {
+  console.error('Components install failed:', error)
+  process.exit(1)
+}
 try {
   const output = execSync(`npm version ${version} --no-git-tag-version --force`, { encoding: 'utf8' })
 } catch (e) {
