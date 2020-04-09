@@ -160,7 +160,8 @@ export class Embedded {
       // Disable text selection on mobile devices
       disableTextSelection: disableTextSelection,
       textLangCode: textLangCode,
-      overrideHelp: overrideHelp
+      overrideHelp: overrideHelp,
+      experimentalResetTreebankURL: true
     })
     // Environment-specific initializations
     if (this.authEnv) {

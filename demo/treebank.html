@@ -1,13 +1,18 @@
-<!-- This demo shows how to enable aligned treebanks and translations -->
+<!-- This demo shows how to add treebank data to a page -->
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Alpheios Embedded Library Treebank Translation Demo (V3)</title>
+    <title>Alpheios Embedded Library Treebank Demo (V1)</title>
     <link rel="stylesheet" href="../dist/style/style-components.css"/>
 </head>
 
-<body data-alpheios_tb_version="3" data-alpheios_tb_src="https://alpheios-project.github.io/treebank-template/embed/DOC/SENTENCE?w=WORD" data-alpheios_tb_ref="on-the-murder-of-eratosthenes-1-50#1-1">
+<body
+    data-alpheios_tb_app="perseids-treebank-template"
+    data-alpheios_tb_app_version="1"
+    data-alpheios_tb_app_url="https://alpheios-project.github.io/treebank-template/embed/DOC/SENTENCE?w=WORD"
+    data-alpheios_tb_ref="on-the-murder-of-eratosthenes-1-50#1-1"
+>
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function(event) {
           import ('../dist/alpheios-embedded.js').then(embedLib => {
