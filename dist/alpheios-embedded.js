@@ -266,14 +266,14 @@ class Embedded {
       textQuerySelector: this.enabledSelector,
       triggerPreCallback: this.triggerPreCallback,
       enableMouseMoveOverride: this.enableMouseMoveOverride,
-      app: { version:`${_package_json__WEBPACK_IMPORTED_MODULE_1__["version"]}`, buildBranch: "i140-core-app-wide-config", buildNumber: "20200409559", buildName: "i140-core-app-wide-config.20200409559", name: _package_json__WEBPACK_IMPORTED_MODULE_1__["description"] },
+      app: { version:`${_package_json__WEBPACK_IMPORTED_MODULE_1__["version"]}`, buildBranch: "i140-core-app-wide-config", buildNumber: "20200409585", buildName: "i140-core-app-wide-config.20200409585", name: _package_json__WEBPACK_IMPORTED_MODULE_1__["description"] },
       appType: components.Platform.appTypes.EMBEDDED_LIBRARY,
       clientId: this.clientId,
       // Disable text selection on mobile devices
       disableTextSelection: disableTextSelection,
       textLangCode: textLangCode,
       overrideHelp: overrideHelp,
-      configServiceUrl: 'https://4wvouc833c.execute-api.us-east-2.amazonaws.com/prod/config',
+      configServiceUrl: 'https://config.alpheios.net/v1/config',
       experimentalResetTreebankURL: false
     })
     // Environment-specific initializations

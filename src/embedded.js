@@ -159,7 +159,7 @@ export class Embedded {
       disableTextSelection: disableTextSelection,
       textLangCode: textLangCode,
       overrideHelp: overrideHelp,
-      configServiceUrl: 'https://4wvouc833c.execute-api.us-east-2.amazonaws.com/prod/config',
+      configServiceUrl: 'https://config.alpheios.net/v1/config',
       experimentalResetTreebankURL: false
     })
     // Environment-specific initializations
