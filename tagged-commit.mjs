@@ -1,20 +1,20 @@
 import pkg from './package.json'
-import generateBuildNumber from './node_modules/alpheios-node-build/dist/support/build-number.mjs'
+import generateBuildInfo from './node_modules/alpheios-node-build/dist/support/build-info.mjs'
 import { execFileSync, execSync } from 'child_process'
 import branch from 'git-branch'
 
-const build = generateBuildNumber()
-const branchName = branch.sync()
-console.log(`Starting a ${build} commit`)
+const buildDT = Date.now()
+const buildInfo = generateBuildInfo(buildDT)
+console.log(`Starting a ${buildInfo.name} commit`)
 
 const baseVersion = pkg.version.split('-')[0]
-const version = `${baseVersion}-${build}`
+const version = `${baseVersion}-${buildInfo.name}`
 console.log(`Setting a package version to ${version}`)
 let output
 try {
-  if (branchName !== 'master') {
+  if (buildInfo.branch !== 'master') {
     console.info(`Installing alpheios-core`)
-    output = execSync(`npm install https://github.com/alpheios-project/alpheios-core#${branchName}`)
+    output = execSync(`npm install https://github.com/alpheios-project/alpheios-core#${buildInfo.branch}`)
   }
 } catch (error) {
   console.error('Components install failed:', error)
@@ -29,7 +29,7 @@ try {
 
 console.log('Rebuilding an embedded library. This may take a while')
 try {
-  output = execSync(`node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs -m all -M development -p app -c config.mjs -b ${build} && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs -m all -M production -p app -c config.mjs -b ${build}`)
+  output = execSync(`node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs -m all -M development -p app -c config.mjs -t ${buildDT} && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs -m all -M production -p app -c config.mjs -t ${buildDT}`)
 } catch (error) {
   console.error('Build process failed:', error)
   process.exit(2)
@@ -44,15 +44,15 @@ try {
   process.exit(3)
 }
 try {
-  output = execFileSync('git', ['commit', '-m', `Build ${build}`], { encoding: 'utf8' })
+  output = execFileSync('git', ['commit', '-m', `Build ${buildInfo.name}`], { encoding: 'utf8' })
 } catch (error) {
   console.error('Commit process failed:', error)
   process.exit(4)
 }
 
-console.log(`Tagging with ${build}`)
+console.log(`Tagging with ${buildInfo.name}`)
 try {
-  output = execSync(`git tag ${build}`, { encoding: 'utf8' })
+  output = execSync(`git tag ${buildInfo.name}`, { encoding: 'utf8' })
 } catch (error) {
   console.error('Tagging failed:', error)
   process.exit(5)

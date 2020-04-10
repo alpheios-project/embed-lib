@@ -1,5 +1,5 @@
 /* eslint-env jest */
-/* global Event, BUILD_NUMBER */
+/* global Event, BUILD_BRANCH, BUILD_NUMBER, BUILD_NAME */
 import State from './state'
 import { version as packageVersion, description as packageDescription } from '../package.json'
 // A variable that will store an instance of the imported components module
@@ -152,13 +152,15 @@ export class Embedded {
       textQuerySelector: this.enabledSelector,
       triggerPreCallback: this.triggerPreCallback,
       enableMouseMoveOverride: this.enableMouseMoveOverride,
-      app: { version:`${packageVersion}`, buildNumber: BUILD_NUMBER, name: packageDescription },
+      app: { version:`${packageVersion}`, buildBranch: BUILD_BRANCH, buildNumber: BUILD_NUMBER, buildName: BUILD_NAME, name: packageDescription },
       appType: components.Platform.appTypes.EMBEDDED_LIBRARY,
       clientId: this.clientId,
       // Disable text selection on mobile devices
       disableTextSelection: disableTextSelection,
       textLangCode: textLangCode,
-      overrideHelp: overrideHelp
+      overrideHelp: overrideHelp,
+      configServiceUrl: 'https://config.alpheios.net/v1/config',
+      experimentalResetTreebankURL: false
     })
     // Environment-specific initializations
     if (this.authEnv) {
