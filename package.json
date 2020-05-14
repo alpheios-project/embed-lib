@@ -102,8 +102,8 @@
     "webpack-merge": "^4.2.2"
   },
   "engines": {
-    "node": ">= 13.2.0",
-    "npm": ">= 6.9.0"
+    "node": ">= 14.1.0",
+    "npm": ">= 6.13.0"
   },
   "jest": {
     "verbose": true,
