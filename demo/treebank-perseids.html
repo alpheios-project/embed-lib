@@ -9,10 +9,7 @@
 
 <body
     data-alpheios_tb_app="perseids-treebank-template"
-    data-alpheios_tb_app_version="1"
-    data-alpheios_tb_app_url="https://alpheios-project.github.io/treebank-template/embed/DOC/SENTENCE?w=WORD"
-    data-alpheios_tb_ref="on-the-murder-of-eratosthenes-1-50#1-1"
->
+    data-alpheios_tb_app_version="1" data-alpheios_tb_app_url="https://alpheios-project.github.io/treebank-template/embed/DOC/SENTENCE">
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function(event) {
           import ('../dist/alpheios-embedded.js').then(embedLib => {
@@ -26,16 +23,105 @@
           })
         });
     </script>
-    <div lang="grc" class="alpheios-enabled">
-      <span data-alpheios_tb_ref="on-the-murder-of-eratosthenes-1-50#1-1">περὶ</span>
-      <span data-alpheios_tb_ref="on-the-murder-of-eratosthenes-1-50#1-2">πολλοῦ</span>
-      <span data-alpheios_tb_ref="on-the-murder-of-eratosthenes-1-50#1-3">ἂν</span>
-      <span data-alpheios_tb_ref="on-the-murder-of-eratosthenes-1-50#1-4">ποιησαίμην</span>
 
-      <span data-alpheios_tb_ref="on-the-murder-of-eratosthenes-1-50#2-1">εὖ</span>
-      <span data-alpheios_tb_ref="on-the-murder-of-eratosthenes-1-50#2-2">γὰρ</span>
-      <span data-alpheios_tb_ref="on-the-murder-of-eratosthenes-1-50#2-3">οἶδʼ</span>
-      <span data-alpheios_tb_ref="on-the-murder-of-eratosthenes-1-50#2-4">ὅτι</span>
+    <h2>Case A</h2>
+    <p>Text with <strong>data-alpheios_tb_doc</strong> and <strong>data-alpheios_tb_sent</strong> attributes
+      (will use <strong>findWord</strong> to get a <strong>wordId</strong>):</p>
+    <div lang="grc" class="alpheios-enabled" data-alpheios_tb_doc="on-the-murder-of-eratosthenes-1-50" data-alpheios_tb_sent="1">
+      <p>περὶ πολλοῦ ἂν ποιησαίμην</p>
+
+      <p data-alpheios_tb_sent="2">
+        εὖ γὰρ οἶδʼ ὅτι
+      </p>
+    </div>
+
+    <h2>Case B</h2>
+    <p>Text with <strong>data-alpheios_tb_doc</strong>, <strong>data-alpheios_tb_sent</strong>, and <strong>data-alpheios_tb_word</strong> attributes:</p>
+    <div lang="grc" class="alpheios-enabled" data-alpheios_tb_doc="on-the-murder-of-eratosthenes-1-50" data-alpheios_tb_sent="1">
+      <p>
+        <span data-alpheios_tb_word="1">περὶ</span>
+        <span data-alpheios_tb_word="2">πολλοῦ</span>
+        <span data-alpheios_tb_word="3">ἂν</span>
+        <span data-alpheios_tb_word="4">ποιησαίμην</span>
+      </p>
+
+      <p data-alpheios_tb_sent="2">
+        <span data-alpheios_tb_word="1">εὖ</span>
+        <span data-alpheios_tb_word="2">γὰρ</span>
+        <span data-alpheios_tb_word="3">οἶδʼ</span>
+        <span data-alpheios_tb_word="4">ὅτι</span>
+      </p>
+    </div>
+
+    <h2>Case C</h2>
+    <p>Text with <strong>data-alpheios_tb_ref</strong> attributes (a legacy formatting):</p>
+    <div lang="grc" class="alpheios-enabled">
+      <p>
+        <span data-alpheios_tb_ref="on-the-murder-of-eratosthenes-1-50#1-1">περὶ</span>
+        <span data-alpheios_tb_ref="on-the-murder-of-eratosthenes-1-50#1-2">πολλοῦ</span>
+        <span data-alpheios_tb_ref="on-the-murder-of-eratosthenes-1-50#1-3">ἂν</span>
+        <span data-alpheios_tb_ref="on-the-murder-of-eratosthenes-1-50#1-4">ποιησαίμην</span>
+      </p>
+
+      <p>
+        <span data-alpheios_tb_ref="on-the-murder-of-eratosthenes-1-50#2-1">εὖ</span>
+        <span data-alpheios_tb_ref="on-the-murder-of-eratosthenes-1-50#2-2">γὰρ</span>
+        <span data-alpheios_tb_ref="on-the-murder-of-eratosthenes-1-50#2-3">οἶδʼ</span>
+        <span data-alpheios_tb_ref="on-the-murder-of-eratosthenes-1-50#2-4">ὅτι</span>
+      </p>
+    </div>
+
+    <h2>Case D</h2>
+    <p>A latin text with a word <strong>primaque</strong> that returns multiple entries from a treebank
+      (uses <strong>data-alpheios_tb_word</strong> attributes):</p>
+    <div lang="lat" class="alpheios-enabled" data-alpheios_tb_app="perseids-treebank-template"
+         data-alpheios_tb_app_version="1"
+         data-alpheios_tb_app_url="https://alpheios-project.github.io/alpheios-trees/embed/DOC/SENTENCE"
+         data-alpheios_tb_doc="phi0959.phi006.alpheios-text-lat1">
+      
+      <p data-alpheios_tb_sent="2">
+        <span data-alpheios_tb_word="11">adspirate</span>
+        <span data-alpheios_tb_word="12">meis</span>
+        <span data-alpheios_tb_word="13 14">primaque</span>
+        <span data-alpheios_tb_word="15">ab</span>
+        <span data-alpheios_tb_word="16">origine</span>
+        <span data-alpheios_tb_word="17">mundi</span>
+      </p>
+    </div>
+
+    <h2>Case E</h2>
+    <p>A latin text with a word <strong>primaque</strong> that returns multiple entries from a treebank
+      (uses <strong>data-alpheios_tb_ref</strong> attributes):</p>
+    <div lang="lat" class="alpheios-enabled" data-alpheios_tb_app="perseids-treebank-template"
+         data-alpheios_tb_app_version="1"
+         data-alpheios_tb_app_url="https://alpheios-project.github.io/alpheios-trees/embed/DOC/SENTENCE">
+      <p>
+        <span data-alpheios_tb_ref="phi0959.phi006.alpheios-text-lat1#2-11">adspirate</span>
+        <span data-alpheios_tb_ref="phi0959.phi006.alpheios-text-lat1#2-12">meis</span>
+        <span data-alpheios_tb_ref="phi0959.phi006.alpheios-text-lat1#2-13 phi0959.phi006.alpheios-text-lat1#2-14">primaque</span>
+        <span data-alpheios_tb_ref="phi0959.phi006.alpheios-text-lat1#2-15">ab</span>
+        <span data-alpheios_tb_ref="phi0959.phi006.alpheios-text-lat1#2-16">origine</span>
+        <span data-alpheios_tb_ref="phi0959.phi006.alpheios-text-lat1#2-17">mundi</span>
+      </p>
+    </div>
+
+    <h2>Error handling</h2>
+    <p>A text with incorrect markup</p>
+    <div lang="lat" class="alpheios-enabled" data-alpheios_tb_app="perseids-treebank-template"
+         data-alpheios_tb_app_version="1"
+         data-alpheios_tb_app_url="https://alpheios-project.github.io/alpheios-trees/embed/DOC/SENTENCE"
+         data-alpheios_tb_doc="phi0959.phi006.alpheios-text-lat1">
+
+      <p data-alpheios_tb_sent="2">
+        <span>adspirate</span> (<span>data-alpheios_tb_word</span> is missing)<br>
+        <span data-alpheios_tb_word="1112">meis</span> (<span>data-alpheios_tb_word</span> has incorrect value)<br>
+        <span data-alpheios_tb_word="-13#14">primaque</span> (unparsable value in <span>data-alpheios_tb_word</span>)<br>
+        <span data-alpheios_tb_doc="eratosthenes" data-alpheios_tb_sent="1">
+          <span data-alpheios_tb_word="15">ab</span> (incorrect value in <span>data-alpheios_tb_doc</span>)<br>
+        </span>
+        <span data-alpheios_tb_word="16">origine</span>
+        <span data-alpheios_tb_word="17">mundi</span>
+      </p>
     </div>
 </body>
 </html>
