@@ -1,6 +1,6 @@
 {
   "name": "alpheios-embedded",
-  "version": "3.1.6",
+  "version": "3.1.6-qa.20200514440",
   "description": "Alpheios Embedded Library",
   "main": "dist/alpheios-embedded.js",
   "directories": {
@@ -42,7 +42,7 @@
     "@babel/preset-env": "^7.9.6",
     "@babel/register": "^7.9.0",
     "@babel/runtime": "^7.9.2",
-    "alpheios-core": "github:alpheios-project/alpheios-core",
+    "alpheios-core": "git+https://github.com/alpheios-project/alpheios-core.git#qa",
     "alpheios-node-build": "github:alpheios-project/node-build#semver:^3.2.0",
     "archiver": "^4.0.1",
     "babel-eslint": "^10.1.0",
