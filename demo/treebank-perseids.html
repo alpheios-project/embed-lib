@@ -105,6 +105,27 @@
       </p>
     </div>
 
+    <h2>Case F</h2>
+    <p>Disambiguation tests:</p>
+    <div lang="grc" class="alpheios-enabled"data-alpheios_tb_app="perseids-treebank-template"
+         data-alpheios_tb_app_version="1"
+         data-alpheios_tb_app_url="https://perseids-publications.github.io/treebank-template/embed/DOC/SENTENCE">
+      A word has two lexemes returned from a morph adapter. A first lexeme has some inflections. A treebank data returns
+      a lexeme that is matching a first lexeme from a morph adapter by word and part of speech. Treebank's lexeme has
+      no inflecitons. First lexeme in a homonym shown in a popup should be marked as disambiguated:
+      <strong data-alpheios_tb_doc="on-the-crown-1-50" data-alpheios_tb_sent="4">
+       παρ᾽
+      </strong>
+    </div>
+    <br>
+    <div lang="grc" class="alpheios-enabled"data-alpheios_tb_app="perseids-treebank-template"
+         data-alpheios_tb_app_version="1"
+         data-alpheios_tb_app_url="https://trees.alpheios.net/embed/DOC/SENTENCE">
+      A word that is contained in a treebank only, not in a morph analyzer. It should be marked as disambiguated:
+      <strong data-alpheios_tb_doc="tlg0085.tlg005.alpheios-text-grc1"
+         data-alpheios_tb_sent="2185285" data-alpheios_tb_word="40">φθίνωσιν</strong>
+    </div>
+
     <h2>Error handling</h2>
     <p>A text with incorrect markup</p>
     <div lang="lat" class="alpheios-enabled" data-alpheios_tb_app="perseids-treebank-template"
