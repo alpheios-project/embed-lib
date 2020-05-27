@@ -98,6 +98,11 @@ export class Embedded {
    *                   Default: false
    *     simpleMode: set to true to restrict the UI to the popup/morphology panel (with grammar links) and lookup but no other features
    *                 Default: false
+   *     arethusaTbRefreshRetryCount: number of times to retry retrieval of treebank data before disabling the
+   *                                  functionality for the treebank document
+   *                                  Default: 5
+   *     arethusaTbRefreshDelay: number of milliseconds to wait in between retrying treebank document requests
+   *                             Default: 200,
    */
   constructor ({
     clientId = null,
@@ -119,7 +124,9 @@ export class Embedded {
     disableTextSelection = false,
     textLangCode = null,
     overrideHelp = false,
-    simpleMode = false
+    simpleMode = false,
+    arethusaTbRefreshRetryCount = 5,
+    arethusaTbRefreshDelay = 200
     } = {}) {
     this.clientId = clientId
 
@@ -160,7 +167,8 @@ export class Embedded {
       textLangCode: textLangCode,
       overrideHelp: overrideHelp,
       configServiceUrl: 'https://config.alpheios.net/v1/config',
-      experimentalResetTreebankURL: false
+      arethusaTbRefreshRetryCount: arethusaTbRefreshRetryCount,
+      arethusaTbRefreshDelay: arethusaTbRefreshDelay
     })
     // Environment-specific initializations
     if (this.authEnv) {
