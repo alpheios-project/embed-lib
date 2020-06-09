@@ -21,11 +21,11 @@ deploy:
       tags: on
       condition: $TRAVIS_TAG =~ ^ftqa
   - provider: script
-    script: "npm publish --tag latest"
+    script: "npm publish --tag rc"
     on:
       all_branches: true
       tags: on
-      condition: $TRAVIS_TAG =~ ^v
+      condition: $TRAVIS_TAG =~ ^production
   - provider: releases
     api_key:
       secure: BUD1xHEhUTzY28546mMtwHhKR0551+GAzNUxYbtyocMyhq1Bq9bF4d2c5sJ6DpzKxemBb5pzXB49BeGGeXAfxZhP0mHG2nVB76ybmC+Ak6cAayz8Y1duZlIFdJSYJ4UpVeP5f8RLRWE2kqakS1fzPWRVljQ9rbM/7zpf3wVU2Iut4X1ZuUDvfyWf2g/859B8RMIgFQDaFgZIbnna7C//Gh3/o7J9pq3tpNmuCjVd49bNG/a3ZGMNTDJFHYJb+GFsrISyduTzawO+VbpX8MlH4cqzjoAKM9tXUnc33kjbPM/Q6nfrYz8v58qOGEgeQdBMXsKatNQFnE87ZK6LoYRlKmFumUVaeu00nfS4Ff2Hvx/5sixzz0j4S6a6HAJLwEtopxhI0npoFAsm6qARLNrGWwZWOpLBg2mC/U0HFEwFauEMMHe0OKGdvDXG79UkaG0Mpvy3j6WWwYY1/ldnNP+EwmwkR4TxtNu1GGE5OKg+hIGFoBsF+4cVJOsZmFEt/ro4pxSTwMQy9DiN+95BSBz/vR/RCwTLrxuDAv7fRabXG7ua+QYNyTNCAa2PVUoPZMpDVAEeXaawrt1UJViLsw07ByGszjXizdbgsV7AzUQh3nKR8xSHOKhk4YCO2idOqGMKQQQfYC0DEEwwBL2e7TSq5ZrhBx6/bqTfOhues0z7W5Y=
