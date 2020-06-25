@@ -16,21 +16,24 @@ const webpack = {
     },
     plugins: [
       // Paths are relative to the output directory, i.e. `dist`
-      new copyPlugin([
-        {
-          from: '../node_modules/alpheios-core/packages/components/dist/',
-          to: 'lib',
-          ignore: ['style/**']
-        },
+      new copyPlugin({
+        patterns: [
+          {
+            from: '../node_modules/alpheios-core/packages/components/dist/',
+            to: 'lib',
+            globOptions: {
+              ignore: [
+                'style/**'
+              ]
+            }
+          },
           {
             from: '../node_modules/alpheios-core/packages/components/dist/style',
             to: 'style',
           }
-      ],
-      {
-        logLevel: 'warn'
-      }),
-    ],
+        ]
+        })
+    ]
   },
 
   production: {

@@ -152,7 +152,7 @@ export class Embedded {
     this.state.setPanelClosed() // A default state of the panel is CLOSED
     this.state.tab = 'info' // A default tab is "info"
 
-    this.ui = components.UIController.create(this.state, {
+    this.ui = components.AppController.create(this.state, {
       storageAdapter: components.LocalStorageArea,
       textQueryTriggerDesktop: this.desktopTriggerEvent,
       textQueryTriggerMobile: this.mobileTriggerEvent,
@@ -299,7 +299,7 @@ export class Embedded {
 
     let alignment = new components.AlignmentSelector(this.doc, {})
     alignment.activate()
-    let alignmentTranslation = components.UIController.initAlignedTranslation(this.doc, '.aligned-translation',
+    let alignmentTranslation = components.AppController.initAlignedTranslation(this.doc, '.aligned-translation',
       {
         // resize from all edges and corners
         edges: { left: true, right: true, bottom: false, top: false },

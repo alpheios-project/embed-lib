@@ -1,0 +1,722 @@
+<!-- This demo shows how to add treebank data to a page -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Alpheios Embedded Library Treebank Demo (V1)</title>
+  <link rel="stylesheet" href="../dist/style/style-components.css"/>
+</head>
+
+<body
+    data-alpheios_tb_app="perseids-treebank-template"
+    data-alpheios_tb_app_version="1"
+    data-alpheios_tb_app_url="https://trees.alpheios.net/embed/DOC/SENTENCE">
+<script type="text/javascript">
+  document.addEventListener('DOMContentLoaded', function (event) {
+    import ('../dist/alpheios-embedded.js').then(embedLib => {
+      window.AlpheiosEmbed.importDependencies({ mode: 'development' }).then(Embedded => {
+        new Embedded({ clientId: 'embed-lib-demo-treebanks', authEnv: null }).activate()
+      }).catch(e => {
+        console.error(`Import of an embedded library dependencies failed: ${e}`)
+      })
+    }).catch(e => {
+      console.error(`Import of an embedded library failed: ${e}`)
+    })
+  })
+</script>
+
+<h2>Ὀδύσσεια - Homer, 1.1-1.30</h2>
+<div lang="grc" class="alpheios-enabled">
+  <div class="l-text">
+      <span class="w alpheios-word " id="s1_w1-5-2-2-8-1-1" nrefs="" tbref="2185541-1"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185541-1">ἄνδρα</span>
+    <span
+        class="w alpheios-word " id="s1_w1-5-2-2-8-1-3" nrefs="" tbref="2185541-2"
+        data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185541-2">μοι</span>
+    <span class="w alpheios-word "
+          id="s1_w1-5-2-2-8-1-5"
+          nrefs=""
+          tbref="2185541-3"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185541-3">ἔννεπε</span>
+    , <span class="w alpheios-word " id="s1_w1-5-2-2-8-1-7" nrefs="" tbref="2185541-5"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185541-5">μοῦσα</span> , <span
+      class="w alpheios-word " id="s1_w1-5-2-2-8-1-9" nrefs="" tbref="2185541-7"
+      data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185541-7">πολύτροπον</span> , <span
+      class="w alpheios-word " id="s1_w1-5-2-2-8-1-11" nrefs="" tbref="2185541-9"
+      data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185541-9">ὃς</span>
+    <span
+        class="w alpheios-word " id="s1_w1-5-2-2-8-1-13" nrefs="" tbref="2185541-10"
+        data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185541-10">μάλα</span>
+    <span
+        class="w alpheios-word " id="s1_w1-5-2-2-8-1-15" nrefs="" tbref="2185541-11"
+        data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185541-11">πολλὰ</span>
+  </div>
+  <div class="l  hascite">
+    <div class="l-text"><span class="w alpheios-word " id="s1_w1-5-2-2-10-1-1" nrefs="" tbref="2185541-12"
+                              data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185541-12">πλάγχθη</span> ,
+      <span class="w alpheios-word " id="s1_w1-5-2-2-10-1-3" nrefs="" tbref="2185541-14"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185541-14">ἐπεὶ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-10-1-5" nrefs="" tbref="2185541-15"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185541-15">Τροίης</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-10-1-7" nrefs="" tbref="2185541-16"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185541-16">ἱερὸν</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-10-1-9" nrefs="" tbref="2185541-17"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185541-17">πτολίεθρον</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-10-1-11" nrefs="" tbref="2185541-18"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185541-18">ἔπερσεν</span>:
+    </div>
+  </div>
+  <div class="l  hascite">
+    <div class="l-text"><span class="w alpheios-word " id="s1_w1-5-2-2-12-1-1" nrefs="" tbref="2185542-1"
+                              data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185542-1">πολλῶν</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-12-1-3" nrefs="" tbref="2185542-2"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185542-2">δ᾽</span>
+      <span class="w alpheios-word "
+            id="s1_w1-5-2-2-12-1-5"
+            nrefs=""
+            tbref="2185542-3"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185542-3">ἀνθρώπων</span>
+      <span class="w alpheios-word " id="s1_w1-5-2-2-12-1-7" nrefs="" tbref="2185542-4"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185542-4">ἴδεν</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-12-1-9" nrefs="" tbref="2185542-5"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185542-5">ἄστεα</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-12-1-11" nrefs="" tbref="2185542-6"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185542-6">καὶ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-12-1-13" nrefs="" tbref="2185542-7"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185542-7">νόον</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-12-1-15" nrefs="" tbref="2185542-8"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185542-8">ἔγνω</span>,
+    </div>
+  </div>
+  <div class="l  hascite">
+    <div class="l-text"><span class="w alpheios-word " id="s1_w1-5-2-2-14-1-1" nrefs="" tbref="2185542-10"
+                              data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185542-10">πολλὰ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-14-1-3" nrefs="" tbref="2185542-11"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185542-11">δ᾽</span>
+      <span class="w alpheios-word "
+            id="s1_w1-5-2-2-14-1-5"
+            nrefs=""
+            tbref="2185542-12"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185542-12">ὅ</span>
+      <span class="w alpheios-word " id="s1_w1-5-2-2-14-1-7" nrefs="" tbref="2185542-13"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185542-13">γ᾽</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-14-1-9" nrefs="" tbref="2185542-14"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185542-14">ἐν</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-14-1-11" nrefs="" tbref="2185542-15"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185542-15">πόντῳ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-14-1-13" nrefs="" tbref="2185542-16"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185542-16">πάθεν</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-14-1-15" nrefs="" tbref="2185542-17"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185542-17">ἄλγεα</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-14-1-17" nrefs="" tbref="2185542-18"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185542-18">ὃν</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-14-1-19" nrefs="" tbref="2185542-19"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185542-19">κατὰ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-14-1-21" nrefs="" tbref="2185542-20"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185542-20">θυμόν</span>,
+    </div>
+  </div>
+  <div class="l  hascite">
+    <div class="l-cite ">5</div>
+    <div class="l-text"><span class="w alpheios-word " id="s1_w1-5-2-2-16-2-1" nrefs="" tbref="2185542-22"
+                              data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185542-22">ἀρνύμενος</span>
+      <span class="w alpheios-word " id="s1_w1-5-2-2-16-2-3" nrefs="" tbref="2185542-23"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185542-23">ἥν</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-16-2-5" nrefs="" tbref="2185542-24"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185542-24">τε</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-16-2-7" nrefs="" tbref="2185542-25"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185542-25">ψυχὴν</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-16-2-9" nrefs="" tbref="2185542-26"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185542-26">καὶ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-16-2-11" nrefs="" tbref="2185542-27"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185542-27">νόστον</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-16-2-13" nrefs="" tbref="2185542-28"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185542-28">ἑταίρων</span>.
+    </div>
+  </div>
+  <div class="l  hascite">
+    <div class="l-text"><span class="w alpheios-word " id="s1_w1-5-2-2-18-1-1" nrefs="" tbref="2185543-1"
+                              data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185543-1">ἀλλ᾽</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-18-1-3" nrefs="" tbref="2185543-2"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185543-2">οὐδ᾽</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-18-1-5" nrefs="" tbref="2185543-3"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185543-3">ὣς</span>
+      <span class="w alpheios-word "
+            id="s1_w1-5-2-2-18-1-7"
+            nrefs=""
+            tbref="2185543-4"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185543-4">ἑτάρους</span>
+      <span class="w alpheios-word " id="s1_w1-5-2-2-18-1-9" nrefs="" tbref="2185543-5"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185543-5">ἐρρύσατο</span> , <span
+          class="w alpheios-word " id="s1_w1-5-2-2-18-1-11" nrefs="" tbref="2185543-7"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185543-7">ἱέμενός</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-18-1-13" nrefs="" tbref="2185543-8"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185543-8">περ</span>:
+    </div>
+  </div>
+  <div class="l  hascite">
+    <div class="l-text"><span class="w alpheios-word " id="s1_w1-5-2-2-20-1-1" nrefs="" tbref="2185544-1"
+                              data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185544-1">αὐτῶν</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-20-1-3" nrefs="" tbref="2185544-2"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185544-2">γὰρ</span>
+      <span class="w alpheios-word "
+            id="s1_w1-5-2-2-20-1-5"
+            nrefs=""
+            tbref="2185544-3"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185544-3">σφετέρῃσιν</span>
+      <span class="w alpheios-word " id="s1_w1-5-2-2-20-1-7" nrefs="" tbref="2185544-4"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185544-4">ἀτασθαλίῃσιν</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-20-1-9" nrefs="" tbref="2185544-5"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185544-5">ὄλοντο</span>,
+    </div>
+  </div>
+  <div class="l  hascite">
+    <div class="l-text"><span class="w alpheios-word " id="s1_w1-5-2-2-22-1-1" nrefs="" tbref="2185544-7"
+                              data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185544-7">νήπιοι</span> ,
+      <span class="w alpheios-word " id="s1_w1-5-2-2-22-1-3" nrefs="" tbref="2185544-9"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185544-9">οἳ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-22-1-5" nrefs="" tbref="2185544-10"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185544-10">κατὰ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-22-1-7" nrefs="" tbref="2185544-11"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185544-11">βοῦς</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-22-1-9" nrefs="" tbref="2185544-12"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185544-12">Ὑπερίονος</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-22-1-11" nrefs="" tbref="2185544-13"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185544-13">Ἠελίοιο</span></div>
+  </div>
+  <div class="l  hascite">
+    <div class="l-text"><span class="w alpheios-word " id="s1_w1-5-2-2-24-1-1" nrefs="" tbref="2185544-14"
+                              data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185544-14">ἤσθιον</span> :
+      <span class="w alpheios-word " id="s1_w1-5-2-2-24-1-3" nrefs="" tbref="2185545-1"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185545-1">αὐτὰρ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-24-1-5" nrefs="" tbref="2185545-2"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185545-2">ὁ</span>
+      <span class="w alpheios-word "
+            id="s1_w1-5-2-2-24-1-7"
+            nrefs=""
+            tbref="2185545-3"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185545-3">τοῖσιν</span>
+      <span class="w alpheios-word " id="s1_w1-5-2-2-24-1-9" nrefs="" tbref="2185545-4"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185545-4">ἀφείλετο</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-24-1-11" nrefs="" tbref="2185545-5"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185545-5">νόστιμον</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-24-1-13" nrefs="" tbref="2185545-6"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185545-6">ἦμαρ</span>.
+    </div>
+  </div>
+  <div class="l  hascite">
+    <div class="l-cite ">10</div>
+    <div class="l-text"><span class="w alpheios-word " id="s1_w1-5-2-2-26-2-1" nrefs="" tbref="2185546-1"
+                              data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185546-1">τῶν</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-26-2-3" nrefs="" tbref="2185546-2"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185546-2">ἁμόθεν</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-26-2-5" nrefs="" tbref="2185546-3"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185546-3">γε</span> , <span
+          class="w alpheios-word " id="s1_w1-5-2-2-26-2-7" nrefs="" tbref="2185546-5"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185546-5">θεά</span> , <span
+          class="w alpheios-word " id="s1_w1-5-2-2-26-2-9" nrefs="" tbref="2185546-7"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185546-7">θύγατερ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-26-2-11" nrefs="" tbref="2185546-8"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185546-8">Διός</span> , <span
+          class="w alpheios-word " id="s1_w1-5-2-2-26-2-13" nrefs="" tbref="2185546-10"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185546-10">εἰπὲ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-26-2-15" nrefs="" tbref="2185546-11"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185546-11">καὶ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-26-2-17" nrefs="" tbref="2185546-12"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185546-12">ἡμῖν</span>.
+    </div>
+  </div>
+  <div class="l  hascite">
+    <div class="l-text">
+      <div class="milestone para " id="" data-alpheios-ignore="all"></div>
+      <span class="w alpheios-word " id="s1_w1-5-2-2-28-3-1" nrefs="" tbref="2185547-1"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185547-1">ἔνθ᾽</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-28-3-3" nrefs="" tbref="2185547-2"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185547-2">ἄλλοι</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-28-3-5" nrefs="" tbref="2185547-3"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185547-3">μὲν</span>
+      <span class="w alpheios-word "
+            id="s1_w1-5-2-2-28-3-7"
+            nrefs=""
+            tbref="2185547-4"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185547-4">πάντες</span>
+      , <span class="w alpheios-word " id="s1_w1-5-2-2-28-3-9" nrefs="" tbref="2185547-6"
+              data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185547-6">ὅσοι</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-28-3-11" nrefs="" tbref="2185547-7"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185547-7">φύγον</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-28-3-13" nrefs="" tbref="2185547-8"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185547-8">αἰπὺν</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-28-3-15" nrefs="" tbref="2185547-9"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185547-9">ὄλεθρον</span>,
+    </div>
+  </div>
+  <div class="l  hascite">
+    <div class="l-text"><span class="w alpheios-word " id="s1_w1-5-2-2-30-1-1" nrefs="" tbref="2185547-11"
+                              data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185547-11">οἴκοι</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-30-1-3" nrefs="" tbref="2185547-12"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185547-12">ἔσαν</span> , <span
+          class="w alpheios-word " id="s1_w1-5-2-2-30-1-5" nrefs="" tbref="2185547-14"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185547-14">πόλεμόν</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-30-1-7" nrefs="" tbref="2185547-15"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185547-15">τε</span>
+      <span class="w alpheios-word "
+            id="s1_w1-5-2-2-30-1-9"
+            nrefs=""
+            tbref="2185547-16"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185547-16">πεφευγότες</span>
+      <span class="w alpheios-word " id="s1_w1-5-2-2-30-1-11" nrefs="" tbref="2185547-17"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185547-17">ἠδὲ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-30-1-13" nrefs="" tbref="2185547-18"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185547-18">θάλασσαν</span>:
+    </div>
+  </div>
+  <div class="l  hascite">
+    <div class="l-text"><span class="w alpheios-word " id="s1_w1-5-2-2-32-1-1" nrefs="" tbref="2185548-1"
+                              data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185548-1">τὸν</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-32-1-3" nrefs="" tbref="2185548-2"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185548-2">δ᾽</span>
+      <span class="w alpheios-word "
+            id="s1_w1-5-2-2-32-1-5"
+            nrefs=""
+            tbref="2185548-3"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185548-3">οἶον</span>
+      <span class="w alpheios-word " id="s1_w1-5-2-2-32-1-7" nrefs="" tbref="2185548-4"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185548-4">νόστου</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-32-1-9" nrefs="" tbref="2185548-5"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185548-5">κεχρημένον</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-32-1-11" nrefs="" tbref="2185548-6"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185548-6">ἠδὲ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-32-1-13" nrefs="" tbref="2185548-7"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185548-7">γυναικὸς</span></div>
+  </div>
+  <div class="l  hascite">
+    <div class="l-text"><span class="w alpheios-word " id="s1_w1-5-2-2-34-1-1" nrefs="" tbref="2185548-8"
+                              data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185548-8">νύμφη</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-34-1-3" nrefs="" tbref="2185548-9"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185548-9">πότνι᾽</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-34-1-5" nrefs="" tbref="2185548-10"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185548-10">ἔρυκε</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-34-1-7" nrefs="" tbref="2185548-11"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185548-11">Καλυψὼ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-34-1-9" nrefs="" tbref="2185548-12"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185548-12">δῖα</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-34-1-11" nrefs="" tbref="2185548-13"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185548-13">θεάων</span></div>
+  </div>
+  <div class="l  hascite">
+    <div class="l-cite ">15</div>
+    <div class="l-text"><span class="w alpheios-word " id="s1_w1-5-2-2-36-2-1" nrefs="" tbref="2185548-14"
+                              data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185548-14">ἐν</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-36-2-3" nrefs="" tbref="2185548-15"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185548-15">σπέσσι</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-36-2-5" nrefs="" tbref="2185548-16"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185548-16">γλαφυροῖσι</span> , <span
+          class="w alpheios-word " id="s1_w1-5-2-2-36-2-7" nrefs="" tbref="2185548-18"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185548-18">λιλαιομένη</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-36-2-9" nrefs="" tbref="2185548-19"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185548-19">πόσιν</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-36-2-11" nrefs="" tbref="2185548-20"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185548-20">εἶναι</span>.
+    </div>
+  </div>
+  <div class="l  hascite">
+    <div class="l-text"><span class="w alpheios-word " id="s1_w1-5-2-2-38-1-1" nrefs="" tbref="2185549-1"
+                              data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185549-1">ἀλλ᾽</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-38-1-3" nrefs="" tbref="2185549-2"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185549-2">ὅτε</span>
+      <span class="w alpheios-word "
+            id="s1_w1-5-2-2-38-1-5"
+            nrefs=""
+            tbref="2185549-3"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185549-3">δὴ</span>
+      <span class="w alpheios-word " id="s1_w1-5-2-2-38-1-7" nrefs="" tbref="2185549-4"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185549-4">ἔτος</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-38-1-9" nrefs="" tbref="2185549-5"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185549-5">ἦλθε</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-38-1-11" nrefs="" tbref="2185549-6"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185549-6">περιπλομένων</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-38-1-13" nrefs="" tbref="2185549-7"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185549-7">ἐνιαυτῶν</span>,
+    </div>
+  </div>
+  <div class="l  hascite">
+    <div class="l-text"><span class="w alpheios-word " id="s1_w1-5-2-2-40-1-1" nrefs="" tbref="2185549-9"
+                              data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185549-9">τῷ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-40-1-3" nrefs="" tbref="2185549-10"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185549-10">οἱ</span>
+      <span class="w alpheios-word "
+            id="s1_w1-5-2-2-40-1-5"
+            nrefs=""
+            tbref="2185549-11"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185549-11">ἐπεκλώσαντο</span>
+      <span class="w alpheios-word " id="s1_w1-5-2-2-40-1-7" nrefs="" tbref="2185549-12"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185549-12">θεοὶ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-40-1-9" nrefs="" tbref="2185549-13"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185549-13">οἶκόνδε</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-40-1-11" nrefs="" tbref="2185549-14"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185549-14">νέεσθαι</span></div>
+  </div>
+  <div class="l  hascite">
+    <div class="l-text"><span class="w alpheios-word " id="s1_w1-5-2-2-42-1-1" nrefs="" tbref="2185549-15"
+                              data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185549-15">εἰς</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-42-1-3" nrefs="" tbref="2185549-16"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185549-16">Ἰθάκην</span> , <span
+          class="w alpheios-word " id="s1_w1-5-2-2-42-1-5" nrefs="" tbref="2185549-18"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185549-18">οὐδ᾽</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-42-1-7" nrefs="" tbref="2185549-19"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185549-19">ἔνθα</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-42-1-9" nrefs="" tbref="2185549-20"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185549-20">πεφυγμένος</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-42-1-11" nrefs="" tbref="2185549-21"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185549-21">ἦεν</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-42-1-13" nrefs="" tbref="2185549-22"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185549-22">ἀέθλων</span></div>
+  </div>
+  <div class="l  hascite">
+    <div class="l-text"><span class="w alpheios-word " id="s1_w1-5-2-2-44-1-1" nrefs="" tbref="2185549-23"
+                              data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185549-23">καὶ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-44-1-3" nrefs="" tbref="2185549-24"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185549-24">μετὰ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-44-1-5" nrefs="" tbref="2185549-25"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185549-25">οἷσι</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-44-1-7" nrefs="" tbref="2185549-26"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185549-26">φίλοισι</span> . <span
+          class="w alpheios-word " id="s1_w1-5-2-2-44-1-9" nrefs="" tbref="2185550-1"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185550-1">θεοὶ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-44-1-11" nrefs="" tbref="2185550-2"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185550-2">δ᾽</span>
+      <span class="w alpheios-word "
+            id="s1_w1-5-2-2-44-1-13"
+            nrefs=""
+            tbref="2185550-3"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185550-3">ἐλέαιρον</span>
+      <span class="w alpheios-word " id="s1_w1-5-2-2-44-1-15" nrefs="" tbref="2185550-4"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185550-4">ἅπαντες</span></div>
+  </div>
+  <div class="l  hascite">
+    <div class="l-cite ">20</div>
+    <div class="l-text"><span class="w alpheios-word " id="s1_w1-5-2-2-46-2-1" nrefs="" tbref="2185550-5"
+                              data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185550-5">νόσφι</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-46-2-3" nrefs="" tbref="2185550-6"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185550-6">Ποσειδάωνος</span> : <span
+          class="w alpheios-word " id="s1_w1-5-2-2-46-2-5" nrefs="" tbref="2185551-1"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185551-1">ὁ</span>
+      <span class="w alpheios-word "
+            id="s1_w1-5-2-2-46-2-7"
+            nrefs="" tbref="2185551-2"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185551-2">δ᾽</span>
+      <span class="w alpheios-word " id="s1_w1-5-2-2-46-2-9" nrefs="" tbref="2185551-3"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185551-3">ἀσπερχὲς</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-46-2-11" nrefs="" tbref="2185551-4"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185551-4">μενέαινεν</span></div>
+  </div>
+  <div class="l  hascite">
+    <div class="l-text"><span class="w alpheios-word " id="s1_w1-5-2-2-48-1-1" nrefs="" tbref="2185551-5"
+                              data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185551-5">ἀντιθέῳ</span>
+      <span class="w alpheios-word " id="s1_w1-5-2-2-48-1-3" nrefs="" tbref="2185551-6"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185551-6">Ὀδυσῆι</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-48-1-5" nrefs="" tbref="2185551-7"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185551-7">πάρος</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-48-1-7" nrefs="" tbref="2185551-8"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185551-8">ἣν</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-48-1-9" nrefs="" tbref="2185551-9"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185551-9">γαῖαν</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-48-1-11" nrefs="" tbref="2185551-10"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185551-10">ἱκέσθαι</span>.
+    </div>
+  </div>
+  <div class="l  hascite">
+    <div class="l-text">
+      <div class="milestone para " id="" data-alpheios-ignore="all"></div>
+      <span class="w alpheios-word " id="s1_w1-5-2-2-50-3-1" nrefs="" tbref="2185552-1"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185552-1">ἀλλ᾽</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-50-3-3" nrefs="" tbref="2185552-2"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185552-2">ὁ</span>
+      <span class="w alpheios-word "
+            id="s1_w1-5-2-2-50-3-5"
+            nrefs="" tbref="2185552-3"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185552-3">μὲν</span>
+      <span class="w alpheios-word " id="s1_w1-5-2-2-50-3-7" nrefs="" tbref="2185552-4"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185552-4">Αἰθίοπας</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-50-3-9" nrefs="" tbref="2185552-5"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185552-5">μετεκίαθε</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-50-3-11" nrefs="" tbref="2185552-6"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185552-6">τηλόθ᾽</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-50-3-13" nrefs="" tbref="2185552-7"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185552-7">ἐόντας</span>,
+    </div>
+  </div>
+  <div class="l  hascite">
+    <div class="l-text"><span class="w alpheios-word " id="s1_w1-5-2-2-52-1-1" nrefs="" tbref="2185552-9"
+                              data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185552-9">Αἰθίοπας</span>
+      <span class="w alpheios-word " id="s1_w1-5-2-2-52-1-3" nrefs="" tbref="2185552-10"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185552-10">τοὶ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-52-1-5" nrefs="" tbref="2185552-11"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185552-11">διχθὰ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-52-1-7" nrefs="" tbref="2185552-12"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185552-12">δεδαίαται</span> , <span
+          class="w alpheios-word " id="s1_w1-5-2-2-52-1-9" nrefs="" tbref="2185552-14"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185552-14">ἔσχατοι</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-52-1-11" nrefs="" tbref="2185552-15"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185552-15">ἀνδρῶν</span>,
+    </div>
+  </div>
+  <div class="l  hascite">
+    <div class="l-text"><span class="w alpheios-word " id="s1_w1-5-2-2-54-1-1" nrefs="" tbref="2185552-17"
+                              data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185552-17">οἱ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-54-1-3" nrefs="" tbref="2185552-18"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185552-18">μὲν</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-54-1-5" nrefs="" tbref="2185552-19"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185552-19">δυσομένου</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-54-1-7" nrefs="" tbref="2185552-20"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185552-20">Ὑπερίονος</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-54-1-9" nrefs="" tbref="2185552-21"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185552-21">οἱ</span>
+      <span class="w alpheios-word "
+            id="s1_w1-5-2-2-54-1-11"
+            nrefs=""
+            tbref="2185552-22"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185552-22">δ᾽</span>
+      <span class="w alpheios-word " id="s1_w1-5-2-2-54-1-13" nrefs="" tbref="2185552-23"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185552-23">ἀνιόντος</span>,
+    </div>
+  </div>
+  <div class="l  hascite">
+    <div class="l-cite ">25</div>
+    <div class="l-text"><span class="w alpheios-word " id="s1_w1-5-2-2-56-2-1" nrefs="" tbref="2185552-25"
+                              data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185552-25">ἀντιόων</span>
+      <span class="w alpheios-word " id="s1_w1-5-2-2-56-2-3" nrefs="" tbref="2185552-26"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185552-26">ταύρων</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-56-2-5" nrefs="" tbref="2185552-27"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185552-27">τε</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-56-2-7" nrefs="" tbref="2185552-28"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185552-28">καὶ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-56-2-9" nrefs="" tbref="2185552-29"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185552-29">ἀρνειῶν</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-56-2-11" nrefs="" tbref="2185552-30"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185552-30">ἑκατόμβης</span>.
+    </div>
+  </div>
+  <div class="l  hascite">
+    <div class="l-text"><span class="w alpheios-word " id="s1_w1-5-2-2-58-1-1" nrefs="" tbref="2185553-1"
+                              data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185553-1">ἔνθ᾽</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-58-1-3" nrefs="" tbref="2185553-2"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185553-2">ὅ</span>
+      <span class="w alpheios-word "
+            id="s1_w1-5-2-2-58-1-5"
+            nrefs="" tbref="2185553-3"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185553-3">γ᾽</span>
+      <span class="w alpheios-word " id="s1_w1-5-2-2-58-1-7" nrefs="" tbref="2185553-4"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185553-4">ἐτέρπετο</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-58-1-9" nrefs="" tbref="2185553-5"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185553-5">δαιτὶ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-58-1-11" nrefs="" tbref="2185553-6"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185553-6">παρήμενος</span> : <span
+          class="w alpheios-word " id="s1_w1-5-2-2-58-1-13" nrefs="" tbref="2185554-1"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185554-1">οἱ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-58-1-15" nrefs="" tbref="2185554-2"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185554-2">δὲ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-58-1-17" nrefs="" tbref="2185554-3"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185554-3">δὴ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-58-1-19" nrefs="" tbref="2185554-4"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185554-4">ἄλλοι</span></div>
+  </div>
+  <div class="l  hascite">
+    <div class="l-text"><span class="w alpheios-word " id="s1_w1-5-2-2-60-1-1" nrefs="" tbref="2185554-5"
+                              data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185554-5">Ζηνὸς</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-60-1-3" nrefs="" tbref="2185554-6"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185554-6">ἐνὶ</span>
+      <span class="w alpheios-word "
+            id="s1_w1-5-2-2-60-1-5"
+            nrefs=""
+            tbref="2185554-7"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185554-7">μεγάροισιν</span>
+      <span class="w alpheios-word " id="s1_w1-5-2-2-60-1-7" nrefs="" tbref="2185554-8"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185554-8">Ὀλυμπίου</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-60-1-9" nrefs="" tbref="2185554-9"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185554-9">ἁθρόοι</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-60-1-11" nrefs="" tbref="2185554-10"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185554-10">ἦσαν</span>.
+    </div>
+  </div>
+  <div class="l  hascite">
+    <div class="l-text"><span class="w alpheios-word " id="s1_w1-5-2-2-62-1-1" nrefs="" tbref="2185555-1"
+                              data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185555-1">τοῖσι</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-62-1-3" nrefs="" tbref="2185555-2"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185555-2">δὲ</span>
+      <span class="w alpheios-word "
+            id="s1_w1-5-2-2-62-1-5"
+            nrefs=""
+            tbref="2185555-3"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185555-3">μύθων</span>
+      <span class="w alpheios-word " id="s1_w1-5-2-2-62-1-7" nrefs="" tbref="2185555-4"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185555-4">ἦρχε</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-62-1-9" nrefs="" tbref="2185555-5"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185555-5">πατὴρ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-62-1-11" nrefs="" tbref="2185555-6"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185555-6">ἀνδρῶν</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-62-1-13" nrefs="" tbref="2185555-7"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185555-7">τε</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-62-1-15" nrefs="" tbref="2185555-8"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185555-8">θεῶν</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-62-1-17" nrefs="" tbref="2185555-9"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185555-9">τε</span>:
+    </div>
+  </div>
+  <div class="l  hascite">
+    <div class="l-text"><span class="w alpheios-word " id="s1_w1-5-2-2-64-1-1" nrefs="" tbref="2185556-1"
+                              data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185556-1">μνήσατο</span>
+      <span class="w alpheios-word " id="s1_w1-5-2-2-64-1-3" nrefs="" tbref="2185556-2"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185556-2">γὰρ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-64-1-5" nrefs="" tbref="2185556-3"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185556-3">κατὰ</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-64-1-7" nrefs="" tbref="2185556-4"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185556-4">θυμὸν</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-64-1-9" nrefs="" tbref="2185556-5"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185556-5">ἀμύμονος</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-64-1-11" nrefs="" tbref="2185556-6"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185556-6">Αἰγίσθοιο</span>,
+    </div>
+  </div>
+  <div class="l  hascite">
+    <div class="l-cite ">30</div>
+    <div class="l-text"><span class="w alpheios-word " id="s1_w1-5-2-2-66-2-1" nrefs="" tbref="2185556-8"
+                              data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185556-8">τόν</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-66-2-3" nrefs="" tbref="2185556-9"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185556-9">ῥ᾽</span>
+      <span class="w alpheios-word "
+            id="s1_w1-5-2-2-66-2-5"
+            nrefs=""
+            tbref="2185556-10"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185556-10">Ἀγαμεμνονίδης</span>
+      <span class="w alpheios-word " id="s1_w1-5-2-2-66-2-7" nrefs="" tbref="2185556-11"
+            data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185556-11">τηλεκλυτὸς</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-66-2-9" nrefs="" tbref="2185556-12"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185556-12">ἔκταν᾽</span>
+      <span
+          class="w alpheios-word " id="s1_w1-5-2-2-66-2-11" nrefs="" tbref="2185556-13"
+          data-alpheios_tb_ref="tlg0012.tlg002.alpheios-text-grc1.1#2185556-13">Ὀρέστης</span>:
+    </div>
+  </div>
+  <div class="passage-end"></div>
+</div>
+</body>
+</html>
