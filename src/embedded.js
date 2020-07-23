@@ -330,7 +330,7 @@ export class Embedded {
 
   openActionPanel () {
     if (this.app.platform.isMobile) {
-      this.app.closePanel()
+      this.app.api.ui.closePanel()
     }
     this.app.api.ui.openActionPanel()
   }
@@ -344,7 +344,7 @@ export class Embedded {
    */
   openActionPanelLookup () {
     if (this.app.platform.isMobile) {
-      this.app.closePanel()
+      this.app.api.ui.closePanel()
     }
     this.app.api.ui.openActionPanel({ showNav: false })
   }
@@ -354,7 +354,7 @@ export class Embedded {
    */
   openActionPanelToolbar () {
     if (this.app.platform.isMobile) {
-      this.app.closePanel()
+      this.app.api.ui.closePanel()
     }
     this.app.api.ui.openActionPanel({ showLookup: false })
   }

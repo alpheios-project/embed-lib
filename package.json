@@ -43,7 +43,7 @@
     "@babel/register": "^7.10.4",
     "@babel/runtime": "^7.10.4",
     "alpheios-core": "github:alpheios-project/alpheios-core",
-    "alpheios-node-build": "github:alpheios-project/node-build#semver:^3.5.0",
+    "alpheios-node-build": "github:alpheios-project/node-build#semver:^3.5.1",
     "archiver": "^4.0.1",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.1.0",
