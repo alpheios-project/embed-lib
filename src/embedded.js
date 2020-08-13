@@ -332,7 +332,7 @@ export class Embedded {
   }
 
   openActionPanel () {
-    if (this.platform.isMobile) {
+    if (this._platform.isMobile) {
       this.app.api.ui.closePanel()
     }
     this.app.api.ui.openActionPanel()
@@ -346,7 +346,7 @@ export class Embedded {
    * Opens the action panel with toolbar buttons hidden and only the lookup visible.
    */
   openActionPanelLookup () {
-    if (this.platform.isMobile) {
+    if (this._platform.isMobile) {
       this.app.api.ui.closePanel()
     }
     this.app.api.ui.openActionPanel({ showNav: false })
@@ -356,7 +356,7 @@ export class Embedded {
    * Opens the action panel with only toolbar buttons visible.
    */
   openActionPanelToolbar () {
-    if (this.platform.isMobile) {
+    if (this._platform.isMobile) {
       this.app.api.ui.closePanel()
     }
     this.app.api.ui.openActionPanel({ showLookup: false })

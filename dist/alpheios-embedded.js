@@ -275,7 +275,7 @@ class Embedded {
       textQuerySelector: this.enabledSelector,
       triggerPreCallback: this.triggerPreCallback,
       enableMouseMoveOverride: this.enableMouseMoveOverride,
-      app: { version:`${_package_json__WEBPACK_IMPORTED_MODULE_1__["version"]}`, buildBranch: "dev-platform-fix", buildNumber: "20200813564", buildName: "dev-platform-fix.20200813564", name: _package_json__WEBPACK_IMPORTED_MODULE_1__["description"] },
+      app: { version:`${_package_json__WEBPACK_IMPORTED_MODULE_1__["version"]}`, buildBranch: "dev", buildNumber: "20200813580", buildName: "dev.20200813580", name: _package_json__WEBPACK_IMPORTED_MODULE_1__["description"] },
       appType: components.Platform.appTypes.EMBEDDED_LIBRARY,
       clientId: this.clientId,
       // Disable text selection on mobile devices
@@ -446,7 +446,7 @@ class Embedded {
   }
 
   openActionPanel () {
-    if (this.platform.isMobile) {
+    if (this._platform.isMobile) {
       this.app.api.ui.closePanel()
     }
     this.app.api.ui.openActionPanel()
@@ -460,7 +460,7 @@ class Embedded {
    * Opens the action panel with toolbar buttons hidden and only the lookup visible.
    */
   openActionPanelLookup () {
-    if (this.platform.isMobile) {
+    if (this._platform.isMobile) {
       this.app.api.ui.closePanel()
     }
     this.app.api.ui.openActionPanel({ showNav: false })
@@ -470,7 +470,7 @@ class Embedded {
    * Opens the action panel with only toolbar buttons visible.
    */
   openActionPanelToolbar () {
-    if (this.platform.isMobile) {
+    if (this._platform.isMobile) {
       this.app.api.ui.closePanel()
     }
     this.app.api.ui.openActionPanel({ showLookup: false })
