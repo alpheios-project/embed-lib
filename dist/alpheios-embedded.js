@@ -266,6 +266,8 @@ class Embedded {
     this.state.setPanelClosed() // A default state of the panel is CLOSED
     this.state.tab = 'info' // A default tab is "info"
 
+    this._platform = new components.Platform({ appType: components.Platform.appTypes.EMBEDDED_LIBRARY })
+
     this.app = components.AppController.create(this.state, {
       storageAdapter: components.LocalStorageArea,
       textQueryTriggerDesktop: this.desktopTriggerEvent,
@@ -273,7 +275,7 @@ class Embedded {
       textQuerySelector: this.enabledSelector,
       triggerPreCallback: this.triggerPreCallback,
       enableMouseMoveOverride: this.enableMouseMoveOverride,
-      app: { version:`${_package_json__WEBPACK_IMPORTED_MODULE_1__["version"]}`, buildBranch: "dev-ui-controller-refactoring", buildNumber: "20200723703", buildName: "dev-ui-controller-refactoring.20200723703", name: _package_json__WEBPACK_IMPORTED_MODULE_1__["description"] },
+      app: { version:`${_package_json__WEBPACK_IMPORTED_MODULE_1__["version"]}`, buildBranch: "dev-platform-fix", buildNumber: "20200813564", buildName: "dev-platform-fix.20200813564", name: _package_json__WEBPACK_IMPORTED_MODULE_1__["description"] },
       appType: components.Platform.appTypes.EMBEDDED_LIBRARY,
       clientId: this.clientId,
       // Disable text selection on mobile devices
@@ -334,13 +336,13 @@ class Embedded {
       this.app.registerModule(components.ActionPanelModule, { showNav: actionPanelParams.showNav })
     } else if (layoutType === 'readingTools') {
       // This is a special configuration for Alpheios Reading Tools
-      if (this.app.platform.isDesktop) {
+      if (this._platform.isDesktop) {
         if (toolbarInitialPos && Object.values(toolbarInitialPos).filter(value => Boolean(value)).length > 0) {
           toolbarParams.initialPos = toolbarInitialPos
         }
 
         this.app.registerModule(components.ToolbarModule, toolbarParams)
-      } else if (this.app.platform.isMobile) {
+      } else if (this._platform.isMobile) {
         this.app.registerModule(components.ActionPanelModule, {
           lookupResultsIn: 'panel',
           initialPos: actionPanelParams.initialPos,
@@ -350,8 +352,9 @@ class Embedded {
     }
   }
 
+  // TODO: Is it used by any external code?
   get platform () {
-    return this.app.platform
+    return this._platform
   }
 
   notifyExtension () {
@@ -443,7 +446,7 @@ class Embedded {
   }
 
   openActionPanel () {
-    if (this.app.platform.isMobile) {
+    if (this.platform.isMobile) {
       this.app.api.ui.closePanel()
     }
     this.app.api.ui.openActionPanel()
@@ -457,7 +460,7 @@ class Embedded {
    * Opens the action panel with toolbar buttons hidden and only the lookup visible.
    */
   openActionPanelLookup () {
-    if (this.app.platform.isMobile) {
+    if (this.platform.isMobile) {
       this.app.api.ui.closePanel()
     }
     this.app.api.ui.openActionPanel({ showNav: false })
@@ -467,7 +470,7 @@ class Embedded {
    * Opens the action panel with only toolbar buttons visible.
    */
   openActionPanelToolbar () {
-    if (this.app.platform.isMobile) {
+    if (this.platform.isMobile) {
       this.app.api.ui.closePanel()
     }
     this.app.api.ui.openActionPanel({ showLookup: false })
