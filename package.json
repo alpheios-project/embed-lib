@@ -22,7 +22,8 @@
     "version-set-major": "npm version major",
     "version-set-minor": "npm version minor",
     "version-set-patch": "npm version patch",
-    "tagged-commit": "node --experimental-modules --experimental-json-modules ./tagged-commit.mjs"
+    "tagged-commit": "node --experimental-modules --experimental-json-modules ./tagged-commit.mjs",
+    "github-build": "node --experimental-modules --experimental-json-modules ./github-build.mjs"
   },
   "repository": {
     "type": "git",
@@ -35,6 +36,7 @@
   },
   "homepage": "https://github.com/alpheios-project/wordsvc#readme",
   "devDependencies": {
+    "@actions/core": "^1.2.4",
     "@babel/core": "^7.10.4",
     "@babel/plugin-proposal-object-rest-spread": "^7.10.4",
     "@babel/plugin-transform-modules-commonjs": "^7.10.4",
