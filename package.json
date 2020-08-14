@@ -1,6 +1,6 @@
 {
   "name": "alpheios-embedded",
-  "version": "3.3.0-githubactions.20200814408",
+  "version": "3.3.0",
   "description": "Alpheios Embedded Library",
   "main": "dist/alpheios-embedded.js",
   "directories": {
