@@ -1,7 +1,7 @@
 name: QA Build
 on: 
   push:
-    branches: [ githubactions, qa ]
+    branches: [ qa ]
   
   workflow_dispatch:
   
@@ -49,5 +49,5 @@ jobs:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       
     - name: publish
-      run: npm publish --tag dev
+      run: npm publish --tag qa
      
