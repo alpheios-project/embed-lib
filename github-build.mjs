@@ -26,7 +26,7 @@ import * as core from '@actions/core'
     const output = execSync(`npm version ${version} --no-git-tag-version --force`, { encoding: 'utf8' })
   } catch (e) {
     console.error('Cannot execute npm version:', e)
-    process.exit(1)
+    process.exit(2)
   }
 
   console.log('Rebuilding an embedded library. This may take a while')
@@ -43,7 +43,7 @@ import * as core from '@actions/core'
     await builder.runModules()
   } catch (error) {
     console.error('Build process failed:', error)
-    process.exit(2)
+    process.exit(3)
   }
   console.log('Rebuilding of an embedded library has been completed')
 
@@ -52,7 +52,7 @@ import * as core from '@actions/core'
     core.default.setOutput('buildName',buildInfo.name)
   } catch (error) {
     console.error('Failed to set output variable:', error)
-    process.exit(3)
+    process.exit(4)
   }
 
 })()
