@@ -1,6 +1,6 @@
 {
   "name": "alpheios-embedded",
-  "version": "3.3.0",
+  "version": "3.3.0-githubactions.20200814286",
   "description": "Alpheios Embedded Library",
   "main": "dist/alpheios-embedded.js",
   "directories": {
@@ -23,7 +23,7 @@
     "version-set-minor": "npm version minor",
     "version-set-patch": "npm version patch",
     "tagged-commit": "node --experimental-modules --experimental-json-modules ./tagged-commit.mjs",
-    "github-build": "node ./github-build.mjs"
+    "github-build": "node --experimental-modules --experimental-json-modules ./github-build.mjs"
   },
   "repository": {
     "type": "git",
