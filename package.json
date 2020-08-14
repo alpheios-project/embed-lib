@@ -22,7 +22,7 @@
     "version-set-major": "npm version major",
     "version-set-minor": "npm version minor",
     "version-set-patch": "npm version patch",
-    "tagged-commit": "node --experimental-modules --experimental-json-modules ./tagged-commit.mjs"
+    "tagged-commit": "node --experimental-modules --experimental-json-modules ./tagged-commit.mjs",
     "github-build": "node ./github-build.mjs"
   },
   "repository": {
