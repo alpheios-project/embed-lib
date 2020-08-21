@@ -1,7 +1,7 @@
-name: QA Build
+name: Release Build
 on: 
   push:
-    branches: [ qa ]
+    branches: [ qa, ftqa, production ]
   
   workflow_dispatch:
   
@@ -49,5 +49,5 @@ jobs:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       
     - name: publish
-      run: npm publish --tag qa
+      run: npm publish --tag ${{ steps.run_build.outputs.npmTag }}
      
