@@ -373,4 +373,4 @@ See our [FAQ pages](http://www.alpheios.net/pages/faq/)
 
 ## Developer Instructions
 
-See [BUILD.md][BUILD.md]
+See [BUILD.md](BUILD.md)
