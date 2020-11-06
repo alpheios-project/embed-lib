@@ -42,7 +42,7 @@
     "@babel/preset-env": "^7.11.0",
     "@babel/register": "^7.10.5",
     "@babel/runtime": "^7.11.1",
-    "alpheios-core": "github:alpheios-project/alpheios-core#move-options-to-data-models",
+    "alpheios-core": "github:alpheios-project/alpheios-core",
     "alpheios-node-build": "github:alpheios-project/node-build#semver:^3.5.0",
     "archiver": "^4.0.2",
     "babel-eslint": "^10.1.0",
