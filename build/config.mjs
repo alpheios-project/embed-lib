@@ -28,6 +28,10 @@ const webpack = {
             }
           },
           {
+            from: '../node_modules/alpheios-core/packages/data-models/dist/',
+            to: 'lib'
+          },
+          {
             from: '../node_modules/alpheios-core/packages/components/dist/style',
             to: 'style',
           }

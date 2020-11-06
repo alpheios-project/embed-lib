@@ -3,7 +3,7 @@
 import State from './state'
 import { version as packageVersion, description as packageDescription } from '../package.json'
 // A variable that will store an instance of the imported components module
-let components
+let components, datamodels
 
 /**
  * Imports dynamic dependencies that are required for the embed-lib.
@@ -25,9 +25,11 @@ export function importDependencies (options) {
   switch (options.mode) {
     case 'production':
       libs.components = './lib/alpheios-components.min.js'
+      libs.datamodels = './lib/alpheios-data-models.min.js'
       break
     case 'development':
       libs.components = './lib/alpheios-components.js'
+      libs.datamodels = './lib/alpheios-data-models.js'
       break
     case 'custom':
       libs = options.libs
@@ -37,6 +39,8 @@ export function importDependencies (options) {
       libs.components = 'https://cdn.jsdelivr.net/npm/alpheios-components@latest/dist/alpheios-components.min.js'
       break
   }
+
+  console.info('libs - ', libs)
   return new Promise((resolve, reject) => {
     let imports = []
     let componentsImport = import(
@@ -46,6 +50,14 @@ export function importDependencies (options) {
       components = window.AlpheiosComponents
     })
     imports.push(componentsImport)
+
+    let datamodelsImport = import(
+      /* webpackIgnore: true */
+      libs.datamodels
+    ).then(() => {
+      datamodels = window.AlpheiosDataModels
+    })
+    imports.push(datamodelsImport)
 
     Promise.all(imports).then(() => {
       resolve (Embedded)
@@ -153,7 +165,7 @@ export class Embedded {
     this.state.tab = 'info' // A default tab is "info"
 
     this.ui = components.AppController.create(this.state, {
-      storageAdapter: components.LocalStorageArea,
+      storageAdapter: datamodels.LocalStorageArea,
       textQueryTriggerDesktop: this.desktopTriggerEvent,
       textQueryTriggerMobile: this.mobileTriggerEvent,
       textQuerySelector: this.enabledSelector,
