@@ -126,7 +126,7 @@ export class Embedded {
     disabledClass = '',
     mobileTriggerEvent = null,
     desktopTriggerEvent = null,
-    triggerPreCallback = (evt) => { return true }, // Not used at the moment but can be set as a filter for `this.ui.getSelectedText()` calls
+    triggerPreCallback = (evt) => { return true }, // Not used at the moment but can be set as a filter for `this.app.getSelectedText()` calls
     enableMouseMoveOverride = false,
     popupInitialPos = {},
     toolbarInitialPos = {},
@@ -165,7 +165,9 @@ export class Embedded {
     this.state.setPanelClosed() // A default state of the panel is CLOSED
     this.state.tab = 'info' // A default tab is "info"
 
-    this.ui = components.AppController.create(this.state, {
+    this._platform = new components.Platform({ appType: components.Platform.appTypes.EMBEDDED_LIBRARY })
+
+    this.app = components.AppController.create(this.state, {
       storageAdapter: datamodels.LocalStorageArea,
       textQueryTriggerDesktop: this.desktopTriggerEvent,
       textQueryTriggerMobile: this.mobileTriggerEvent,
@@ -187,19 +189,19 @@ export class Embedded {
     if (this.authEnv) {
       if (authEnv.CLIENT_ID) {
         // Register an authentication module only with authentication environment is loaded
-        this.ui.registerModule(components.AuthModule, { auth: new components.AppAuthenticator(authEnv) })
+        this.app.registerModule(components.AuthModule, { auth: new components.AppAuthenticator(authEnv) })
       } else if (authEnv.LOGIN_URL) {
-        this.ui.registerModule(components.AuthModule, { auth: new components.SessionAuthenticator(authEnv) })
+        this.app.registerModule(components.AuthModule, { auth: new components.SessionAuthenticator(authEnv) })
       }
     } else {
-      this.ui.registerModule(components.AuthModule, { auth: null })
+      this.app.registerModule(components.AuthModule, { auth: null })
     }
     // Register UI modules
     let panelParams = {}
     if (this.simpleMode) {
       panelParams.showNav = false
     }
-    this.ui.registerModule(components.PanelModule, panelParams)
+    this.app.registerModule(components.PanelModule, panelParams)
 
     let popupParams = {}
     if (popupInitialPos && Object.values(popupInitialPos).filter(value => Boolean(value)).length > 0) {
@@ -208,7 +210,7 @@ export class Embedded {
     if (this.simpleMode) {
       popupParams.showNav = false
     }
-    this.ui.registerModule(components.PopupModule, popupParams)
+    this.app.registerModule(components.PopupModule, popupParams)
 
     let actionPanelParams = {}
     if (actionPanelInitialPos && Object.values(actionPanelInitialPos).filter(value => Boolean(value)).length > 0) {
@@ -229,18 +231,18 @@ export class Embedded {
         toolbarParams.initialPos = toolbarInitialPos
       }
 
-      this.ui.registerModule(components.ToolbarModule, toolbarParams)
-      this.ui.registerModule(components.ActionPanelModule, { showNav: actionPanelParams.showNav })
+      this.app.registerModule(components.ToolbarModule, toolbarParams)
+      this.app.registerModule(components.ActionPanelModule, { showNav: actionPanelParams.showNav })
     } else if (layoutType === 'readingTools') {
       // This is a special configuration for Alpheios Reading Tools
-      if (this.ui.platform.isDesktop) {
+      if (this._platform.isDesktop) {
         if (toolbarInitialPos && Object.values(toolbarInitialPos).filter(value => Boolean(value)).length > 0) {
           toolbarParams.initialPos = toolbarInitialPos
         }
 
-        this.ui.registerModule(components.ToolbarModule, toolbarParams)
-      } else if (this.ui.platform.isMobile) {
-        this.ui.registerModule(components.ActionPanelModule, {
+        this.app.registerModule(components.ToolbarModule, toolbarParams)
+      } else if (this._platform.isMobile) {
+        this.app.registerModule(components.ActionPanelModule, {
           lookupResultsIn: 'panel',
           initialPos: actionPanelParams.initialPos,
           showNav: actionPanelParams.showNav
@@ -249,8 +251,9 @@ export class Embedded {
     }
   }
 
+  // TODO: Is it used by any external code?
   get platform () {
-    return this.ui.platform
+    return this._platform
   }
 
   notifyExtension () {
@@ -268,15 +271,15 @@ export class Embedded {
        */
       this.notifyExtension()
 
-      // await this.ui.init() // Activate will call `init()` if has not been initialized previously
-      await this.ui.activate()
+      // await this.app.init() // Activate will call `init()` if has not been initialized previously
+      await this.app.activate()
 
       // Set a body attribute so the content scrip will know if embedded library is active on a page
       this.doc.body.setAttribute('alpheios-embed-lib-status', 'active')
       this.doc.body.addEventListener('Alpheios_Embedded_Check', event => { this.notifyExtension(event) })
 
       // and set the state on the components
-      this.ui.setEmbedLibActive(true)
+      this.app.setEmbedLibActive(true)
 
     } catch (error) {
       console.error(`Unexpected error activating Alpheios: ${error}`)
@@ -338,37 +341,37 @@ export class Embedded {
   }
 
   openToolbar () {
-    this.ui.openToolbar()
+    this.app.api.ui.openToolbar()
   }
 
   openActionPanel () {
-    if (this.ui.platform.isMobile) {
-      this.ui.closePanel()
+    if (this._platform.isMobile) {
+      this.app.api.ui.closePanel()
     }
-    this.ui.openActionPanel()
+    this.app.api.ui.openActionPanel()
   }
 
   closeActionPanel () {
-    this.ui.closeActionPanel()
+    this.app.api.ui.closeActionPanel()
   }
 
   /**
    * Opens the action panel with toolbar buttons hidden and only the lookup visible.
    */
   openActionPanelLookup () {
-    if (this.ui.platform.isMobile) {
-      this.ui.closePanel()
+    if (this._platform.isMobile) {
+      this.app.api.ui.closePanel()
     }
-    this.ui.openActionPanel({ showNav: false })
+    this.app.api.ui.openActionPanel({ showNav: false })
   }
 
   /**
    * Opens the action panel with only toolbar buttons visible.
    */
   openActionPanelToolbar () {
-    if (this.ui.platform.isMobile) {
-      this.ui.closePanel()
+    if (this._platform.isMobile) {
+      this.app.api.ui.closePanel()
     }
-    this.ui.openActionPanel({ showLookup: false })
+    this.app.api.ui.openActionPanel({ showLookup: false })
   }
 }

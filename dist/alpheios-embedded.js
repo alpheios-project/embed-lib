@@ -94,7 +94,7 @@ window["AlpheiosEmbed"] =
 /*! exports provided: name, version, description, main, directories, scripts, repository, author, license, bugs, homepage, devDependencies, engines, jest, eslintConfig, eslintIgnore, dependencies, config, default */
 /***/ (function(module) {
 
-module.exports = JSON.parse("{\"name\":\"alpheios-embedded\",\"version\":\"3.3.0\",\"description\":\"Alpheios Embedded Library\",\"main\":\"dist/alpheios-embedded.js\",\"directories\":{\"doc\":\"doc\"},\"scripts\":{\"set-node-build-deps\":\"npx install-peerdeps alpheios-node-build --dev --only-peers\",\"test\":\"jest\",\"build\":\"npm run build-dev && npm run build-prod\",\"build-prod\":\"npm run lint && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs -m all -M production -p app -c config.mjs\",\"build-dev\":\"npm run lint && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs -m all -M development -p app -c config.mjs\",\"auth0-env-update\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/prod --t=dist/auth0 --f=env-embed.js\",\"auth0-env-dev-update\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/dev --t=dist/auth0 --f=env-embed.js\",\"lint\":\"eslint --fix src/**/*.js\",\"update-dependencies\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-core/packages/components/dist/ --t=dist/lib && node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-core/packages/components/dist/style --t=dist/style\",\"build-experimental\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs -m webpack -M development -p app -c config.mjs\",\"dev\":\"npm run build-experimental && http-server -c-1 -p 8888 & onchange src -- npm run build-experimental\",\"conventional-commit\":\"npx git-cz\",\"version-set-major\":\"npm version major\",\"version-set-minor\":\"npm version minor\",\"version-set-patch\":\"npm version patch\",\"tagged-commit\":\"node --experimental-modules --experimental-json-modules ./tagged-commit.mjs\"},\"repository\":{\"type\":\"git\",\"url\":\"git+https://github.com/alpheios-project/wordsvc.git\"},\"author\":\"The Alpheios Project, Ltd.\",\"license\":\"ISC\",\"bugs\":{\"url\":\"https://github.com/alpheios-project/wordsvc/issues\"},\"homepage\":\"https://github.com/alpheios-project/wordsvc#readme\",\"devDependencies\":{\"@babel/core\":\"^7.11.1\",\"@babel/plugin-proposal-object-rest-spread\":\"^7.11.0\",\"@babel/plugin-transform-modules-commonjs\":\"^7.10.4\",\"@babel/plugin-transform-runtime\":\"^7.11.0\",\"@babel/preset-env\":\"^7.11.0\",\"@babel/register\":\"^7.10.5\",\"@babel/runtime\":\"^7.11.1\",\"alpheios-core\":\"github:alpheios-project/alpheios-core#move-options-to-data-models\",\"alpheios-node-build\":\"github:alpheios-project/node-build#semver:^3.5.0\",\"archiver\":\"^4.0.2\",\"babel-eslint\":\"^10.1.0\",\"babel-loader\":\"^8.1.0\",\"babel-plugin-dynamic-import-node\":\"^2.3.3\",\"babel-plugin-module-resolver\":\"^4.0.0\",\"chalk\":\"^4.1.0\",\"command-line-args\":\"^5.1.1\",\"copy-webpack-plugin\":\"^6.0.3\",\"coveralls\":\"^3.0.11\",\"css-loader\":\"^3.6.0\",\"cz-conventional-changelog\":\"^3.1.0\",\"eslint\":\"^7.6.0\",\"eslint-config-standard\":\"^14.1.1\",\"eslint-plugin-import\":\"^2.22.0\",\"eslint-plugin-node\":\"^11.1.0\",\"eslint-plugin-promise\":\"^4.2.1\",\"eslint-plugin-standard\":\"^4.0.1\",\"eslint-plugin-vue\":\"^6.2.2\",\"fibers\":\"^5.0.0\",\"fs-extra\":\"^9.0.1\",\"git-branch\":\"^2.0.1\",\"http-server\":\"^0.12.3\",\"imagemin\":\"^7.0.1\",\"imagemin-jpegtran\":\"^7.0.0\",\"imagemin-optipng\":\"^8.0.0\",\"imagemin-svgo\":\"^8.0.0\",\"inspectpack\":\"^4.5.2\",\"interactjs\":\"^1.9.20\",\"jest\":\"^26.2.2\",\"jest-fetch-mock\":\"^3.0.3\",\"mini-css-extract-plugin\":\"^0.9.0\",\"onchange\":\"^7.0.2\",\"optimize-css-assets-webpack-plugin\":\"^5.0.3\",\"path\":\"^0.12.7\",\"postcss-import\":\"^12.0.1\",\"postcss-loader\":\"^3.0.0\",\"postcss-safe-important\":\"^1.2.0\",\"postcss-scss\":\"^2.1.1\",\"raw-loader\":\"^4.0.0\",\"sass\":\"^1.26.10\",\"sass-loader\":\"^8.0.2\",\"shx\":\"^0.3.2\",\"source-map-loader\":\"^1.0.1\",\"style-loader\":\"^1.1.3\",\"url-loader\":\"^4.1.0\",\"vue-loader\":\"^15.9.3\",\"vue-style-loader\":\"^4.1.2\",\"vue-svg-loader\":\"^0.16.0\",\"vue-template-compiler\":\"^2.6.11\",\"vue-template-loader\":\"^1.1.0\",\"webpack\":\"^4.44.1\",\"webpack-bundle-analyzer\":\"^3.8.0\",\"webpack-cleanup-plugin\":\"^0.5.1\",\"webpack-dev-server\":\"^3.11.0\",\"webpack-merge\":\"^4.2.2\"},\"engines\":{\"node\":\">= 14.1.0\",\"npm\":\">= 6.13.0\"},\"jest\":{\"verbose\":true,\"transform\":{\"^.+\\\\.jsx?$\":\"babel-jest\"},\"transformIgnorePatterns\":[\"node_modules/alpheios-core/packages/components/\"]},\"eslintConfig\":{\"env\":{\"browser\":true,\"node\":true},\"parser\":\"babel-eslint\",\"parserOptions\":{\"sourceType\":\"module\",\"ecmaVersion\":2019,\"allowImportExportEverywhere\":true}},\"eslintIgnore\":[\"**/dist\"],\"dependencies\":{},\"config\":{\"commitizen\":{\"path\":\"./node_modules/cz-conventional-changelog\"}}}");
+module.exports = JSON.parse("{\"name\":\"alpheios-embedded\",\"version\":\"3.3.1\",\"description\":\"Alpheios Embedded Library\",\"main\":\"dist/alpheios-embedded.js\",\"directories\":{\"doc\":\"doc\"},\"scripts\":{\"set-node-build-deps\":\"npx install-peerdeps alpheios-node-build --dev --only-peers\",\"test\":\"jest\",\"build\":\"npm run build-dev && npm run build-prod\",\"build-prod\":\"npm run lint && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs -m all -M production -p app -c config.mjs\",\"build-dev\":\"npm run lint && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs -m all -M development -p app -c config.mjs\",\"auth0-env-update\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/prod --t=dist/auth0 --f=env-embed.js\",\"auth0-env-dev-update\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/dev --t=dist/auth0 --f=env-embed.js\",\"lint\":\"eslint --fix src/**/*.js\",\"update-dependencies\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-core/packages/components/dist/ --t=dist/lib && node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-core/packages/components/dist/style --t=dist/style\",\"build-experimental\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs -m webpack -M development -p app -c config.mjs\",\"dev\":\"npm run build-experimental && http-server -c-1 -p 8888 & onchange src -- npm run build-experimental\",\"conventional-commit\":\"npx git-cz\",\"version-set-major\":\"npm version major\",\"version-set-minor\":\"npm version minor\",\"version-set-patch\":\"npm version patch\",\"tagged-commit\":\"node --experimental-modules --experimental-json-modules ./tagged-commit.mjs\",\"github-build\":\"node --experimental-modules --experimental-json-modules ./github-build.mjs\"},\"repository\":{\"type\":\"git\",\"url\":\"git+https://github.com/alpheios-project/wordsvc.git\"},\"author\":\"The Alpheios Project, Ltd.\",\"license\":\"ISC\",\"bugs\":{\"url\":\"https://github.com/alpheios-project/wordsvc/issues\"},\"homepage\":\"https://github.com/alpheios-project/wordsvc#readme\",\"devDependencies\":{\"@actions/core\":\"^1.2.4\",\"@babel/core\":\"^7.11.4\",\"@babel/plugin-proposal-object-rest-spread\":\"^7.10.4\",\"@babel/plugin-transform-modules-commonjs\":\"^7.10.4\",\"@babel/plugin-transform-runtime\":\"^7.10.4\",\"@babel/preset-env\":\"^7.10.4\",\"@babel/register\":\"^7.10.4\",\"@babel/runtime\":\"^7.10.4\",\"alpheios-core\":\"git+https://github.com/alpheios-project/alpheios-core.git\",\"alpheios-node-build\":\"github:alpheios-project/node-build#semver:^3.5.1\",\"archiver\":\"^4.0.1\",\"babel-eslint\":\"^10.1.0\",\"babel-loader\":\"^8.1.0\",\"babel-plugin-dynamic-import-node\":\"^2.3.3\",\"babel-plugin-module-resolver\":\"^4.0.0\",\"chalk\":\"^4.1.0\",\"command-line-args\":\"^5.1.1\",\"copy-webpack-plugin\":\"^6.0.3\",\"coveralls\":\"^3.0.11\",\"css-loader\":\"^3.6.0\",\"cz-conventional-changelog\":\"^3.1.0\",\"eslint\":\"^7.7.0\",\"eslint-config-standard\":\"^14.1.1\",\"eslint-plugin-import\":\"^2.22.0\",\"eslint-plugin-node\":\"^11.1.0\",\"eslint-plugin-promise\":\"^4.2.1\",\"eslint-plugin-standard\":\"^4.0.1\",\"eslint-plugin-vue\":\"^6.2.2\",\"fibers\":\"^5.0.0\",\"fs-extra\":\"^9.0.1\",\"git-branch\":\"^2.0.1\",\"http-server\":\"^0.12.3\",\"imagemin\":\"^7.0.1\",\"imagemin-jpegtran\":\"^7.0.0\",\"imagemin-optipng\":\"^8.0.0\",\"imagemin-svgo\":\"^8.0.0\",\"inspectpack\":\"^4.5.2\",\"interactjs\":\"^1.9.22\",\"jest\":\"^26.4.1\",\"jest-fetch-mock\":\"^3.0.3\",\"mini-css-extract-plugin\":\"^0.9.0\",\"onchange\":\"^7.0.2\",\"optimize-css-assets-webpack-plugin\":\"^5.0.3\",\"path\":\"^0.12.7\",\"postcss-import\":\"^12.0.1\",\"postcss-loader\":\"^3.0.0\",\"postcss-safe-important\":\"^1.2.0\",\"postcss-scss\":\"^2.1.1\",\"raw-loader\":\"^4.0.0\",\"sass\":\"^1.26.9\",\"sass-loader\":\"^8.0.2\",\"shx\":\"^0.3.2\",\"source-map-loader\":\"^1.0.2\",\"style-loader\":\"^1.1.3\",\"url-loader\":\"^4.1.0\",\"vue-loader\":\"^15.9.3\",\"vue-style-loader\":\"^4.1.2\",\"vue-svg-loader\":\"^0.16.0\",\"vue-template-compiler\":\"^2.6.12\",\"vue-template-loader\":\"^1.1.0\",\"webpack\":\"^4.44.1\",\"webpack-bundle-analyzer\":\"^3.8.0\",\"webpack-cleanup-plugin\":\"^0.5.1\",\"webpack-dev-server\":\"^3.11.0\",\"webpack-merge\":\"^4.2.2\"},\"engines\":{\"node\":\">= 14.1.0\",\"npm\":\">= 6.13.0\"},\"jest\":{\"verbose\":true,\"transform\":{\"^.+\\\\.jsx?$\":\"babel-jest\"},\"transformIgnorePatterns\":[\"node_modules/alpheios-core/packages/components/\"]},\"eslintConfig\":{\"env\":{\"browser\":true,\"node\":true},\"parser\":\"babel-eslint\",\"parserOptions\":{\"sourceType\":\"module\",\"ecmaVersion\":2019,\"allowImportExportEverywhere\":true}},\"eslintIgnore\":[\"**/dist\"],\"dependencies\":{},\"config\":{\"commitizen\":{\"path\":\"./node_modules/cz-conventional-changelog\"}}}");
 
 /***/ }),
 
@@ -240,7 +240,7 @@ class Embedded {
     disabledClass = '',
     mobileTriggerEvent = null,
     desktopTriggerEvent = null,
-    triggerPreCallback = (evt) => { return true }, // Not used at the moment but can be set as a filter for `this.ui.getSelectedText()` calls
+    triggerPreCallback = (evt) => { return true }, // Not used at the moment but can be set as a filter for `this.app.getSelectedText()` calls
     enableMouseMoveOverride = false,
     popupInitialPos = {},
     toolbarInitialPos = {},
@@ -279,14 +279,16 @@ class Embedded {
     this.state.setPanelClosed() // A default state of the panel is CLOSED
     this.state.tab = 'info' // A default tab is "info"
 
-    this.ui = components.AppController.create(this.state, {
+    this._platform = new components.Platform({ appType: components.Platform.appTypes.EMBEDDED_LIBRARY })
+
+    this.app = components.AppController.create(this.state, {
       storageAdapter: datamodels.LocalStorageArea,
       textQueryTriggerDesktop: this.desktopTriggerEvent,
       textQueryTriggerMobile: this.mobileTriggerEvent,
       textQuerySelector: this.enabledSelector,
       triggerPreCallback: this.triggerPreCallback,
       enableMouseMoveOverride: this.enableMouseMoveOverride,
-      app: { version:`${_package_json__WEBPACK_IMPORTED_MODULE_1__["version"]}`, buildBranch: "move-options-to-data-models", buildNumber: "20201106434", buildName: "move-options-to-data-models.20201106434", name: _package_json__WEBPACK_IMPORTED_MODULE_1__["description"] },
+      app: { version:`${_package_json__WEBPACK_IMPORTED_MODULE_1__["version"]}`, buildBranch: "move-options-to-data-models", buildNumber: "20201106558", buildName: "move-options-to-data-models.20201106558", name: _package_json__WEBPACK_IMPORTED_MODULE_1__["description"] },
       appType: components.Platform.appTypes.EMBEDDED_LIBRARY,
       clientId: this.clientId,
       // Disable text selection on mobile devices
@@ -301,19 +303,19 @@ class Embedded {
     if (this.authEnv) {
       if (authEnv.CLIENT_ID) {
         // Register an authentication module only with authentication environment is loaded
-        this.ui.registerModule(components.AuthModule, { auth: new components.AppAuthenticator(authEnv) })
+        this.app.registerModule(components.AuthModule, { auth: new components.AppAuthenticator(authEnv) })
       } else if (authEnv.LOGIN_URL) {
-        this.ui.registerModule(components.AuthModule, { auth: new components.SessionAuthenticator(authEnv) })
+        this.app.registerModule(components.AuthModule, { auth: new components.SessionAuthenticator(authEnv) })
       }
     } else {
-      this.ui.registerModule(components.AuthModule, { auth: null })
+      this.app.registerModule(components.AuthModule, { auth: null })
     }
     // Register UI modules
     let panelParams = {}
     if (this.simpleMode) {
       panelParams.showNav = false
     }
-    this.ui.registerModule(components.PanelModule, panelParams)
+    this.app.registerModule(components.PanelModule, panelParams)
 
     let popupParams = {}
     if (popupInitialPos && Object.values(popupInitialPos).filter(value => Boolean(value)).length > 0) {
@@ -322,7 +324,7 @@ class Embedded {
     if (this.simpleMode) {
       popupParams.showNav = false
     }
-    this.ui.registerModule(components.PopupModule, popupParams)
+    this.app.registerModule(components.PopupModule, popupParams)
 
     let actionPanelParams = {}
     if (actionPanelInitialPos && Object.values(actionPanelInitialPos).filter(value => Boolean(value)).length > 0) {
@@ -343,18 +345,18 @@ class Embedded {
         toolbarParams.initialPos = toolbarInitialPos
       }
 
-      this.ui.registerModule(components.ToolbarModule, toolbarParams)
-      this.ui.registerModule(components.ActionPanelModule, { showNav: actionPanelParams.showNav })
+      this.app.registerModule(components.ToolbarModule, toolbarParams)
+      this.app.registerModule(components.ActionPanelModule, { showNav: actionPanelParams.showNav })
     } else if (layoutType === 'readingTools') {
       // This is a special configuration for Alpheios Reading Tools
-      if (this.ui.platform.isDesktop) {
+      if (this._platform.isDesktop) {
         if (toolbarInitialPos && Object.values(toolbarInitialPos).filter(value => Boolean(value)).length > 0) {
           toolbarParams.initialPos = toolbarInitialPos
         }
 
-        this.ui.registerModule(components.ToolbarModule, toolbarParams)
-      } else if (this.ui.platform.isMobile) {
-        this.ui.registerModule(components.ActionPanelModule, {
+        this.app.registerModule(components.ToolbarModule, toolbarParams)
+      } else if (this._platform.isMobile) {
+        this.app.registerModule(components.ActionPanelModule, {
           lookupResultsIn: 'panel',
           initialPos: actionPanelParams.initialPos,
           showNav: actionPanelParams.showNav
@@ -363,8 +365,9 @@ class Embedded {
     }
   }
 
+  // TODO: Is it used by any external code?
   get platform () {
-    return this.ui.platform
+    return this._platform
   }
 
   notifyExtension () {
@@ -382,15 +385,15 @@ class Embedded {
        */
       this.notifyExtension()
 
-      // await this.ui.init() // Activate will call `init()` if has not been initialized previously
-      await this.ui.activate()
+      // await this.app.init() // Activate will call `init()` if has not been initialized previously
+      await this.app.activate()
 
       // Set a body attribute so the content scrip will know if embedded library is active on a page
       this.doc.body.setAttribute('alpheios-embed-lib-status', 'active')
       this.doc.body.addEventListener('Alpheios_Embedded_Check', event => { this.notifyExtension(event) })
 
       // and set the state on the components
-      this.ui.setEmbedLibActive(true)
+      this.app.setEmbedLibActive(true)
 
     } catch (error) {
       console.error(`Unexpected error activating Alpheios: ${error}`)
@@ -452,38 +455,38 @@ class Embedded {
   }
 
   openToolbar () {
-    this.ui.openToolbar()
+    this.app.api.ui.openToolbar()
   }
 
   openActionPanel () {
-    if (this.ui.platform.isMobile) {
-      this.ui.closePanel()
+    if (this._platform.isMobile) {
+      this.app.api.ui.closePanel()
     }
-    this.ui.openActionPanel()
+    this.app.api.ui.openActionPanel()
   }
 
   closeActionPanel () {
-    this.ui.closeActionPanel()
+    this.app.api.ui.closeActionPanel()
   }
 
   /**
    * Opens the action panel with toolbar buttons hidden and only the lookup visible.
    */
   openActionPanelLookup () {
-    if (this.ui.platform.isMobile) {
-      this.ui.closePanel()
+    if (this._platform.isMobile) {
+      this.app.api.ui.closePanel()
     }
-    this.ui.openActionPanel({ showNav: false })
+    this.app.api.ui.openActionPanel({ showNav: false })
   }
 
   /**
    * Opens the action panel with only toolbar buttons visible.
    */
   openActionPanelToolbar () {
-    if (this.ui.platform.isMobile) {
-      this.ui.closePanel()
+    if (this._platform.isMobile) {
+      this.app.api.ui.closePanel()
     }
-    this.ui.openActionPanel({ showLookup: false })
+    this.app.api.ui.openActionPanel({ showLookup: false })
   }
 }
 
