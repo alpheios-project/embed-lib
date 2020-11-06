@@ -135,15 +135,16 @@ let components, datamodels
  * or rejected when there was an error during an import.
  */
 function importDependencies (options) {
-  let libs = {}
+  let libPaths = {}
+  let libraries = {}
   switch (options.mode) {
     case 'production':
-      libs.components = './lib/alpheios-components.min.js'
-      libs.datamodels = './lib/alpheios-data-models.min.js'
+      libPaths.components = './lib/alpheios-components.min.js'
+      libPaths.datamodels = './lib/alpheios-data-models.min.js'
       break
     case 'development':
-      libs.components = './lib/alpheios-components.js'
-      libs.datamodels = './lib/alpheios-data-models.js'
+      libPaths.components = './lib/alpheios-components.js'
+      libPaths.datamodels = './lib/alpheios-data-models.js'
       break
     case 'custom':
       libs = options.libs
@@ -154,26 +155,25 @@ function importDependencies (options) {
       break
   }
 
-  console.info('libs - ', libs)
+  const importDep = (libAlias, libName) => {
+    const libImport = import(
+      /* webpackIgnore: true */
+      libPaths[libAlias]
+    ).then(() => {
+      libraries[libAlias] = window[libName]
+    })
+    return libImport
+  }
+
   return new Promise((resolve, reject) => {
     let imports = []
-    let componentsImport = import(
-      /* webpackIgnore: true */
-      libs.components
-    ).then(() => {
-      components = window.AlpheiosComponents
-    })
-    imports.push(componentsImport)
 
-    let datamodelsImport = import(
-      /* webpackIgnore: true */
-      libs.datamodels
-    ).then(() => {
-      datamodels = window.AlpheiosDataModels
-    })
-    imports.push(datamodelsImport)
+    imports.push(importDep('components', 'AlpheiosComponents'))
+    imports.push(importDep('datamodels', 'AlpheiosDataModels'))
 
     Promise.all(imports).then(() => {
+      components = libraries.components
+      datamodels = libraries.datamodels
       resolve (Embedded)
     }).catch((e) => {
       reject(e)
@@ -254,6 +254,7 @@ class Embedded {
     arethusaTbRefreshRetryCount = 5,
     arethusaTbRefreshDelay = 200
     } = {}) {
+
     this.clientId = clientId
 
     if (this.clientId === null) {
@@ -285,7 +286,7 @@ class Embedded {
       textQuerySelector: this.enabledSelector,
       triggerPreCallback: this.triggerPreCallback,
       enableMouseMoveOverride: this.enableMouseMoveOverride,
-      app: { version:`${_package_json__WEBPACK_IMPORTED_MODULE_1__["version"]}`, buildBranch: "move-options-to-data-models", buildNumber: "20201106362", buildName: "move-options-to-data-models.20201106362", name: _package_json__WEBPACK_IMPORTED_MODULE_1__["description"] },
+      app: { version:`${_package_json__WEBPACK_IMPORTED_MODULE_1__["version"]}`, buildBranch: "move-options-to-data-models", buildNumber: "20201106434", buildName: "move-options-to-data-models.20201106434", name: _package_json__WEBPACK_IMPORTED_MODULE_1__["description"] },
       appType: components.Platform.appTypes.EMBEDDED_LIBRARY,
       clientId: this.clientId,
       // Disable text selection on mobile devices

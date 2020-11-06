@@ -21,15 +21,16 @@ let components, datamodels
  * or rejected when there was an error during an import.
  */
 export function importDependencies (options) {
-  let libs = {}
+  let libPaths = {}
+  let libraries = {}
   switch (options.mode) {
     case 'production':
-      libs.components = './lib/alpheios-components.min.js'
-      libs.datamodels = './lib/alpheios-data-models.min.js'
+      libPaths.components = './lib/alpheios-components.min.js'
+      libPaths.datamodels = './lib/alpheios-data-models.min.js'
       break
     case 'development':
-      libs.components = './lib/alpheios-components.js'
-      libs.datamodels = './lib/alpheios-data-models.js'
+      libPaths.components = './lib/alpheios-components.js'
+      libPaths.datamodels = './lib/alpheios-data-models.js'
       break
     case 'custom':
       libs = options.libs
@@ -40,26 +41,25 @@ export function importDependencies (options) {
       break
   }
 
-  console.info('libs - ', libs)
+  const importDep = (libAlias, libName) => {
+    const libImport = import(
+      /* webpackIgnore: true */
+      libPaths[libAlias]
+    ).then(() => {
+      libraries[libAlias] = window[libName]
+    })
+    return libImport
+  }
+
   return new Promise((resolve, reject) => {
     let imports = []
-    let componentsImport = import(
-      /* webpackIgnore: true */
-      libs.components
-    ).then(() => {
-      components = window.AlpheiosComponents
-    })
-    imports.push(componentsImport)
 
-    let datamodelsImport = import(
-      /* webpackIgnore: true */
-      libs.datamodels
-    ).then(() => {
-      datamodels = window.AlpheiosDataModels
-    })
-    imports.push(datamodelsImport)
+    imports.push(importDep('components', 'AlpheiosComponents'))
+    imports.push(importDep('datamodels', 'AlpheiosDataModels'))
 
     Promise.all(imports).then(() => {
+      components = libraries.components
+      datamodels = libraries.datamodels
       resolve (Embedded)
     }).catch((e) => {
       reject(e)
@@ -140,6 +140,7 @@ export class Embedded {
     arethusaTbRefreshRetryCount = 5,
     arethusaTbRefreshDelay = 200
     } = {}) {
+
     this.clientId = clientId
 
     if (this.clientId === null) {
