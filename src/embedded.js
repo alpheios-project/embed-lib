@@ -1,7 +1,8 @@
 /* eslint-env jest */
 /* global Event, BUILD_BRANCH, BUILD_NUMBER, BUILD_NAME */
 import State from './state'
-import { version as packageVersion, description as packageDescription } from '../package.json'
+import pkg from '../package.json'
+const { version: packageVersion, description: packageDescription } = pkg
 // A variable that will store an instance of the imported components module
 let components
 
