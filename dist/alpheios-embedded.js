@@ -185,7 +185,7 @@ class Embedded {
       textQuerySelector: this.enabledSelector,
       triggerPreCallback: this.triggerPreCallback,
       enableMouseMoveOverride: this.enableMouseMoveOverride,
-      app: { version:`${packageVersion}`, buildBranch: "dev-in-progress", buildNumber: "20201109678", buildName: "dev-in-progress.20201109678", name: packageDescription },
+      app: { version:`${packageVersion}`, buildBranch: "dev", buildNumber: "20201110475", buildName: "dev.20201110475", name: packageDescription },
       appType: components.Platform.appTypes.EMBEDDED_LIBRARY,
       clientId: this.clientId,
       // Disable text selection on mobile devices
