@@ -7,23 +7,18 @@ window.AlpheiosEmbed =
 /*!*********************!*\
   !*** ./embedded.js ***!
   \*********************/
-/*! namespace exports */
-/*! export Embedded [provided] [maybe used in main (runtime-defined)] [usage prevents renaming] */
-/*! export importDependencies [provided] [maybe used in main (runtime-defined)] [usage prevents renaming] */
-/*! other exports [not provided] [maybe used in main (runtime-defined)] */
-/*! runtime requirements: __webpack_require__, __webpack_require__.r, __webpack_exports__, __webpack_require__.d, __webpack_require__.* */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "importDependencies": () => /* binding */ importDependencies,
-/* harmony export */   "Embedded": () => /* binding */ Embedded
+/* harmony export */   "importDependencies": () => (/* binding */ importDependencies),
+/* harmony export */   "Embedded": () => (/* binding */ Embedded)
 /* harmony export */ });
 /* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./state */ "./state.js");
 /* harmony import */ var _package_json__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../package.json */ "../package.json");
 /* eslint-env jest */
 /* global Event, BUILD_BRANCH, BUILD_NUMBER, BUILD_NAME */
-;
+
 
 const { version: packageVersion, description: packageDescription } = _package_json__WEBPACK_IMPORTED_MODULE_1__
 // A variable that will store an instance of the imported components module
@@ -185,7 +180,7 @@ class Embedded {
       textQuerySelector: this.enabledSelector,
       triggerPreCallback: this.triggerPreCallback,
       enableMouseMoveOverride: this.enableMouseMoveOverride,
-      app: { version:`${packageVersion}`, buildBranch: "dev", buildNumber: "20201110475", buildName: "dev.20201110475", name: packageDescription },
+      app: { version:`${packageVersion}`, buildBranch: "update-build", buildNumber: "20210326520", buildName: "update-build.20210326520", name: packageDescription },
       appType: components.Platform.appTypes.EMBEDDED_LIBRARY,
       clientId: this.clientId,
       // Disable text selection on mobile devices
@@ -394,15 +389,11 @@ class Embedded {
 /*!******************!*\
   !*** ./state.js ***!
   \******************/
-/*! namespace exports */
-/*! export default [provided] [no usage info] [missing usage info prevents renaming] */
-/*! other exports [not provided] [no usage info] */
-/*! runtime requirements: __webpack_require__.r, __webpack_exports__, __webpack_require__.d, __webpack_require__.* */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => /* binding */ State
+/* harmony export */   "default": () => (/* binding */ State)
 /* harmony export */ });
 /**
  * Contains Alpheios state
@@ -559,147 +550,6 @@ class State {
 /*!***********************!*\
   !*** ../package.json ***!
   \***********************/
-/*! default exports */
-/*! export author [provided] [no usage info] [missing usage info prevents renaming] */
-/*! export bugs [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export url [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   other exports [not provided] [no usage info] */
-/*! export config [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export commitizen [provided] [no usage info] [missing usage info prevents renaming] */
-/*!     export path [provided] [no usage info] [missing usage info prevents renaming] */
-/*!     other exports [not provided] [no usage info] */
-/*!   other exports [not provided] [no usage info] */
-/*! export dependencies [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   exports [not provided] [no usage info] */
-/*! export description [provided] [no usage info] [missing usage info prevents renaming] */
-/*! export devDependencies [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export @actions/core [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export @babel/core [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export @babel/plugin-proposal-object-rest-spread [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export @babel/plugin-transform-modules-commonjs [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export @babel/plugin-transform-runtime [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export @babel/preset-env [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export @babel/register [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export @babel/runtime [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export alpheios-core [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export alpheios-node-build [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export archiver [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export babel-eslint [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export babel-loader [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export babel-plugin-dynamic-import-node [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export babel-plugin-module-resolver [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export chalk [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export command-line-args [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export copy-webpack-plugin [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export coveralls [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export css-loader [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export cz-conventional-changelog [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export eslint [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export eslint-config-standard [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export eslint-plugin-import [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export eslint-plugin-node [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export eslint-plugin-promise [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export eslint-plugin-standard [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export eslint-plugin-vue [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export fibers [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export fs-extra [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export git-branch [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export http-server [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export imagemin [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export imagemin-jpegtran [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export imagemin-optipng [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export imagemin-svgo [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export inspectpack [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export interactjs [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export jest [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export jest-fetch-mock [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export mini-css-extract-plugin [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export onchange [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export optimize-css-assets-webpack-plugin [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export path [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export postcss-import [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export postcss-loader [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export postcss-safe-important [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export postcss-scss [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export raw-loader [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export sass [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export sass-loader [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export shx [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export source-map-loader [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export style-loader [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export url-loader [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export vue-loader [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export vue-style-loader [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export vue-svg-loader [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export vue-template-compiler [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export vue-template-loader [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export webpack [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export webpack-bundle-analyzer [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export webpack-cleanup-plugin [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export webpack-dev-server [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export webpack-merge [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   other exports [not provided] [no usage info] */
-/*! export directories [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export doc [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   other exports [not provided] [no usage info] */
-/*! export engines [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export node [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export npm [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   other exports [not provided] [no usage info] */
-/*! export eslintConfig [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export env [provided] [no usage info] [missing usage info prevents renaming] */
-/*!     export browser [provided] [no usage info] [missing usage info prevents renaming] */
-/*!     export node [provided] [no usage info] [missing usage info prevents renaming] */
-/*!     other exports [not provided] [no usage info] */
-/*!   export parser [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export parserOptions [provided] [no usage info] [missing usage info prevents renaming] */
-/*!     export allowImportExportEverywhere [provided] [no usage info] [missing usage info prevents renaming] */
-/*!     export ecmaVersion [provided] [no usage info] [missing usage info prevents renaming] */
-/*!     export sourceType [provided] [no usage info] [missing usage info prevents renaming] */
-/*!     other exports [not provided] [no usage info] */
-/*!   other exports [not provided] [no usage info] */
-/*! export eslintIgnore [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export 0 [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   other exports [not provided] [no usage info] */
-/*! export homepage [provided] [no usage info] [missing usage info prevents renaming] */
-/*! export jest [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export transform [provided] [no usage info] [missing usage info prevents renaming] */
-/*!     export ^.+\\.jsx?$ [provided] [no usage info] [missing usage info prevents renaming] */
-/*!     other exports [not provided] [no usage info] */
-/*!   export transformIgnorePatterns [provided] [no usage info] [missing usage info prevents renaming] */
-/*!     export 0 [provided] [no usage info] [missing usage info prevents renaming] */
-/*!     other exports [not provided] [no usage info] */
-/*!   export verbose [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   other exports [not provided] [no usage info] */
-/*! export license [provided] [no usage info] [missing usage info prevents renaming] */
-/*! export main [provided] [no usage info] [missing usage info prevents renaming] */
-/*! export name [provided] [no usage info] [missing usage info prevents renaming] */
-/*! export repository [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export type [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export url [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   other exports [not provided] [no usage info] */
-/*! export scripts [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export auth0-env-dev-update [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export auth0-env-update [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export build [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export build-dev [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export build-experimental [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export build-prod [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export conventional-commit [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export dev [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export github-build [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export lint [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export set-node-build-deps [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export tagged-commit [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export test [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export update-dependencies [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export version-set-major [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export version-set-minor [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   export version-set-patch [provided] [no usage info] [missing usage info prevents renaming] */
-/*!   other exports [not provided] [no usage info] */
-/*! export version [provided] [no usage info] [missing usage info prevents renaming] */
-/*! other exports [not provided] [no usage info] */
-/*! runtime requirements: module */
 /***/ ((module) => {
 
 module.exports = JSON.parse("{\"name\":\"alpheios-embedded\",\"version\":\"3.3.1\",\"description\":\"Alpheios Embedded Library\",\"main\":\"dist/alpheios-embedded.js\",\"directories\":{\"doc\":\"doc\"},\"scripts\":{\"set-node-build-deps\":\"npx install-peerdeps alpheios-node-build --dev --only-peers\",\"test\":\"jest\",\"build\":\"npm run build-dev && npm run build-prod\",\"build-prod\":\"npm run lint && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs -m all -M production -p app -c config.mjs\",\"build-dev\":\"npm run lint && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs -m all -M development -p app -c config.mjs\",\"auth0-env-update\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/prod --t=dist/auth0 --f=env-embed.js\",\"auth0-env-dev-update\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/dev --t=dist/auth0 --f=env-embed.js\",\"lint\":\"eslint --fix src/**/*.js\",\"update-dependencies\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-core/packages/components/dist/ --t=dist/lib && node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-core/packages/components/dist/style --t=dist/style\",\"build-experimental\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs -m webpack -M development -p app -c config.mjs\",\"dev\":\"npm run build-experimental && http-server -c-1 -p 8888 & onchange src -- npm run build-experimental\",\"conventional-commit\":\"npx git-cz\",\"version-set-major\":\"npm version major\",\"version-set-minor\":\"npm version minor\",\"version-set-patch\":\"npm version patch\",\"tagged-commit\":\"node --experimental-modules --experimental-json-modules ./tagged-commit.mjs\",\"github-build\":\"node --experimental-modules --experimental-json-modules ./github-build.mjs\"},\"repository\":{\"type\":\"git\",\"url\":\"git+https://github.com/alpheios-project/wordsvc.git\"},\"author\":\"The Alpheios Project, Ltd.\",\"license\":\"ISC\",\"bugs\":{\"url\":\"https://github.com/alpheios-project/wordsvc/issues\"},\"homepage\":\"https://github.com/alpheios-project/wordsvc#readme\",\"devDependencies\":{\"@actions/core\":\"^1.2.6\",\"@babel/core\":\"^7.12.3\",\"@babel/plugin-proposal-object-rest-spread\":\"^7.12.1\",\"@babel/plugin-transform-modules-commonjs\":\"^7.12.1\",\"@babel/plugin-transform-runtime\":\"^7.12.1\",\"@babel/preset-env\":\"^7.12.1\",\"@babel/register\":\"^7.12.1\",\"@babel/runtime\":\"^7.12.5\",\"alpheios-core\":\"git+https://github.com/alpheios-project/alpheios-core.git\",\"alpheios-node-build\":\"github:alpheios-project/node-build#v4\",\"archiver\":\"^4.0.2\",\"babel-eslint\":\"^10.1.0\",\"babel-loader\":\"^8.1.0\",\"babel-plugin-dynamic-import-node\":\"^2.3.3\",\"babel-plugin-module-resolver\":\"^4.0.0\",\"chalk\":\"^4.1.0\",\"command-line-args\":\"^5.1.1\",\"copy-webpack-plugin\":\"^6.3.0\",\"coveralls\":\"^3.0.11\",\"css-loader\":\"^5.0.1\",\"cz-conventional-changelog\":\"^3.3.0\",\"eslint\":\"^7.13.0\",\"eslint-config-standard\":\"^16.0.1\",\"eslint-plugin-import\":\"^2.22.1\",\"eslint-plugin-node\":\"^11.1.0\",\"eslint-plugin-promise\":\"^4.2.1\",\"eslint-plugin-standard\":\"^4.0.2\",\"eslint-plugin-vue\":\"^7.1.0\",\"fibers\":\"^5.0.0\",\"fs-extra\":\"^9.0.1\",\"git-branch\":\"^2.0.1\",\"http-server\":\"^0.12.3\",\"imagemin\":\"^7.0.1\",\"imagemin-jpegtran\":\"^7.0.0\",\"imagemin-optipng\":\"^8.0.0\",\"imagemin-svgo\":\"^8.0.0\",\"inspectpack\":\"^4.5.2\",\"interactjs\":\"^1.10.0\",\"jest\":\"^26.6.3\",\"jest-fetch-mock\":\"^3.0.3\",\"mini-css-extract-plugin\":\"^1.3.0\",\"onchange\":\"^7.1.0\",\"optimize-css-assets-webpack-plugin\":\"^5.0.4\",\"path\":\"^0.12.7\",\"postcss-import\":\"^13.0.0\",\"postcss-loader\":\"^4.0.4\",\"postcss-safe-important\":\"^1.2.0\",\"postcss-scss\":\"^3.0.4\",\"raw-loader\":\"^4.0.2\",\"sass\":\"^1.29.0\",\"sass-loader\":\"^10.0.5\",\"shx\":\"^0.3.3\",\"source-map-loader\":\"^1.1.2\",\"style-loader\":\"^2.0.0\",\"url-loader\":\"^4.1.1\",\"vue-loader\":\"^15.9.5\",\"vue-style-loader\":\"^4.1.2\",\"vue-svg-loader\":\"^0.16.0\",\"vue-template-compiler\":\"^2.6.12\",\"vue-template-loader\":\"^1.1.0\",\"webpack\":\"^5.4.0\",\"webpack-bundle-analyzer\":\"^4.1.0\",\"webpack-cleanup-plugin\":\"^0.5.1\",\"webpack-dev-server\":\"^3.11.0\",\"webpack-merge\":\"^5.3.0\"},\"engines\":{\"node\":\">= 14.1.0\",\"npm\":\">= 6.13.0\"},\"jest\":{\"verbose\":true,\"transform\":{\"^.+\\\\.jsx?$\":\"babel-jest\"},\"transformIgnorePatterns\":[\"node_modules/alpheios-core/packages/components/\"]},\"eslintConfig\":{\"env\":{\"browser\":true,\"node\":true},\"parser\":\"babel-eslint\",\"parserOptions\":{\"sourceType\":\"module\",\"ecmaVersion\":2019,\"allowImportExportEverywhere\":true}},\"eslintIgnore\":[\"**/dist\"],\"dependencies\":{},\"config\":{\"commitizen\":{\"path\":\"./node_modules/cz-conventional-changelog\"}}}");
@@ -746,7 +596,7 @@ module.exports = JSON.parse("{\"name\":\"alpheios-embedded\",\"version\":\"3.3.1
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop)
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
