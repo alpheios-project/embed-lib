@@ -371,7 +371,8 @@ class Embedded {
     overrideHelp = false,
     simpleMode = false,
     arethusaTbRefreshRetryCount = 5,
-    arethusaTbRefreshDelay = 200
+    arethusaTbRefreshDelay = 200,
+    languageOptions = {}
     } = {}) {
     this.clientId = clientId
 
@@ -406,7 +407,7 @@ class Embedded {
       textQuerySelector: this.enabledSelector,
       triggerPreCallback: this.triggerPreCallback,
       enableMouseMoveOverride: this.enableMouseMoveOverride,
-      app: { version:`${packageVersion}`, buildBranch: "incr-3.3.x", buildNumber: "20210326622", buildName: "incr-3.3.x.20210326622", name: packageDescription },
+      app: { version:`${packageVersion}`, buildBranch: "ac-i647-paidea-glossary", buildNumber: "20210624255", buildName: "ac-i647-paidea-glossary.20210624255", name: packageDescription },
       appType: components.Platform.appTypes.EMBEDDED_LIBRARY,
       clientId: this.clientId,
       // Disable text selection on mobile devices
@@ -415,7 +416,8 @@ class Embedded {
       overrideHelp: overrideHelp,
       configServiceUrl: 'https://config.alpheios.net/v1/config',
       arethusaTbRefreshRetryCount: arethusaTbRefreshRetryCount,
-      arethusaTbRefreshDelay: arethusaTbRefreshDelay
+      arethusaTbRefreshDelay: arethusaTbRefreshDelay,
+      languageOptions
     })
     // Environment-specific initializations
     if (this.authEnv) {
