@@ -407,7 +407,7 @@ class Embedded {
       textQuerySelector: this.enabledSelector,
       triggerPreCallback: this.triggerPreCallback,
       enableMouseMoveOverride: this.enableMouseMoveOverride,
-      app: { version:`${packageVersion}`, buildBranch: "ac-i647-paidea-glossary", buildNumber: "20210624255", buildName: "ac-i647-paidea-glossary.20210624255", name: packageDescription },
+      app: { version:`${packageVersion}`, buildBranch: "incr-3.3.-paideia", buildNumber: "20210629584", buildName: "incr-3.3.-paideia.20210629584", name: packageDescription },
       appType: components.Platform.appTypes.EMBEDDED_LIBRARY,
       clientId: this.clientId,
       // Disable text selection on mobile devices
