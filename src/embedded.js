@@ -128,7 +128,8 @@ export class Embedded {
     simpleMode = false,
     arethusaTbRefreshRetryCount = 5,
     arethusaTbRefreshDelay = 200,
-    languageOptions = {}
+    languageOptions = {},
+    uiOptions = {}
     } = {}) {
     this.clientId = clientId
 
@@ -173,7 +174,8 @@ export class Embedded {
       configServiceUrl: 'https://config.alpheios.net/v1/config',
       arethusaTbRefreshRetryCount: arethusaTbRefreshRetryCount,
       arethusaTbRefreshDelay: arethusaTbRefreshDelay,
-      languageOptions
+      languageOptions,
+      uiOptions
     })
     // Environment-specific initializations
     if (this.authEnv) {
