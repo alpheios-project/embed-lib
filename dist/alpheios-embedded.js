@@ -408,7 +408,7 @@ class Embedded {
       textQuerySelector: this.enabledSelector,
       triggerPreCallback: this.triggerPreCallback,
       enableMouseMoveOverride: this.enableMouseMoveOverride,
-      app: { version:`${packageVersion}`, buildBranch: "incr-3.4.x", buildNumber: "20211126119", buildName: "incr-3.4.x.20211126119", name: packageDescription },
+      app: { version:`${packageVersion}`, buildBranch: "ext-323-embed-ext", buildNumber: "20211126428", buildName: "ext-323-embed-ext.20211126428", name: packageDescription },
       appType: components.Platform.appTypes.EMBEDDED_LIBRARY,
       clientId: this.clientId,
       // Disable text selection on mobile devices
@@ -485,6 +485,7 @@ class Embedded {
         })
       }
     }
+    this.notifyExtension()
   }
 
   // TODO: Is it used by any external code?
@@ -505,7 +506,6 @@ class Embedded {
        * than the extension will have no information about
        * the embedded library presence unless explicitly notified by us.
        */
-      this.notifyExtension()
 
       // await this.app.init() // Activate will call `init()` if has not been initialized previously
       await this.app.activate()

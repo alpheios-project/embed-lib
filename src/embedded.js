@@ -241,6 +241,7 @@ export class Embedded {
         })
       }
     }
+    this.notifyExtension()
   }
 
   // TODO: Is it used by any external code?
@@ -261,7 +262,6 @@ export class Embedded {
        * than the extension will have no information about
        * the embedded library presence unless explicitly notified by us.
        */
-      this.notifyExtension()
 
       // await this.app.init() // Activate will call `init()` if has not been initialized previously
       await this.app.activate()
