@@ -1,6 +1,6 @@
 {
   "name": "alpheios-embedded",
-  "version": "3.4.1-incr-3.4.x.20211126130",
+  "version": "3.4.1-incr-3.4.x.20211202196",
   "description": "Alpheios Embedded Library",
   "main": "dist/alpheios-embedded.js",
   "directories": {
@@ -85,7 +85,7 @@
     "postcss-safe-important": "^1.2.1",
     "postcss-scss": "^3.0.5",
     "raw-loader": "^4.0.2",
-    "sass": "^1.43.5",
+    "sass": "^1.44.0",
     "sass-loader": "^10.2.0",
     "shx": "^0.3.3",
     "source-map-loader": "^1.1.3",
