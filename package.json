@@ -1,6 +1,6 @@
 {
   "name": "alpheios-embedded",
-  "version": "3.4.2-incr-3.4.x.20220429024",
+  "version": "3.4.2-incr-3.4.x.20220504210",
   "description": "Alpheios Embedded Library",
   "main": "dist/alpheios-embedded.js",
   "directories": {
@@ -45,8 +45,8 @@
     "@babel/register": "^7.17.7",
     "@babel/runtime": "^7.17.9",
     "@vue/compiler-sfc": "^3.2.33",
-    "alpheios-core": "https://github.com/alpheios-project/alpheios-core.git#incr-3.4.x",
-    "alpheios-node-build": "https://github.com/alpheios-project/node-build#v5",
+    "alpheios-core": "git+https://github.com/alpheios-project/alpheios-core.git#incr-3.4.x",
+    "alpheios-node-build": "git+https://github.com/alpheios-project/node-build.git#v5",
     "archiver": "^5.3.1",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.2.5",
