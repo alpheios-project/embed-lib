@@ -1,6 +1,6 @@
 {
   "name": "alpheios-embedded",
-  "version": "3.4.5",
+  "version": "3.4.5-incr-3.4.x.20220504216",
   "description": "Alpheios Embedded Library",
   "main": "dist/alpheios-embedded.js",
   "directories": {
