@@ -1,121 +1,252 @@
-window["AlpheiosEmbed"] =
-/******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// define __esModule on exports
-/******/ 	__webpack_require__.r = function(exports) {
-/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 		}
-/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 	};
-/******/
-/******/ 	// create a fake namespace object
-/******/ 	// mode & 1: value is a module id, require it
-/******/ 	// mode & 2: merge all properties of value into the ns
-/******/ 	// mode & 4: return value when already ns object
-/******/ 	// mode & 8|1: behave like require
-/******/ 	__webpack_require__.t = function(value, mode) {
-/******/ 		if(mode & 1) value = __webpack_require__(value);
-/******/ 		if(mode & 8) return value;
-/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
-/******/ 		var ns = Object.create(null);
-/******/ 		__webpack_require__.r(ns);
-/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
-/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
-/******/ 		return ns;
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
-/******/
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./embedded.js");
-/******/ })
-/************************************************************************/
-/******/ ({
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./state.js":
+/*!******************!*\
+  !*** ./state.js ***!
+  \******************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ State)
+/* harmony export */ });
+/**
+ * Contains Alpheios state
+ * @property {panelStatus} panelStatus
+ */
+class State {
+  constructor (tabID) {
+    this.panelStatus = undefined
+    this.tab = undefined
+    this.watchers = new Map()
+  }
+
+  static create (source) {
+    let copy = new State()
+    for (let key of Object.keys(source)) {
+      copy[key] = source[key]
+    }
+    return copy
+  }
+
+  static get defaults () {
+    return {
+      panelStatus: State.statuses.panel.OPEN
+    }
+  }
+
+  static get statuses () {
+    return {
+      embedLib: {
+        PENDING: Symbol.for('Alpheios_Status_Pending'), // Has not been fully initialized yet
+        ACTIVE: Symbol.for('Alpheios_Status_Active'), // Is loaded and active
+        DEACTIVATED: Symbol.for('Alpheios_Status_Deactivated'), // Has been loaded, but is deactivated
+        DISABLED: Symbol.for('Alpheios_Status_Disabled') // Has been loaded, but it is disabled
+      },
+      panel: {
+        OPEN: Symbol.for('Alpheios_Status_PanelOpen'), // Panel is open
+        CLOSED: Symbol.for('Alpheios_Status_PanelClosed'), // Panel is closed
+        DEFAULT: Symbol.for('Alpheios_Status_PanelDefault') // Panel should set its state according to default values
+      },
+      tab: {
+        DEFAULT: 'default' // A tab should be set according to default values
+      }
+    }
+  }
+
+  /**
+   * Sets a watcher function that is called every time a property is changed using a setItem() method.
+   * @param {String} property - A name of a property that should be monitored
+   * @param {Function} watchFunc - A function that will be called every time a property changes
+   * @return {State} Reference to self for chaining
+   */
+  setWatcher (property, watchFunc) {
+    this.watchers.set(property, watchFunc)
+    return this
+  }
+
+  /**
+   * SetItem provides a monitored way to change state. If value is assigned to a data property directly
+   * there is no way to know if a property was changed. However, if a property was changed using setItem() method,
+   * and if there is a watcher function registered for a changed property name,
+   * this function will be called on every property change, passing a changed property name as an argument.
+   * @param key
+   * @param value
+   * @return {State}
+   */
+  setItem (key, value) {
+    this[key] = value
+    if (this.watchers && this.watchers.has(key)) {
+      this.watchers.get(key)(key, this)
+    }
+    return this
+  }
+
+  isPanelOpen () {
+    return this.panelStatus === State.statuses.panel.OPEN
+  }
+
+  isPanelClosed () {
+    return this.panelStatus === State.statuses.panel.CLOSED
+  }
+
+  isPanelStateDefault () {
+    return this.panelStatus === State.statuses.panel.DEFAULT
+  }
+
+  isPanelStateValid () {
+    return (
+      this.panelStatus === State.statuses.panel.OPEN ||
+      this.panelStatus === State.statuses.panel.CLOSED
+    )
+  }
+
+  setPanelOpen () {
+    this.setItem('panelStatus', State.statuses.panel.OPEN)
+    return this
+  }
+
+  setPanelClosed () {
+    this.setItem('panelStatus', State.statuses.panel.CLOSED)
+    return this
+  }
+
+  changeTab (tabName) {
+    this.setItem('tab', tabName)
+    return this
+  }
+
+  activateUI () {
+    this.setItem('uiActive', true)
+    return this
+  }
+
+  // TODO: A temporary solution for compatibility with TabScript.
+  isActive () {
+    return this.status === State.statuses.embedLib.ACTIVE
+  }
+
+  isDeactivated () {
+    return this.status === State.statuses.embedLib.DEACTIVATED
+  }
+
+  isDisabled () {
+    return this.status === State.statuses.embedLib.DISABLED
+  }
+
+  isTabStateDefault () {
+    return this.tab === State.statuses.tab.DEFAULT
+  }
+
+  uiIsActive () {
+    return this.uiActive
+  }
+
+  activate () {
+    this.status = State.statuses.embedLib.ACTIVE
+    return this
+  }
+
+  deactivate () {
+    this.status = State.statuses.embedLib.DEACTIVATED
+    return this
+  }
+
+  disable () {
+    this.status = State.statuses.embedLib.DISABLED
+    return this
+  }
+}
+
+
+/***/ }),
 
 /***/ "../package.json":
 /*!***********************!*\
   !*** ../package.json ***!
   \***********************/
-/*! exports provided: name, version, description, main, directories, scripts, repository, author, license, bugs, homepage, devDependencies, engines, jest, eslintConfig, eslintIgnore, dependencies, config, default */
-/***/ (function(module) {
+/***/ ((module) => {
 
-module.exports = JSON.parse("{\"name\":\"alpheios-embedded\",\"version\":\"3.3.0-qa.20200814435\",\"description\":\"Alpheios Embedded Library\",\"main\":\"dist/alpheios-embedded.js\",\"directories\":{\"doc\":\"doc\"},\"scripts\":{\"set-node-build-deps\":\"npx install-peerdeps alpheios-node-build --dev --only-peers\",\"test\":\"jest\",\"build\":\"npm run build-dev && npm run build-prod\",\"build-prod\":\"npm run lint && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs -m all -M production -p app -c config.mjs\",\"build-dev\":\"npm run lint && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs -m all -M development -p app -c config.mjs\",\"auth0-env-update\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/prod --t=dist/auth0 --f=env-embed.js\",\"auth0-env-dev-update\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/dev --t=dist/auth0 --f=env-embed.js\",\"lint\":\"eslint --fix src/**/*.js\",\"update-dependencies\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-core/packages/components/dist/ --t=dist/lib && node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-core/packages/components/dist/style --t=dist/style\",\"build-experimental\":\"node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs -m webpack -M development -p app -c config.mjs\",\"dev\":\"npm run build-experimental && http-server -c-1 -p 8888 & onchange src -- npm run build-experimental\",\"conventional-commit\":\"npx git-cz\",\"version-set-major\":\"npm version major\",\"version-set-minor\":\"npm version minor\",\"version-set-patch\":\"npm version patch\",\"tagged-commit\":\"node --experimental-modules --experimental-json-modules ./tagged-commit.mjs\",\"github-build\":\"node --experimental-modules --experimental-json-modules ./github-build.mjs\"},\"repository\":{\"type\":\"git\",\"url\":\"git+https://github.com/alpheios-project/wordsvc.git\"},\"author\":\"The Alpheios Project, Ltd.\",\"license\":\"ISC\",\"bugs\":{\"url\":\"https://github.com/alpheios-project/wordsvc/issues\"},\"homepage\":\"https://github.com/alpheios-project/wordsvc#readme\",\"devDependencies\":{\"@actions/core\":\"^1.2.4\",\"@babel/core\":\"^7.10.4\",\"@babel/plugin-proposal-object-rest-spread\":\"^7.10.4\",\"@babel/plugin-transform-modules-commonjs\":\"^7.10.4\",\"@babel/plugin-transform-runtime\":\"^7.10.4\",\"@babel/preset-env\":\"^7.10.4\",\"@babel/register\":\"^7.10.4\",\"@babel/runtime\":\"^7.10.4\",\"alpheios-core\":\"git+https://github.com/alpheios-project/alpheios-core.git#qa\",\"alpheios-node-build\":\"github:alpheios-project/node-build#semver:^3.5.1\",\"archiver\":\"^4.0.1\",\"babel-eslint\":\"^10.1.0\",\"babel-loader\":\"^8.1.0\",\"babel-plugin-dynamic-import-node\":\"^2.3.3\",\"babel-plugin-module-resolver\":\"^4.0.0\",\"chalk\":\"^4.1.0\",\"command-line-args\":\"^5.1.1\",\"copy-webpack-plugin\":\"^6.0.3\",\"coveralls\":\"^3.0.11\",\"css-loader\":\"^3.6.0\",\"cz-conventional-changelog\":\"^3.1.0\",\"eslint\":\"^7.3.1\",\"eslint-config-standard\":\"^14.1.1\",\"eslint-plugin-import\":\"^2.22.0\",\"eslint-plugin-node\":\"^11.1.0\",\"eslint-plugin-promise\":\"^4.2.1\",\"eslint-plugin-standard\":\"^4.0.1\",\"eslint-plugin-vue\":\"^6.2.2\",\"fibers\":\"^5.0.0\",\"fs-extra\":\"^9.0.1\",\"git-branch\":\"^2.0.1\",\"http-server\":\"^0.12.3\",\"imagemin\":\"^7.0.1\",\"imagemin-jpegtran\":\"^7.0.0\",\"imagemin-optipng\":\"^8.0.0\",\"imagemin-svgo\":\"^8.0.0\",\"inspectpack\":\"^4.5.2\",\"interactjs\":\"^1.9.19\",\"jest\":\"^26.1.0\",\"jest-fetch-mock\":\"^3.0.3\",\"mini-css-extract-plugin\":\"^0.9.0\",\"onchange\":\"^7.0.2\",\"optimize-css-assets-webpack-plugin\":\"^5.0.3\",\"path\":\"^0.12.7\",\"postcss-import\":\"^12.0.1\",\"postcss-loader\":\"^3.0.0\",\"postcss-safe-important\":\"^1.2.0\",\"postcss-scss\":\"^2.1.1\",\"raw-loader\":\"^4.0.0\",\"sass\":\"^1.26.9\",\"sass-loader\":\"^8.0.2\",\"shx\":\"^0.3.2\",\"source-map-loader\":\"^1.0.1\",\"style-loader\":\"^1.1.3\",\"url-loader\":\"^4.1.0\",\"vue-loader\":\"^15.9.3\",\"vue-style-loader\":\"^4.1.2\",\"vue-svg-loader\":\"^0.16.0\",\"vue-template-compiler\":\"^2.6.11\",\"vue-template-loader\":\"^1.1.0\",\"webpack\":\"^4.43.0\",\"webpack-bundle-analyzer\":\"^3.8.0\",\"webpack-cleanup-plugin\":\"^0.5.1\",\"webpack-dev-server\":\"^3.11.0\",\"webpack-merge\":\"^4.2.2\"},\"engines\":{\"node\":\">= 14.1.0\",\"npm\":\">= 6.13.0\"},\"jest\":{\"verbose\":true,\"transform\":{\"^.+\\\\.jsx?$\":\"babel-jest\"},\"transformIgnorePatterns\":[\"node_modules/alpheios-core/packages/components/\"]},\"eslintConfig\":{\"env\":{\"browser\":true,\"node\":true},\"parser\":\"babel-eslint\",\"parserOptions\":{\"sourceType\":\"module\",\"ecmaVersion\":2019,\"allowImportExportEverywhere\":true}},\"eslintIgnore\":[\"**/dist\"],\"dependencies\":{},\"config\":{\"commitizen\":{\"path\":\"./node_modules/cz-conventional-changelog\"}}}");
+module.exports = JSON.parse('{"name":"alpheios-embedded","version":"3.3.1-incr-3.3.x.20210806328","description":"Alpheios Embedded Library","main":"dist/alpheios-embedded.js","directories":{"doc":"doc"},"scripts":{"set-node-build-deps":"npx install-peerdeps alpheios-node-build --dev --only-peers","test":"jest","build":"npm run build-dev && npm run build-prod","build-prod":"npm run lint && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs -m all -M production -p app -c config.mjs","build-dev":"npm run lint && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs -m all -M development -p app -c config.mjs","auth0-env-update":"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/prod --t=dist/auth0 --f=env-embed.js","auth0-env-dev-update":"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=../protected-config/auth0/dev --t=dist/auth0 --f=env-embed.js","lint":"eslint --fix src/**/*.js","update-dependencies":"node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-core/packages/components/dist/ --t=dist/lib && node --experimental-modules ./node_modules/alpheios-node-build/dist/files.mjs replace --s=./node_modules/alpheios-core/packages/components/dist/style --t=dist/style","build-experimental":"node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs -m webpack -M development -p app -c config.mjs","dev":"npm run build-experimental && http-server -c-1 -p 8888 & onchange src -- npm run build-experimental","conventional-commit":"npx git-cz","version-set-major":"npm version major","version-set-minor":"npm version minor","version-set-patch":"npm version patch","tagged-commit":"node --experimental-modules --experimental-json-modules ./tagged-commit.mjs","github-build":"node --experimental-modules --experimental-json-modules ./github-build.mjs"},"repository":{"type":"git","url":"git+https://github.com/alpheios-project/wordsvc.git"},"author":"The Alpheios Project, Ltd.","license":"ISC","bugs":{"url":"https://github.com/alpheios-project/wordsvc/issues"},"homepage":"https://github.com/alpheios-project/wordsvc#readme","devDependencies":{"@actions/core":"^1.4.0","@babel/core":"^7.15.0","@babel/plugin-proposal-object-rest-spread":"^7.14.7","@babel/plugin-transform-modules-commonjs":"^7.15.0","@babel/plugin-transform-runtime":"^7.15.0","@babel/preset-env":"^7.15.0","@babel/register":"^7.14.5","@babel/runtime":"^7.14.8","alpheios-core":"git+https://github.com/alpheios-project/alpheios-core.git#incr-3.3.x","alpheios-node-build":"github:alpheios-project/node-build#v4","archiver":"^4.0.2","babel-eslint":"^10.1.0","babel-loader":"^8.2.2","babel-plugin-dynamic-import-node":"^2.3.3","babel-plugin-module-resolver":"^4.1.0","chalk":"^4.1.2","command-line-args":"^5.2.0","copy-webpack-plugin":"^6.4.1","coveralls":"^3.1.1","css-loader":"^5.2.7","cz-conventional-changelog":"^3.3.0","eslint":"^7.32.0","eslint-config-standard":"^16.0.3","eslint-plugin-import":"^2.23.4","eslint-plugin-node":"^11.1.0","eslint-plugin-promise":"^4.3.1","eslint-plugin-standard":"^4.1.0","eslint-plugin-vue":"^7.15.1","fibers":"^5.0.0","fs-extra":"^9.1.0","git-branch":"^2.0.1","http-server":"^0.12.3","imagemin":"^7.0.1","imagemin-jpegtran":"^7.0.0","imagemin-optipng":"^8.0.0","imagemin-svgo":"^8.0.0","inspectpack":"^4.7.1","interactjs":"^1.10.11","jest":"^26.6.3","jest-fetch-mock":"^3.0.3","mini-css-extract-plugin":"^1.6.2","onchange":"^7.1.0","optimize-css-assets-webpack-plugin":"^5.0.8","path":"^0.12.7","postcss-import":"^13.0.0","postcss-loader":"^4.3.0","postcss-safe-important":"^1.2.1","postcss-scss":"^3.0.5","raw-loader":"^4.0.2","sass":"^1.37.5","sass-loader":"^10.2.0","shx":"^0.3.3","source-map-loader":"^1.1.3","style-loader":"^2.0.0","url-loader":"^4.1.1","vue-loader":"^15.9.8","vue-style-loader":"^4.1.3","vue-svg-loader":"^0.16.0","vue-template-compiler":"^2.6.14","vue-template-loader":"^1.1.0","webpack":"^5.48.0","webpack-bundle-analyzer":"^4.4.2","webpack-cleanup-plugin":"^0.5.1","webpack-dev-server":"^3.11.2","webpack-merge":"^5.8.0"},"engines":{"node":">= 14.1.0","npm":">= 6.13.0"},"jest":{"verbose":true,"transform":{"^.+\\\\.jsx?$":"babel-jest"},"transformIgnorePatterns":["node_modules/alpheios-core/packages/components/"]},"eslintConfig":{"env":{"browser":true,"node":true},"parser":"babel-eslint","parserOptions":{"sourceType":"module","ecmaVersion":2019,"allowImportExportEverywhere":true}},"eslintIgnore":["**/dist"],"dependencies":{},"config":{"commitizen":{"path":"./node_modules/cz-conventional-changelog"}}}');
 
-/***/ }),
+/***/ })
 
-/***/ "./embedded.js":
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+(() => {
 /*!*********************!*\
   !*** ./embedded.js ***!
   \*********************/
-/*! exports provided: importDependencies, Embedded */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "importDependencies", function() { return importDependencies; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Embedded", function() { return Embedded; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "importDependencies": () => (/* binding */ importDependencies),
+/* harmony export */   "Embedded": () => (/* binding */ Embedded)
+/* harmony export */ });
 /* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./state */ "./state.js");
 /* harmony import */ var _package_json__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../package.json */ "../package.json");
-var _package_json__WEBPACK_IMPORTED_MODULE_1___namespace = /*#__PURE__*/__webpack_require__.t(/*! ../package.json */ "../package.json", 1);
 /* eslint-env jest */
 /* global Event, BUILD_BRANCH, BUILD_NUMBER, BUILD_NAME */
 
 
+const { version: packageVersion, description: packageDescription } = _package_json__WEBPACK_IMPORTED_MODULE_1__
 // A variable that will store an instance of the imported components module
 let components
 
@@ -240,7 +371,9 @@ class Embedded {
     overrideHelp = false,
     simpleMode = false,
     arethusaTbRefreshRetryCount = 5,
-    arethusaTbRefreshDelay = 200
+    arethusaTbRefreshDelay = 200,
+    languageOptions = {},
+    uiOptions = {}
     } = {}) {
     this.clientId = clientId
 
@@ -251,7 +384,7 @@ class Embedded {
     // clientId
     this.doc = documentObject
     this.authEnv = authEnv
-    this.state = new _state__WEBPACK_IMPORTED_MODULE_0__["default"]()
+    this.state = new _state__WEBPACK_IMPORTED_MODULE_0__.default()
     this.enabledSelector = enabledSelector
     this.disabledSelector = disabledSelector
     this.enabledClass = enabledClass
@@ -275,7 +408,7 @@ class Embedded {
       textQuerySelector: this.enabledSelector,
       triggerPreCallback: this.triggerPreCallback,
       enableMouseMoveOverride: this.enableMouseMoveOverride,
-      app: { version:`${_package_json__WEBPACK_IMPORTED_MODULE_1__["version"]}`, buildBranch: "qa", buildNumber: "20200814435", buildName: "qa.20200814435", name: _package_json__WEBPACK_IMPORTED_MODULE_1__["description"] },
+      app: { version:`${packageVersion}`, buildBranch: "incr-3.3.x", buildNumber: "20210806328", buildName: "incr-3.3.x.20210806328", name: packageDescription },
       appType: components.Platform.appTypes.EMBEDDED_LIBRARY,
       clientId: this.clientId,
       // Disable text selection on mobile devices
@@ -284,7 +417,9 @@ class Embedded {
       overrideHelp: overrideHelp,
       configServiceUrl: 'https://config.alpheios.net/v1/config',
       arethusaTbRefreshRetryCount: arethusaTbRefreshRetryCount,
-      arethusaTbRefreshDelay: arethusaTbRefreshDelay
+      arethusaTbRefreshDelay: arethusaTbRefreshDelay,
+      languageOptions,
+      uiOptions
     })
     // Environment-specific initializations
     if (this.authEnv) {
@@ -477,169 +612,9 @@ class Embedded {
   }
 }
 
+})();
 
-/***/ }),
-
-/***/ "./state.js":
-/*!******************!*\
-  !*** ./state.js ***!
-  \******************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return State; });
-/**
- * Contains Alpheios state
- * @property {panelStatus} panelStatus
- */
-class State {
-  constructor (tabID) {
-    this.panelStatus = undefined
-    this.tab = undefined
-    this.watchers = new Map()
-  }
-
-  static create (source) {
-    let copy = new State()
-    for (let key of Object.keys(source)) {
-      copy[key] = source[key]
-    }
-    return copy
-  }
-
-  static get defaults () {
-    return {
-      panelStatus: State.statuses.panel.OPEN
-    }
-  }
-
-  static get statuses () {
-    return {
-      embedLib: {
-        PENDING: Symbol.for('Alpheios_Status_Pending'), // Has not been fully initialized yet
-        ACTIVE: Symbol.for('Alpheios_Status_Active'), // Is loaded and active
-        DEACTIVATED: Symbol.for('Alpheios_Status_Deactivated'), // Has been loaded, but is deactivated
-        DISABLED: Symbol.for('Alpheios_Status_Disabled') // Has been loaded, but it is disabled
-      },
-      panel: {
-        OPEN: Symbol.for('Alpheios_Status_PanelOpen'), // Panel is open
-        CLOSED: Symbol.for('Alpheios_Status_PanelClosed'), // Panel is closed
-        DEFAULT: Symbol.for('Alpheios_Status_PanelDefault') // Panel should set its state according to default values
-      },
-      tab: {
-        DEFAULT: 'default' // A tab should be set according to default values
-      }
-    }
-  }
-
-  /**
-   * Sets a watcher function that is called every time a property is changed using a setItem() method.
-   * @param {String} property - A name of a property that should be monitored
-   * @param {Function} watchFunc - A function that will be called every time a property changes
-   * @return {State} Reference to self for chaining
-   */
-  setWatcher (property, watchFunc) {
-    this.watchers.set(property, watchFunc)
-    return this
-  }
-
-  /**
-   * SetItem provides a monitored way to change state. If value is assigned to a data property directly
-   * there is no way to know if a property was changed. However, if a property was changed using setItem() method,
-   * and if there is a watcher function registered for a changed property name,
-   * this function will be called on every property change, passing a changed property name as an argument.
-   * @param key
-   * @param value
-   * @return {State}
-   */
-  setItem (key, value) {
-    this[key] = value
-    if (this.watchers && this.watchers.has(key)) {
-      this.watchers.get(key)(key, this)
-    }
-    return this
-  }
-
-  isPanelOpen () {
-    return this.panelStatus === State.statuses.panel.OPEN
-  }
-
-  isPanelClosed () {
-    return this.panelStatus === State.statuses.panel.CLOSED
-  }
-
-  isPanelStateDefault () {
-    return this.panelStatus === State.statuses.panel.DEFAULT
-  }
-
-  isPanelStateValid () {
-    return (
-      this.panelStatus === State.statuses.panel.OPEN ||
-      this.panelStatus === State.statuses.panel.CLOSED
-    )
-  }
-
-  setPanelOpen () {
-    this.setItem('panelStatus', State.statuses.panel.OPEN)
-    return this
-  }
-
-  setPanelClosed () {
-    this.setItem('panelStatus', State.statuses.panel.CLOSED)
-    return this
-  }
-
-  changeTab (tabName) {
-    this.setItem('tab', tabName)
-    return this
-  }
-
-  activateUI () {
-    this.setItem('uiActive', true)
-    return this
-  }
-
-  // TODO: A temporary solution for compatibility with TabScript.
-  isActive () {
-    return this.status === State.statuses.embedLib.ACTIVE
-  }
-
-  isDeactivated () {
-    return this.status === State.statuses.embedLib.DEACTIVATED
-  }
-
-  isDisabled () {
-    return this.status === State.statuses.embedLib.DISABLED
-  }
-
-  isTabStateDefault () {
-    return this.tab === State.statuses.tab.DEFAULT
-  }
-
-  uiIsActive () {
-    return this.uiActive
-  }
-
-  activate () {
-    this.status = State.statuses.embedLib.ACTIVE
-    return this
-  }
-
-  deactivate () {
-    this.status = State.statuses.embedLib.DEACTIVATED
-    return this
-  }
-
-  disable () {
-    this.status = State.statuses.embedLib.DISABLED
-    return this
-  }
-}
-
-
-/***/ })
-
-/******/ });
+window.AlpheiosEmbed = __webpack_exports__;
+/******/ })()
+;
 //# sourceMappingURL=alpheios-embedded.js.map

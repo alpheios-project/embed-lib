@@ -373,28 +373,4 @@ See our [FAQ pages](http://www.alpheios.net/pages/faq/)
 
 ## Developer Instructions
 
-### Prerequisites to build the Alpheios Embedded Library from source:
-
-  * Node 13.7.0 or higher
-
-### Install Dependencies
-
-```
-npm install
-```
-
-### Build
-
-```
-npm run test
-npm run build
-```
-
-### Develop
-
-```
-npm run dev
-```
-
-Runs a local web server on port 8888. Load the sample.html file at the root of the directory. Changes made to the
-code will be dynamically rebuilt.
+See [BUILD.md](BUILD.md)
